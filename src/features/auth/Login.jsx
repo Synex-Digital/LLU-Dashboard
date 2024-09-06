@@ -5,15 +5,10 @@ import Button from "../../components/common/Button";
 import { FaApple } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
-import {
-    validateName,
-    validateEmail,
-    validatePassword,
-} from "../../helpers/validation";
+import { validateEmail, validatePassword } from "../../helpers/validation";
 import { routes } from "../../routes/Routers";
 
-const SignUp = () => {
-    const [fullName, setFullName] = useState("");
+const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
@@ -22,7 +17,6 @@ const SignUp = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         const newErrors = {
-            fullName: validateName(fullName),
             email: validateEmail(email),
             password: validatePassword(password),
         };
@@ -31,7 +25,7 @@ const SignUp = () => {
 
         const hasErrors = Object.values(newErrors).some((error) => error);
         if (!hasErrors) {
-            console.log(fullName, email, password, "Form submitted");
+            console.log(email, password, "Form submitted");
         }
     };
 
@@ -39,16 +33,14 @@ const SignUp = () => {
         <main className="bg-background font-inter text-white">
             <section className="flex items-center justify-center">
                 <div className="my-10 w-1/3">
-                    <h1 className="text-center text-2xl font-medium">
-                        Create Your Account
-                    </h1>
+                    <h1 className="text-center text-2xl font-medium">Login</h1>
                     <div className="text-center text-sm font-medium">
-                        Already Have An Account?{" "}
+                        Do Not Have Account Yet?{" "}
                         <Link
-                            to={routes.login.path}
+                            to={routes.signup.path}
                             className="mt-3 text-base font-semibold text-Primary"
                         >
-                            Log In
+                            Sign Up
                         </Link>
                     </div>
                     <div className="mt-16 flex flex-col gap-y-3">
@@ -56,23 +48,6 @@ const SignUp = () => {
                             className="flex flex-col gap-y-3"
                             onSubmit={handleSubmit}
                         >
-                            <div>
-                                <p>Full Name</p>
-                                <Input
-                                    type="text"
-                                    user={true}
-                                    value={fullName}
-                                    onChange={(e) =>
-                                        setFullName(e.target.value)
-                                    }
-                                    placeholder={"Enter Your Full Name"}
-                                />
-                                {errors.fullName && (
-                                    <p className="text-red-500 text-sm">
-                                        {errors.fullName}
-                                    </p>
-                                )}
-                            </div>
                             <div>
                                 <p>Email</p>
                                 <Input
@@ -107,6 +82,16 @@ const SignUp = () => {
                             </div>
                             <Button title={"Sign Up"} className="mt-5" />
                         </form>
+                        <div>
+                            <button
+                                onClick={() =>
+                                    navigate(routes.forgotPassword.path)
+                                }
+                                className="text-sm float-right text-blue-500 hover:underline"
+                            >
+                                Forgot Password
+                            </button>
+                        </div>
                         <p className="text-sm font-medium">
                             By continuing, you agree to LLU’s Terms of Service
                             and Privacy Policy
@@ -132,14 +117,6 @@ const SignUp = () => {
                                 </span>{" "}
                                 Continue with Apple
                             </button>
-                            <div className="text-center">
-                                <button
-                                    onClick={() => navigate("/")}
-                                    className="text-sm text-blue-500 hover:underline"
-                                >
-                                    Skip For Now
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -148,4 +125,4 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
+export default Login;
