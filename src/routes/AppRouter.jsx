@@ -10,6 +10,7 @@ import { routes } from "./Routers";
 import SignUp from "../features/auth/Signup";
 import Login from "../features/auth/Login";
 import ForgotPassword from "../features/auth/ForgotPassword";
+import VerifiedOtp from "../features/auth/VerifiedOtp";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -71,6 +72,21 @@ const router = createBrowserRouter(
                             />
                         </Helmet>
                         <ForgotPassword />
+                    </>
+                }
+            ></Route>
+            <Route
+                path={routes.verifiedOtp.path}
+                element={
+                    <>
+                        <Helmet>
+                            <title>{routes.verifiedOtp.title}</title>
+                            <meta
+                                name="description"
+                                content="LLU Description"
+                            />
+                        </Helmet>
+                        <VerifiedOtp />
                     </>
                 }
             ></Route>

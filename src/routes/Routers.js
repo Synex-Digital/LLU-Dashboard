@@ -24,6 +24,11 @@ export const routes = {
         key: "forgot-password",
         path: "/auth/forgot-password",
     },
+    verifiedOtp: {
+        title: "Verified OTP",
+        key: "verified-otp",
+        path: "/auth/verified-otp",
+    },
     notFound: {
         title: "Page Not Found",
         key: "page-not-found",
