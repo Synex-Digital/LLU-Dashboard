@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 
@@ -12,6 +12,7 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -81,6 +82,16 @@ const Login = () => {
                             </div>
                             <Button title={"Sign Up"} className="mt-5" />
                         </form>
+                        <div>
+                            <button
+                                onClick={() =>
+                                    navigate(routes.forgotPassword.path)
+                                }
+                                className="text-sm float-right text-blue-500 hover:underline"
+                            >
+                                Forgot Password
+                            </button>
+                        </div>
                         <p className="text-sm font-medium">
                             By continuing, you agree to LLU’s Terms of Service
                             and Privacy Policy
