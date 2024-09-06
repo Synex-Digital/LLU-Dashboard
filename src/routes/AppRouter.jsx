@@ -8,6 +8,7 @@ import GetStarted from "../features/auth/GetStarted";
 import { Helmet } from "react-helmet-async";
 import { routes } from "./Routers";
 import SignUp from "../features/auth/Signup";
+import Login from "../features/auth/Login";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -33,6 +34,18 @@ const router = createBrowserRouter(
               <meta name="description" content="LLU Description" />
             </Helmet>
             <SignUp />
+          </>
+        }
+      ></Route>
+      <Route
+        path={routes.login.path}
+        element={
+          <>
+            <Helmet>
+              <title>{routes.login.title}</title>
+              <meta name="description" content="LLU Description" />
+            </Helmet>
+            <Login />
           </>
         }
       ></Route>
