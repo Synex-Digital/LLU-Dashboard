@@ -2,7 +2,7 @@ import React from "react";
 
 const Home = () => {
     return (
-        <div className="p-5 text-justify">
+        <div className="text-justify">
             <div>
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Est
                 quibusdam consequuntur non esse suscipit incidunt! Vitae nam

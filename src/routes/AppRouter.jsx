@@ -17,6 +17,7 @@ import SetNewPassword from "../pages/auth/SetNewPassword";
 import SelectUser from "../pages/auth/SelectUser";
 import Home from "../pages/home/Home";
 import RotLayOut from "../components/RotLayOut";
+import Session from "../pages/Session";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -168,6 +169,21 @@ const router = createBrowserRouter(
                                 />
                             </Helmet>
                             <Home />
+                        </>
+                    }
+                />
+                <Route
+                    path={routes.session.path}
+                    element={
+                        <>
+                            <Helmet>
+                                <title>{routes.session.title}</title>
+                                <meta
+                                    name="description"
+                                    content="LLU Description"
+                                />
+                            </Helmet>
+                            <Session />
                         </>
                     }
                 />

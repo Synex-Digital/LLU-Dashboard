@@ -11,7 +11,9 @@ const RotLayOut = () => {
                 <SideBar />
                 <section className="w-10/12 relative overflow-y-auto overflow-x-hidden">
                     <Navbar />
-                    <Outlet />
+                    <div className="p-5">
+                        <Outlet />
+                    </div>
                 </section>
             </section>
         </main>
