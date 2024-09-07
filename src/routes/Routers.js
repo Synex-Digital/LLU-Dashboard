@@ -42,6 +42,11 @@ export const routes = {
   home: {
     title: "Home",
     key: "home",
-    path: "/home",
+    path: "/",
+  },
+  dashboard: {
+    title: "Dashboard",
+    key: "dashboard",
+    path: "/dashboard",
   },
 };

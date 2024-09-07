@@ -7,6 +7,7 @@ export default {
         Primary: "#B79654",
         background: "#100F15",
         Secondary: "#54B1B7",
+        darkSlate: "#1B1A22",
       },
       fontFamily: {
         inter: ["Inter", "sans-serif"],
