@@ -3,7 +3,7 @@ import profile from "../assets/image/pp.png";
 import Image from "../components/common/Image";
 import Button from "../components/common/Button";
 import { AiFillMessage } from "react-icons/ai";
-import { IoIosCall } from "react-icons/io";
+import { IoIosCall, IoIosTime } from "react-icons/io";
 import { MdLocationPin } from "react-icons/md";
 import { FaRegCalendarAlt } from "react-icons/fa";
 
@@ -64,8 +64,9 @@ const SessionDetails = () => {
                     </p>
                     <div className="text-sm text-gray-400 inline-block">
                         <FaRegCalendarAlt className="inline-block text-lg text-Primary" />
-                        <p className="inline-block mx-2">20th May, 2024</p>
-                        <p className="inline-block">05:00 PM - 06:00 PM</p>
+                        <p className="inline-block ml-1 mr-3">20th May, 2024</p>
+                        <IoIosTime className="inline-block text-lg text-Primary" />
+                        <p className="inline-block ml-1">05:00 PM - 06:00 PM</p>
                     </div>
                 </div>
             </div>

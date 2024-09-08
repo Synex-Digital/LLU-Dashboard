@@ -59,4 +59,9 @@ export const routes = {
         key: "session-details",
         path: "/session-details",
     },
+    notifications: {
+        title: "Notifications",
+        key: "notifications",
+        path: "/notifications",
+    },
 };
