@@ -54,4 +54,9 @@ export const routes = {
         key: "session",
         path: "/session",
     },
+    sessionDetails: {
+        title: "Session Details",
+        key: "session-details",
+        path: "/session-details",
+    },
 };
