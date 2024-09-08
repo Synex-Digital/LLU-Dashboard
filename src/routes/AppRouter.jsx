@@ -18,6 +18,8 @@ import SelectUser from "../pages/auth/SelectUser";
 import Home from "../pages/home/Home";
 import RotLayOut from "../components/RotLayOut";
 import Session from "../pages/Session";
+import SessionDetails from "../pages/SessionDetails";
+import Notifications from "../pages/Notifications";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -184,6 +186,36 @@ const router = createBrowserRouter(
                                 />
                             </Helmet>
                             <Session />
+                        </>
+                    }
+                />
+                <Route
+                    path={routes.sessionDetails.path}
+                    element={
+                        <>
+                            <Helmet>
+                                <title>{routes.sessionDetails.title}</title>
+                                <meta
+                                    name="description"
+                                    content="LLU Description"
+                                />
+                            </Helmet>
+                            <SessionDetails />
+                        </>
+                    }
+                />
+                <Route
+                    path={routes.notifications.path}
+                    element={
+                        <>
+                            <Helmet>
+                                <title>{routes.notifications.title}</title>
+                                <meta
+                                    name="description"
+                                    content="LLU Description"
+                                />
+                            </Helmet>
+                            <Notifications />
                         </>
                     }
                 />
