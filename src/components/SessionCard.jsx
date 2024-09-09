@@ -18,14 +18,14 @@ const SessionCard = ({
     return (
         <div className="bg-darkSlate p-3 rounded-lg">
             <h2 className="font-medium">{title}</h2>
-            {lTrue ? (
+            <p className="text-sm text-gray-400 my-3">{sessionDetails}</p>
+            {lTrue && (
                 <p className="text-sm text-gray-400 mt-3 mb-1">
                     <MdLocationPin className="inline-block text-xl text-Primary" />{" "}
                     {locations}
                 </p>
-            ) : (
-                <p className="text-sm text-gray-400 my-3">{sessionDetails}</p>
             )}
+
             <div className="flex items-end justify-between">
                 <div className="text-sm text-gray-400 inline-block">
                     <FaRegCalendarAlt className="inline-block text-lg text-Primary" />
