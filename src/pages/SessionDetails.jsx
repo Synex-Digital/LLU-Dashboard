@@ -1,7 +1,7 @@
 import React from "react";
-import profile from "../assets/image/pp.png";
 import Image from "../components/common/Image";
-import Button from "../components/common/Button";
+
+import profile from "../assets/image/pp.png";
 import { AiFillMessage } from "react-icons/ai";
 import { IoIosCall, IoIosTime } from "react-icons/io";
 import { MdLocationPin } from "react-icons/md";

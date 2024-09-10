@@ -21,6 +21,8 @@ import Session from "../pages/Session";
 import SessionDetails from "../pages/SessionDetails";
 import Notifications from "../pages/Notifications";
 import AthleteRequest from "../pages/AthleteRequest";
+import CreateSession from "../pages/CreateSession";
+import Profile from "../pages/Profile";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -190,6 +192,30 @@ const router = createBrowserRouter(
                 <meta name="description" content="LLU Description" />
               </Helmet>
               <AthleteRequest />
+            </>
+          }
+        />
+        <Route
+          path={routes.createSession.path}
+          element={
+            <>
+              <Helmet>
+                <title>{routes.createSession.title}</title>
+                <meta name="description" content="LLU Description" />
+              </Helmet>
+              <CreateSession />
+            </>
+          }
+        />
+        <Route
+          path={routes.profile.path}
+          element={
+            <>
+              <Helmet>
+                <title>{routes.profile.title}</title>
+                <meta name="description" content="LLU Description" />
+              </Helmet>
+              <Profile />
             </>
           }
         />

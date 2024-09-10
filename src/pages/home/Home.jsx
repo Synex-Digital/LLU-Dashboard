@@ -1,10 +1,12 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SessionCard from "../../components/SessionCard";
 import { FiPlusCircle } from "react-icons/fi";
 import ReactCalendar from "../../components/ReactCalendar";
+import { routes } from "../../routes/Routers";
 
 const Home = () => {
+  const navigate = useNavigate();
   return (
     <main>
       <section>
@@ -35,7 +37,10 @@ const Home = () => {
         <div className="flex items-center justify-between">
           <div className="flex gap-x-3">
             <h1 className="text-3xl font-semibold">Upcoming Session</h1>
-            <button className="flex items-center gap-x-2 rounded-full bg-darkSlate px-6 py-2">
+            <button
+              onClick={() => navigate(routes.createSession.path)}
+              className="flex items-center gap-x-2 rounded-full bg-darkSlate px-6 py-2"
+            >
               <FiPlusCircle /> Create New Session
             </button>
           </div>

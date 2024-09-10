@@ -69,4 +69,14 @@ export const routes = {
     key: "athlete-request",
     path: "/athlete-request",
   },
+  createSession: {
+    title: "Create Session",
+    key: "create-session",
+    path: "/create-session",
+  },
+  profile: {
+    title: "Profile",
+    key: "profile",
+    path: "/profile",
+  },
 };

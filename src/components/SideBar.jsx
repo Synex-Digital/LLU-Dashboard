@@ -8,8 +8,11 @@ import paymentMethod from "../assets/icon/payment-method.svg";
 import setting from "../assets/icon/setting.svg";
 import privacyPolicy from "../assets/icon/privacy-policy.svg";
 import profileIcon from "../assets/icon/profile-icon.svg";
+import { useNavigate } from "react-router-dom";
+import { routes } from "../routes/Routers";
 
 const SideBar = () => {
+  const navigate = useNavigate();
   return (
     <aside className="static h-screen w-1/5 bg-darkSlate px-3 py-5">
       <div className="flex flex-col items-center justify-center gap-2">
@@ -17,7 +20,10 @@ const SideBar = () => {
         <h2 className="text-center text-xl font-semibold">Tammy Gauthier</h2>
       </div>
       <div className="mt-8 flex flex-col gap-y-6">
-        <div className="flex cursor-pointer items-center gap-x-4 rounded-lg px-3 py-2 hover:bg-background">
+        <div
+          onClick={() => navigate(routes.profile.path)}
+          className="flex cursor-pointer items-center gap-x-4 rounded-lg px-3 py-2 hover:bg-background"
+        >
           <Image src={profileIcon} />
           <p>Profile</p>
         </div>
@@ -37,10 +43,6 @@ const SideBar = () => {
         <div className="flex cursor-pointer items-center gap-x-4 rounded-lg px-3 py-2 hover:bg-background">
           <Image src={helpCenter} />
           <p>Help Center</p>
-        </div>
-        <div className="flex cursor-pointer items-center gap-x-4 rounded-lg px-3 py-2 hover:bg-background">
-          <Image src={privacyPolicy} />
-          <p>Privacy Policy</p>
         </div>
       </div>
     </aside>
