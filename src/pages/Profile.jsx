@@ -20,7 +20,10 @@ const Profile = () => {
                 <PageHeading title={"Facilitator"} />
                 <div className="flex items-center gap-3">
                     <CiShare2 className="h-10 w-10 rounded-full border border-darkText p-2" />
-                    <CiEdit className="h-10 w-10 rounded-full border border-darkText p-2" />
+                    <CiEdit
+                        onClick={() => navigate(routes.editDetails.path)}
+                        className="h-10 w-10 cursor-pointer rounded-full border border-darkText p-2"
+                    />
                 </div>
             </div>
             <div className="mb-5 flex items-center gap-x-60 border-b border-b-darkSlate pb-5">
@@ -60,11 +63,11 @@ const Profile = () => {
                     <FaAngleRight />
                 </div>
                 <div className="flex items-center justify-between rounded-lg bg-darkSlate p-3">
-                    <p>Ark Indoor Stadium</p>
+                    <p>Sports Club</p>
                     <FaAngleRight />
                 </div>
                 <div className="flex items-center justify-between rounded-lg bg-darkSlate p-3">
-                    <p>Ark Indoor Stadium</p>
+                    <p>Basketball Indoor Club</p>
                     <FaAngleRight />
                 </div>
             </div>

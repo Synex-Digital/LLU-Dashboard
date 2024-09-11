@@ -63,7 +63,7 @@ const FacilityView = () => {
                 </div>
 
                 <div>
-                    <div className=" flex justify-between">
+                    <div className=" flex items-center justify-between">
                         <SubPageTitle title={"Address"} />
                         <p className="text-darkText">View on map</p>
                     </div>

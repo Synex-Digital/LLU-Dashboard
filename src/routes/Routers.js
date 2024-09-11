@@ -84,4 +84,9 @@ export const routes = {
         key: "facility-view",
         path: "/facility-view",
     },
+    editDetails: {
+        title: "Edit Details",
+        key: "edit-details",
+        path: "/edit-details",
+    },
 };

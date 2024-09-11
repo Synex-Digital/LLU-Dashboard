@@ -24,6 +24,7 @@ import AthleteRequest from "../pages/AthleteRequest";
 import CreateSession from "../pages/CreateSession";
 import Profile from "../pages/Profile";
 import FacilityView from "../pages/FacilityView";
+import EditDetails from "../pages/EditDetails";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -280,6 +281,21 @@ const router = createBrowserRouter(
                                 />
                             </Helmet>
                             <FacilityView />
+                        </>
+                    }
+                />
+                <Route
+                    path={routes.editDetails.path}
+                    element={
+                        <>
+                            <Helmet>
+                                <title>{routes.editDetails.title}</title>
+                                <meta
+                                    name="description"
+                                    content="LLU Description"
+                                />
+                            </Helmet>
+                            <EditDetails />
                         </>
                     }
                 />
