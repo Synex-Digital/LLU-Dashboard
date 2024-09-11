@@ -4,7 +4,6 @@ import Button from "../components/common/Button";
 import { MdLocationPin } from "react-icons/md";
 
 const CreateSession = () => {
-  const [isToggled, setIsToggled] = useState(false);
   const [days, setDays] = useState({
     mon: true,
     tue: true,
