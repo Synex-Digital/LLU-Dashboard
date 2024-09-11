@@ -26,6 +26,7 @@ import Profile from "../pages/Profile";
 import FacilityView from "../pages/FacilityView";
 import EditDetails from "../pages/EditDetails";
 import EditArkIndoor from "../pages/EditArkIndoor";
+import AddFacility from "../pages/AddFacility";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -255,6 +256,18 @@ const router = createBrowserRouter(
                 <meta name="description" content="LLU Description" />
               </Helmet>
               <EditArkIndoor />
+            </>
+          }
+        />
+        <Route
+          path={routes.addFacility.path}
+          element={
+            <>
+              <Helmet>
+                <title>{routes.addFacility.title}</title>
+                <meta name="description" content="LLU Description" />
+              </Helmet>
+              <AddFacility />
             </>
           }
         />

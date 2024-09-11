@@ -94,4 +94,9 @@ export const routes = {
     key: "edit-ark-indoor",
     path: "/edit-ark-indoor",
   },
+  addFacility: {
+    title: "Add Facility",
+    key: "add-facility",
+    path: "/add-facility",
+  },
 };

@@ -4,6 +4,7 @@ import SubPageTitle from "../components/common/SubPageTitle";
 import { BsPlusSquareDotted } from "react-icons/bs";
 
 const EditArkIndoor = () => {
+  const [images, setImages] = useState([]);
   const [days, setDays] = useState({
     mon: true,
     tue: true,
@@ -33,6 +34,29 @@ const EditArkIndoor = () => {
       ...timeRange,
       [day]: { ...timeRange[day], [key]: value },
     });
+  };
+
+  const handleFile = (e) => {
+    const files = Array.from(e.target.files); // Convert FileList to array
+    const imagePromises = files.map((file) => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = (event) => {
+          resolve(event.target.result); // Resolve the image data URL
+        };
+
+        reader.onerror = reject; // Handle file reading error
+        reader.readAsDataURL(file); // Read the file as a data URL
+      });
+    });
+
+    // Once all promises resolve, update the state
+    Promise.all(imagePromises)
+      .then((imageUrls) => {
+        setImages((prevImages) => [...prevImages, ...imageUrls]); // Append new images to the previous ones
+      })
+      .catch((error) => console.error("Error loading images", error));
   };
 
   const CustomToggleSwitch = ({ checked, onChange }) => {
@@ -107,10 +131,20 @@ const EditArkIndoor = () => {
           <BsPlusSquareDotted className="text-4xl text-Primary" />
           <div>
             <p>Click to upload</p>
-            <p className="text-darkText">Max.800px to 400px</p>
+            <p className="text-darkText">Max.800x400px</p>
           </div>
-          <input type="file" hidden />
+          <input onChange={handleFile} type="file" hidden />
         </label>
+      </div>
+      <div className="mt-5 grid grid-cols-4 gap-3">
+        {images.map((imageSrc, index) => (
+          <img
+            key={index}
+            className="h-[400px] w-[800px] rounded-lg"
+            src={imageSrc}
+            alt={`Preview ${index}`}
+          />
+        ))}
       </div>
     </section>
   );
