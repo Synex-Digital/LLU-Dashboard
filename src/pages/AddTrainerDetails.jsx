@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import PageHeading from "../components/common/PageHeading";
 import SubPageTitle from "../components/common/SubPageTitle";
-import { BsPlusSquareDotted } from "react-icons/bs";
 
-const EditArkIndoor = () => {
-  const [images, setImages] = useState([]);
+const AddTrainerDetails = () => {
   const [days, setDays] = useState({
     mon: true,
     tue: true,
@@ -35,29 +33,6 @@ const EditArkIndoor = () => {
       [day]: { ...timeRange[day], [key]: value },
     });
   };
-
-  const handleFile = (e) => {
-    const files = Array.from(e.target.files);
-    const imagePromises = files.map((file) => {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-
-        reader.onload = (event) => {
-          resolve(event.target.result);
-        };
-
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    });
-
-    Promise.all(imagePromises)
-      .then((imageUrls) => {
-        setImages((prevImages) => [...prevImages, ...imageUrls]);
-      })
-      .catch((error) => console.error("Error loading images", error));
-  };
-
   const CustomToggleSwitch = ({ checked, onChange }) => {
     return (
       <div
@@ -75,24 +50,35 @@ const EditArkIndoor = () => {
 
   return (
     <section>
-      <PageHeading title={"Edit Ark Indoor"} />
+      <PageHeading title={"Add Trainer Details"} />
+
       <p>
-        Facility Name
-        <span className="text-redText">*</span>
+        Trainer Name<span className="text-redText">*</span>
       </p>
       <input
-        placeholder="Ark Indoor"
+        placeholder="Write full name here"
         className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
       />
       <p>
-        Capacity
-        <span className="text-redText">*</span>
+        Hourly Rate<span className="text-redText">*</span>
       </p>
-      <input
-        placeholder="Enter capacity amount"
+      <div className="mb-5 mt-2 flex items-center gap-2 rounded-lg bg-darkSlate pl-3">
+        <div className="border-r border-Secondary pr-2">USD</div>
+        <input
+          placeholder="Hourly Rate"
+          className="w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
+        />
+      </div>
+      <p>
+        About<span className="text-redText">*</span>
+      </p>
+      <textarea
+        placeholder="About..."
         className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
       />
-      <SubPageTitle title={"Working Hours"} />
+
+      <h2 className="mb-4 mt-5 text-lg font-semibold">Working Hours</h2>
+
       {Object.keys(days).map((day, index) => (
         <div key={index} className="mb-2 flex items-center justify-between">
           <div className="flex items-center">
@@ -109,14 +95,14 @@ const EditArkIndoor = () => {
                 type="time"
                 value={timeRange[day].from}
                 onChange={(e) => updateTime(day, "from", e.target.value)}
-                className="rounded-lg border border-darkSlate bg-darkSlate px-2 py-1 text-sm"
+                className="rounded-lg border border-darkSlate bg-darkSlate px-2 py-1 text-sm text-white"
               />
               <span>to</span>
               <input
                 type="time"
                 value={timeRange[day].to}
                 onChange={(e) => updateTime(day, "to", e.target.value)}
-                className="rounded-lg border border-darkSlate bg-darkSlate px-2 py-1 text-sm"
+                className="rounded-lg border border-darkSlate bg-darkSlate px-2 py-1 text-sm text-white"
               />
             </div>
           ) : (
@@ -124,29 +110,26 @@ const EditArkIndoor = () => {
           )}
         </div>
       ))}
-      <SubPageTitle title={"Gallery"} />
-      <div>
-        <label className="flex cursor-pointer items-center gap-x-3">
-          <BsPlusSquareDotted className="text-4xl text-Primary" />
-          <div>
-            <p>Click to upload</p>
-            <p className="text-darkText">Max.800x400px</p>
-          </div>
-          <input onChange={handleFile} type="file" hidden />
-        </label>
-      </div>
-      <div className="mt-5 grid grid-cols-4 gap-3">
-        {images.map((imageSrc, index) => (
-          <img
-            key={index}
-            className="h-[400px] w-[800px] rounded-lg"
-            src={imageSrc}
-            alt={`Preview ${index}`}
-          />
-        ))}
-      </div>
+
+      <SubPageTitle title={"Location"} />
+      <p>City</p>
+      <input
+        placeholder="city"
+        className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
+      />
+      <p>Road</p>
+      <input
+        placeholder="road"
+        className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
+      />
+
+      <p>Zip Code</p>
+      <input
+        placeholder="34543"
+        className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
+      />
     </section>
   );
 };
 
-export default EditArkIndoor;
+export default AddTrainerDetails;

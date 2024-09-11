@@ -47,7 +47,10 @@ const Profile = () => {
       </div>
       <div className="flex items-center justify-between text-xl font-medium">
         <SubPageTitle title={"Facility List"} />
-        <CiCirclePlus className="text-3xl" />
+        <CiCirclePlus
+          onClick={() => navigate(routes.addFacility.path)}
+          className="cursor-pointer text-3xl"
+        />
       </div>
 
       <div className="grid grid-cols-3 gap-3">

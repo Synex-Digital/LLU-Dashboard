@@ -9,40 +9,39 @@ const EditDetails = () => {
   return (
     <section>
       <PageHeading title={"Edit Facilitator Details"} />
-      <div className="mx-auto w-1/2">
-        <p>
-          Full Name<span className="text-redText">*</span>
-        </p>
+
+      <p>
+        Full Name<span className="text-redText">*</span>
+      </p>
+      <input
+        placeholder="Write full name here"
+        className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
+      />
+      <p>
+        Hourly Rate<span className="text-redText">*</span>
+      </p>
+      <div className="mb-5 mt-2 flex items-center gap-2 rounded-lg bg-darkSlate pl-3">
+        <div className="border-r border-Secondary pr-2">USD</div>
         <input
-          placeholder="Write full name here"
-          className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
-        />
-        <p>
-          Hourly Rate<span className="text-redText">*</span>
-        </p>
-        <div className="mb-5 mt-2 flex items-center gap-2 rounded-lg bg-darkSlate pl-3">
-          <div className="border-r border-Secondary pr-2">USD</div>
-          <input
-            placeholder="Hourly Rate"
-            className="w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
-          />
-        </div>
-        <p>
-          Established in<span className="text-redText">*</span>
-        </p>
-        <input
-          placeholder="2004"
-          className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
-        />
-        <p>
-          Professionals Resources
-          <span className="text-redText">*</span>
-        </p>
-        <input
-          placeholder="25"
-          className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
+          placeholder="Hourly Rate"
+          className="w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
         />
       </div>
+      <p>
+        Established in<span className="text-redText">*</span>
+      </p>
+      <input
+        placeholder="2004"
+        className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
+      />
+      <p>
+        Professionals Resources
+        <span className="text-redText">*</span>
+      </p>
+      <input
+        placeholder="25"
+        className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
+      />
 
       <div className="flex items-center justify-between">
         <SubPageTitle title={"Address"} />
