@@ -37,24 +37,23 @@ const EditArkIndoor = () => {
   };
 
   const handleFile = (e) => {
-    const files = Array.from(e.target.files); // Convert FileList to array
+    const files = Array.from(e.target.files);
     const imagePromises = files.map((file) => {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
 
         reader.onload = (event) => {
-          resolve(event.target.result); // Resolve the image data URL
+          resolve(event.target.result);
         };
 
-        reader.onerror = reject; // Handle file reading error
-        reader.readAsDataURL(file); // Read the file as a data URL
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
       });
     });
 
-    // Once all promises resolve, update the state
     Promise.all(imagePromises)
       .then((imageUrls) => {
-        setImages((prevImages) => [...prevImages, ...imageUrls]); // Append new images to the previous ones
+        setImages((prevImages) => [...prevImages, ...imageUrls]);
       })
       .catch((error) => console.error("Error loading images", error));
   };

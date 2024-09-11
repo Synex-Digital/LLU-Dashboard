@@ -99,4 +99,9 @@ export const routes = {
     key: "add-facility",
     path: "/add-facility",
   },
+  addTrainerDetails: {
+    title: "Add Trainer Details",
+    key: "add-trainer",
+    path: "/add-trainer",
+  },
 };

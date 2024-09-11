@@ -92,74 +92,73 @@ const AddFacility = () => {
   return (
     <section>
       <PageHeading title={"Add Facility"} />
-      <div className="mx-auto w-1/2">
-        <p>
-          Full Name<span className="text-redText">*</span>
-        </p>
-        <input
-          placeholder="Write full name here"
-          className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
-        />
-        <p>
-          Hourly Rate<span className="text-redText">*</span>
-        </p>
-        <div className="mb-5 mt-2 flex items-center gap-2 rounded-lg bg-darkSlate pl-3">
-          <div className="border-r border-Secondary pr-2">USD</div>
-          <input
-            placeholder="Hourly Rate"
-            className="w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
-          />
-        </div>
-        <p>
-          Established in<span className="text-redText">*</span>
-        </p>
-        <input
-          placeholder="2004"
-          className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
-        />
-        <p>
-          Professionals Resources
-          <span className="text-redText">*</span>
-        </p>
-        <input
-          placeholder="25"
-          className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
-        />
-        <p>
-          Facilities
-          <span className="text-redText">*</span>
-        </p>
-        <input
-          placeholder="Enter your facilities here"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
-        />
-        <div className="mt-3 flex flex-wrap">
-          {facilities.map((facility, index) => (
-            <div
-              key={index}
-              className="mb-2 mr-2 flex items-center rounded-full bg-darkSlate px-3 py-1 text-white"
-            >
-              {facility}
 
-              <RxCross2
-                onClick={() => removeFacility(index)}
-                className="ml-2 cursor-pointer text-red-400"
-              />
-            </div>
-          ))}
-        </div>
-        <p>
-          Select Trainer
-          <span className="text-redText">*</span>
-        </p>
+      <p>
+        Full Name<span className="text-redText">*</span>
+      </p>
+      <input
+        placeholder="Write full name here"
+        className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
+      />
+      <p>
+        Hourly Rate<span className="text-redText">*</span>
+      </p>
+      <div className="mb-5 mt-2 flex items-center gap-2 rounded-lg bg-darkSlate pl-3">
+        <div className="border-r border-Secondary pr-2">USD</div>
         <input
-          placeholder="Select Trainer"
-          className="mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
+          placeholder="Hourly Rate"
+          className="w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
         />
       </div>
+      <p>
+        Established in<span className="text-redText">*</span>
+      </p>
+      <input
+        placeholder="2004"
+        className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
+      />
+      <p>
+        Professionals Resources
+        <span className="text-redText">*</span>
+      </p>
+      <input
+        placeholder="25"
+        className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
+      />
+      <p>
+        Facilities
+        <span className="text-redText">*</span>
+      </p>
+      <input
+        placeholder="Enter your facilities here"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyDown={handleKeyDown}
+        className="mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
+      />
+      <div className="mt-3 flex flex-wrap">
+        {facilities.map((facility, index) => (
+          <div
+            key={index}
+            className="mb-2 mr-2 flex items-center rounded-full bg-darkSlate px-3 py-1 text-white"
+          >
+            {facility}
+
+            <RxCross2
+              onClick={() => removeFacility(index)}
+              className="ml-2 cursor-pointer text-red-400"
+            />
+          </div>
+        ))}
+      </div>
+      <p>
+        Select Trainer
+        <span className="text-redText">*</span>
+      </p>
+      <input
+        placeholder="Select Trainer"
+        className="mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
+      />
 
       <h2 className="mb-4 mt-5 text-lg font-semibold">Working Hours</h2>
 
