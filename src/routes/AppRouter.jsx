@@ -6,6 +6,8 @@ import {
 } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { routes } from "./Routers";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import GetStarted from "../pages/auth/GetStarted";
 import SignUp from "../pages/auth/Signup";
@@ -388,6 +390,19 @@ const AppRouter = () => {
     return (
         <>
             <RouterProvider router={router} />
+            <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                transition:Bounce
+            />
         </>
     );
 };

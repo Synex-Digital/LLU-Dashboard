@@ -16,6 +16,7 @@ const GetStarted = () => {
             title={"GET STARTED"}
           />
           <Button
+          onClick={() => navigate(routes.login.path)}
             className="w-full border border-[#B3B1BA] bg-transparent"
             title={"SIGN IN"}
           />
