@@ -32,6 +32,7 @@ import AddFacility from "../pages/AddFacility";
 import AddTrainerDetails from "../pages/AddTrainerDetails";
 import Settings from "../pages/Settings";
 import ChangeEmailAddress from "../pages/ChangeEmailAddress";
+import PublicRoute from "./PublicRoute";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -47,7 +48,9 @@ const router = createBrowserRouter(
                                 content="LLU Description"
                             />
                         </Helmet>
-                        <GetStarted />
+                        <PublicRoute>
+                            <GetStarted />
+                        </PublicRoute>
                     </>
                 }
             ></Route>
@@ -62,7 +65,9 @@ const router = createBrowserRouter(
                                 content="LLU Description"
                             />
                         </Helmet>
-                        <SignUp />
+                        <PublicRoute>
+                            <SignUp />
+                        </PublicRoute>
                     </>
                 }
             ></Route>
@@ -77,7 +82,9 @@ const router = createBrowserRouter(
                                 content="LLU Description"
                             />
                         </Helmet>
-                        <Login />
+                        <PublicRoute>
+                            <Login />
+                        </PublicRoute>
                     </>
                 }
             ></Route>
@@ -92,7 +99,9 @@ const router = createBrowserRouter(
                                 content="LLU Description"
                             />
                         </Helmet>
-                        <ForgotPassword />
+                        <PublicRoute>
+                            <ForgotPassword />
+                        </PublicRoute>
                     </>
                 }
             ></Route>
@@ -107,7 +116,9 @@ const router = createBrowserRouter(
                                 content="LLU Description"
                             />
                         </Helmet>
-                        <VerifiedOtp />
+                        <PublicRoute>
+                            <VerifiedOtp />
+                        </PublicRoute>
                     </>
                 }
             ></Route>
@@ -122,7 +133,9 @@ const router = createBrowserRouter(
                                 content="LLU Description"
                             />
                         </Helmet>
-                        <SetNewPassword />
+                        <PublicRoute>
+                            <SetNewPassword />
+                        </PublicRoute>
                     </>
                 }
             ></Route>

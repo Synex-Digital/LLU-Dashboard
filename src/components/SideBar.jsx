@@ -13,12 +13,21 @@ import { routes } from "../routes/Routers";
 
 const SideBar = () => {
     const navigate = useNavigate();
+    const userData = JSON.parse(localStorage.getItem("user"));
+
     return (
         <aside className="static h-screen w-1/5 bg-darkSlate px-3 py-5">
             <div className="flex flex-col items-center justify-center gap-2">
-                <Image className={"w-32 rounded-full"} src={profile} />
+                <Image
+                    className={"w-32 rounded-full"}
+                    src={
+                        userData?.profile_picture
+                            ? userData?.profile_picture
+                            : userData?.img
+                    }
+                />
                 <h2 className="text-center text-xl font-semibold">
-                    Tammy Gauthier
+                    {userData?.first_name} {userData?.last_name}
                 </h2>
             </div>
             <div className="mt-8 flex flex-col gap-y-6">

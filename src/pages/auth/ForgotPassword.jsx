@@ -28,7 +28,7 @@ const ForgotPassword = () => {
   return (
     <main className="h-screen bg-background font-inter text-white">
       <section className="flex items-center justify-center">
-        <div className="my-10 w-1/3">
+        <div className="my-10 xl:w-1/3 w-full px-2 sm:w-4/5">
           <div className="flex items-center">
             <Link
               to={routes.login.path}

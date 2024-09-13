@@ -21,12 +21,6 @@ const Login = () => {
     const notify = (message) => toast.success(message);
     const notifyError = (message) => toast.error(message);
 
-    // useEffect(() => {
-    //     // Get the cookie value
-    //     const value = Cookies.get("myCookieName");
-    //     console.log(value);
-    // }, []);
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -55,18 +49,21 @@ const Login = () => {
                     }
                 );
 
-                notify("Login successful");
-                Cookies.set(`token`, `${response.data.token}`, {
-                    secure: true,
-                });
-                // document.cookie =
-                //     `token=${response.data.token}; Path=/; Secure; Max-Age=` +
-                //     30 * 24 * 60 * 60;
+                if (response.data && response.data.token) {
+                    Cookies.set("llu-token", response.data.token, {
+                        secure: true,
+                        expires: 30, // Expires in 30 days
+                    });
 
-                // if (response) {
-                // navigate(routes.dashboard.path);
-                // }
-                // document.cookie = "token=; Path=/; Secure; HttpOnly; Max-Age=0";
+                    localStorage.setItem(
+                        "user",
+                        JSON.stringify(response.data.user)
+                    );
+                    notify("Login successful");
+                    navigate(routes.dashboard.path);
+                }
+
+                console.log(response.data);
             } catch (error) {
                 notifyError("Login failed");
             }
@@ -76,7 +73,7 @@ const Login = () => {
     return (
         <main className="bg-background font-inter text-white">
             <section className="flex items-center justify-center">
-                <div className="my-10 w-1/3">
+                <div className="my-10 xl:w-1/3 px-2">
                     <h1 className="text-center text-2xl font-medium">Login</h1>
                     <div className="text-center text-sm font-medium text-[#B7B6BA]">
                         Do Not Have Account Yet?{" "}
