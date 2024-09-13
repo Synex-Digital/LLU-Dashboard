@@ -6,6 +6,8 @@ import {
 } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { routes } from "./Routers";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import GetStarted from "../pages/auth/GetStarted";
 import SignUp from "../pages/auth/Signup";
@@ -30,6 +32,7 @@ import AddFacility from "../pages/AddFacility";
 import AddTrainerDetails from "../pages/AddTrainerDetails";
 import Settings from "../pages/Settings";
 import ChangeEmailAddress from "../pages/ChangeEmailAddress";
+import PublicRoute from "./PublicRoute";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -45,7 +48,9 @@ const router = createBrowserRouter(
                                 content="LLU Description"
                             />
                         </Helmet>
-                        <GetStarted />
+                        <PublicRoute>
+                            <GetStarted />
+                        </PublicRoute>
                     </>
                 }
             ></Route>
@@ -60,7 +65,9 @@ const router = createBrowserRouter(
                                 content="LLU Description"
                             />
                         </Helmet>
-                        <SignUp />
+                        <PublicRoute>
+                            <SignUp />
+                        </PublicRoute>
                     </>
                 }
             ></Route>
@@ -75,7 +82,9 @@ const router = createBrowserRouter(
                                 content="LLU Description"
                             />
                         </Helmet>
-                        <Login />
+                        <PublicRoute>
+                            <Login />
+                        </PublicRoute>
                     </>
                 }
             ></Route>
@@ -90,7 +99,9 @@ const router = createBrowserRouter(
                                 content="LLU Description"
                             />
                         </Helmet>
-                        <ForgotPassword />
+                        <PublicRoute>
+                            <ForgotPassword />
+                        </PublicRoute>
                     </>
                 }
             ></Route>
@@ -105,7 +116,9 @@ const router = createBrowserRouter(
                                 content="LLU Description"
                             />
                         </Helmet>
-                        <VerifiedOtp />
+                        <PublicRoute>
+                            <VerifiedOtp />
+                        </PublicRoute>
                     </>
                 }
             ></Route>
@@ -120,7 +133,9 @@ const router = createBrowserRouter(
                                 content="LLU Description"
                             />
                         </Helmet>
-                        <SetNewPassword />
+                        <PublicRoute>
+                            <SetNewPassword />
+                        </PublicRoute>
                     </>
                 }
             ></Route>
@@ -388,6 +403,19 @@ const AppRouter = () => {
     return (
         <>
             <RouterProvider router={router} />
+            <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                transition:Bounce
+            />
         </>
     );
 };
