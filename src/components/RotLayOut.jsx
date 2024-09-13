@@ -7,7 +7,7 @@ import { routes } from "../routes/Routers";
 import Cookies from "js-cookie";
 
 const PrivateRoute = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(true); //change for design value is false
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -31,9 +31,9 @@ const RotLayOut = () => {
             <main className="font-inter text-white">
                 <section className="flex h-screen overflow-hidden">
                     <SideBar />
-                    <section className="relative w-10/12 overflow-y-auto overflow-x-hidden">
+                    <section className="relative lg:w-10/12 overflow-y-auto overflow-x-hidden">
                         <Navbar />
-                        <div className="p-5">
+                        <div className="lg:p-5 max-lg:p-2">
                             <Outlet />
                         </div>
                     </section>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "./common/Image";
 
 import profile from "../assets/image/pp.png";
@@ -10,16 +10,27 @@ import privacyPolicy from "../assets/icon/privacy-policy.svg";
 import profileIcon from "../assets/icon/profile-icon.svg";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../routes/Routers";
+import { FaAnglesLeft } from "react-icons/fa6";
+import clsx from "clsx";
+import navBarStore from "../features/navSlice";
 
 const SideBar = () => {
     const navigate = useNavigate();
     const userData = JSON.parse(localStorage.getItem("user"));
+    const { bears, toggleBears } = navBarStore();
 
     return (
-        <aside className="static h-screen w-1/5 bg-darkSlate px-3 py-5">
+        <aside
+            className={clsx(
+                `${bears ? "max-lg:absolute" : "max-lg:hidden"} static max-lg:absolute max-lg:z-50 max-sm:w-2/3 max-md:w-2/5 max-lg:w-1/3 max-xl:w-1/4 h-screen sm:max-md:h-fit w-1/5 bg-darkSlate px-3 py-5`
+            )}
+        >
+            <p className="max-lg:block hidden absolute right-3 cursor-pointer">
+                <FaAnglesLeft onClick={() => toggleBears()} />
+            </p>
             <div className="flex flex-col items-center justify-center gap-2">
                 <Image
-                    className={"w-32 rounded-full"}
+                    className={"xl:w-28 lg:w-24 w-20 rounded-full bg-red-400"}
                     src={
                         userData?.profile_picture
                             ? userData?.profile_picture

@@ -55,13 +55,33 @@ const SignUp = () => {
                     }
                 );
 
+                await axios.post(
+                    `http://localhost:8080/auth/register_special_user/${response.data.user_id}?type=facilitator`,
+                    {
+                        no_of_professionals: response.data.user_id,
+                    }
+                );
+
                 notify("Registration successful");
+
                 if (response) {
                     navigate(routes.verifiedOtp.path);
                 }
             } catch (error) {
                 notifyError("Registration failed");
             }
+        }
+    };
+
+    let handleGoogleLogin = async () => {
+        try {
+            let response = (window.location.href =
+                "http://localhost:8080/auth/google");
+            console.log(response);
+        } catch (error) {
+            // console.log(error);
+
+            notifyError("failed");
         }
     };
 
@@ -150,7 +170,10 @@ const SignUp = () => {
                                 </span>
                                 <hr className="flex-grow border-gray-700" />
                             </div>
-                            <button className="mb-4 flex w-full items-center justify-center rounded-lg bg-[#2F2F2F] py-2 font-medium text-white">
+                            <button
+                                onClick={handleGoogleLogin}
+                                className="mb-4 flex w-full items-center justify-center rounded-lg bg-[#2F2F2F] py-2 font-medium text-white"
+                            >
                                 <span className="mr-2 text-xl">
                                     <FcGoogle />
                                 </span>{" "}
