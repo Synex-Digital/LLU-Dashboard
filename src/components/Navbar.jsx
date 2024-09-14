@@ -20,7 +20,7 @@ const Navbar = () => {
 
     return (
         <>
-            <nav className="sticky top-0 w-full border-b  border-darkSlate bg-background py-4">
+            <nav className="sticky top-0 w-full border-b z-50 border-darkSlate bg-background py-4">
                 <div className="max-lg:flex justify-between hidden max-lg:px-2">
                     <FaAnglesRight
                         className="cursor-pointer"
@@ -62,19 +62,11 @@ const Navbar = () => {
                     </Link>
                     <Link
                         className={clsx(
-                            `${pathName == routes.home.path ? "text-white" : "text-darkText "}`
+                            `${pathName == routes.community.path ? "text-white" : "text-darkText "}`
                         )}
-                        to={"/"}
+                        to={routes.community.path}
                     >
                         Community
-                    </Link>
-                    <Link
-                        className={clsx(
-                            `${pathName == routes.athleteRequest.path ? "text-white" : "text-darkText "}`
-                        )}
-                        to={routes.athleteRequest.path}
-                    >
-                        Request
                     </Link>
                     <div className="flex items-center gap-x-1 rounded bg-darkSlate px-2 py-1">
                         <MdLocationPin className="text-xl" />
@@ -90,7 +82,7 @@ const Navbar = () => {
                     </div>
                 </div>
             </nav>
-            <footer className="lg:hidden fixed z-10 bottom-0 text-center grid grid-cols-4 gap-x-2 items-center bg-darkSlate w-full py-3 px-2">
+            <footer className="lg:hidden fixed z-50 bottom-0 text-center grid grid-cols-3 gap-x-2 items-center bg-darkSlate w-full py-3 px-2">
                 <Link
                     className={clsx(
                         `${pathName == routes.dashboard.path ? "text-center text-white" : "text-center text-darkText "}`
@@ -111,21 +103,12 @@ const Navbar = () => {
                 </Link>
                 <Link
                     className={clsx(
-                        `${pathName == routes.home.path ? "text-center text-white" : "text-center text-darkText "}`
+                        `${pathName == routes.community.path ? "text-center text-white" : "text-center text-darkText "}`
                     )}
-                    to={"/"}
+                    to={routes.community.path}
                 >
                     <FaUsers className="text-2xl mx-auto" />
                     <span className="text-sm">Community</span>
-                </Link>
-                <Link
-                    className={clsx(
-                        `${pathName == routes.athleteRequest.path ? "text-center text-white" : "text-center text-darkText "}`
-                    )}
-                    to={routes.athleteRequest.path}
-                >
-                    <RiQuestionnaireFill className="text-2xl mx-auto" />
-                    <span className="text-sm">Request</span>
                 </Link>
             </footer>
         </>

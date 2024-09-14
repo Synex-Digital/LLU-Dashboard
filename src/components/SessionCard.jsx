@@ -28,10 +28,10 @@ const SessionCard = ({
             )}
 
             <div className="flex items-end justify-between">
-                <div className="inline-block text-sm text-gray-400">
-                    <FaRegCalendarAlt className="inline-block text-lg text-Primary" />
-                    <p className="mx-2 inline-block">{times}</p>
-                    <p className="inline-block">{dates}</p>
+                <div className="flex items-center text-sm text-gray-400">
+                    <FaRegCalendarAlt className=" text-lg text-Primary" />
+                    <p className="mx-2">{times}</p>
+                    <p>{dates}</p>
                 </div>
                 {bTrue && (
                     <Button

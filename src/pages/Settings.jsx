@@ -17,6 +17,10 @@ const customStyles = {
         transform: "translate(-50%, -50%)",
         width: "50%",
     },
+    overlay: {
+        backgroundColor: 'rgba(0, 0, 0, 0.75)', // Add background color with some opacity
+        zIndex: 999, // Set z-index
+    },
 };
 
 const Settings = () => {
@@ -56,7 +60,7 @@ const Settings = () => {
                     <FaAngleRight />
                 </div>
             </div>
-            <div className="w-2/5 grid grid-cols-2 gap-x-5 mt-5">
+            <div className="xl:w-2/5 md:w-1/2 grid grid-cols-2 gap-x-5 mt-5">
                 <Button
                     onClick={openModal}
                     className={"border border-darkText bg-transparent"}
@@ -74,7 +78,10 @@ const Settings = () => {
             >
                 <p className="text-lg font-medium mb-2">
                     Are you sure you want to delete your account?{" "}
-                    <span onClick={closeModal} className="float-right text-2xl cursor-pointer">
+                    <span
+                        onClick={closeModal}
+                        className="float-right text-2xl cursor-pointer"
+                    >
                         <RxCrossCircled />
                     </span>
                 </p>
@@ -86,9 +93,11 @@ const Settings = () => {
                 <div className="grid grid-cols-2 gap-x-4 mt-5 mx-auto">
                     <Button
                         title={"No, don't delete it"}
-                        className={"bg-transparent border border-darkText text-darkSlate"}
+                        className={
+                            "bg-transparent border border-darkText !text-darkSlate"
+                        }
                     />
-                    <Button title={"Yes I'm sure"} className={"bg-redText"}/>
+                    <Button title={"Yes I'm sure"} className={"bg-redText"} />
                 </div>
             </Modal>
         </section>

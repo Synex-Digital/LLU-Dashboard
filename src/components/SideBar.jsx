@@ -22,7 +22,7 @@ const SideBar = () => {
     return (
         <aside
             className={clsx(
-                `${bears ? "max-lg:absolute" : "max-lg:hidden"} static max-lg:absolute max-lg:z-50 max-sm:w-2/3 max-md:w-2/5 max-lg:w-1/3 max-xl:w-1/4 h-screen sm:max-md:h-fit w-1/5 bg-darkSlate px-3 py-5`
+                `${bears ? "max-lg:absolute" : "max-lg:hidden"} static max-lg:absolute max-lg:z-[100] max-sm:w-2/3 max-md:w-2/5 max-lg:w-1/3 max-xl:w-1/4 h-screen sm:max-md:h-fit w-1/5 bg-darkSlate px-3 py-5`
             )}
         >
             <p className="max-lg:block hidden absolute right-3 cursor-pointer">

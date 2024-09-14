@@ -6,6 +6,7 @@ import ReactCalendar from "../../components/ReactCalendar";
 import { routes } from "../../routes/Routers";
 import axios from "axios";
 import Cookies from "js-cookie";
+import PageHeading from "../../components/common/PageHeading";
 
 const Home = () => {
     const navigate = useNavigate();
@@ -37,12 +38,12 @@ const Home = () => {
         <main>
             <section>
                 <div className="flex items-center justify-between">
-                    <h1 className="text-3xl font-semibold">Ongoing Session</h1>
+                    <PageHeading className={"mb-0"} title={"Ongoing Session"} />
                     <Link className="text-sm text-Primary" to={"/"}>
                         See all
                     </Link>
                 </div>
-                <div className="mt-8 grid grid-cols-3 gap-3">
+                <div className="mt-8 grid xl:grid-cols-3 sm:grid-cols-2 gap-3">
                     {Array.from({ length: 4 }).map((_, index) => (
                         <div key={index}>
                             <SessionCard
@@ -64,15 +65,7 @@ const Home = () => {
             <section className="my-10">
                 <div className="flex items-center justify-between">
                     <div className="flex gap-x-3">
-                        <h1 className="text-3xl font-semibold">
-                            Upcoming Session
-                        </h1>
-                        <button
-                            onClick={() => navigate(routes.createSession.path)}
-                            className="flex items-center gap-x-2 rounded-full bg-darkSlate px-6 py-2"
-                        >
-                            <FiPlusCircle /> Create New Session
-                        </button>
+                        <PageHeading className={"mb-0"} title={"Upcoming Session"} />
                     </div>
                     <Link className="text-sm text-Primary" to={"/"}>
                         See all
@@ -81,7 +74,7 @@ const Home = () => {
                 <div className="mt-8">
                     <ReactCalendar />
                 </div>
-                <div className="mt-3 grid grid-cols-3 gap-3">
+                <div className="mt-3 grid xl:grid-cols-3 sm:grid-cols-2 gap-3">
                     {Array.from({ length: 4 }).map((_, index) => (
                         <div key={index}>
                             <SessionCard
@@ -103,12 +96,12 @@ const Home = () => {
 
             <section>
                 <div className="flex items-center justify-between">
-                    <h1 className="text-3xl font-semibold">Session History</h1>
+                    <PageHeading className={"mb-0"} title={"Session History"} />
                     <Link className="text-sm text-Primary" to={"/"}>
                         See all
                     </Link>
                 </div>
-                <div className="mt-8 grid grid-cols-3 gap-3">
+                <div className="mt-8 grid xl:grid-cols-3 sm:grid-cols-2 gap-3">
                     {Array.from({ length: 4 }).map((_, index) => (
                         <div key={index}>
                             <SessionCard
