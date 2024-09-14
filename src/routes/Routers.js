@@ -114,4 +114,9 @@ export const routes = {
         key: "change-email-address",
         path: "/change-email-address",
     },
+    community: {
+        title: "Community",
+        key: "community",
+        path: "/community",
+    },
 };

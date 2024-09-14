@@ -33,6 +33,7 @@ import AddTrainerDetails from "../pages/AddTrainerDetails";
 import Settings from "../pages/Settings";
 import ChangeEmailAddress from "../pages/ChangeEmailAddress";
 import PublicRoute from "./PublicRoute";
+import Community from "../pages/Community";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -391,6 +392,21 @@ const router = createBrowserRouter(
                                 />
                             </Helmet>
                             <ChangeEmailAddress />
+                        </>
+                    }
+                />
+                <Route
+                    path={routes.community.path}
+                    element={
+                        <>
+                            <Helmet>
+                                <title>{routes.community.title}</title>
+                                <meta
+                                    name="description"
+                                    content="LLU Description"
+                                />
+                            </Helmet>
+                            <Community />
                         </>
                     }
                 />

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import HomeLayout from "./HomeLayout";
 import Navbar from "./Navbar";
 import SideBar from "./SideBar";
 import { Navigate, Outlet } from "react-router-dom";
@@ -31,9 +30,9 @@ const RotLayOut = () => {
             <main className="font-inter text-white">
                 <section className="flex h-screen overflow-hidden">
                     <SideBar />
-                    <section className="relative lg:w-10/12 overflow-y-auto overflow-x-hidden">
+                    <section className="relative lg:w-10/12 w-full overflow-y-auto overflow-x-hidden">
                         <Navbar />
-                        <div className="lg:p-5 max-lg:p-2">
+                        <div className="lg:p-5 max-lg:p-2 max-lg:mb-[76px]">
                             <Outlet />
                         </div>
                     </section>
