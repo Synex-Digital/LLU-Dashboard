@@ -64,11 +64,7 @@ export const routes = {
         key: "notifications",
         path: "/notifications",
     },
-    athleteRequest: {
-        title: "Athlete Request",
-        key: "athlete-request",
-        path: "/athlete-request",
-    },
+
     createSession: {
         title: "Create Session",
         key: "create-session",

@@ -245,21 +245,7 @@ const router = createBrowserRouter(
                         </>
                     }
                 />
-                <Route
-                    path={routes.athleteRequest.path}
-                    element={
-                        <>
-                            <Helmet>
-                                <title>{routes.athleteRequest.title}</title>
-                                <meta
-                                    name="description"
-                                    content="LLU Description"
-                                />
-                            </Helmet>
-                            <AthleteRequest />
-                        </>
-                    }
-                />
+
                 <Route
                     path={routes.createSession.path}
                     element={
