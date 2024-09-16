@@ -115,4 +115,9 @@ export const routes = {
         key: "community",
         path: "/community",
     },
+    userProfile: {
+        title: "User Profile",
+        key: "user-profile",
+        path: "/user-profile",
+    },
 };
