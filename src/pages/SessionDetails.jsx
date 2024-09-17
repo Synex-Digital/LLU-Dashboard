@@ -6,8 +6,11 @@ import { AiFillMessage } from "react-icons/ai";
 import { IoIosCall, IoIosTime } from "react-icons/io";
 import { MdLocationPin } from "react-icons/md";
 import { FaRegCalendarAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { routes } from "../routes/Routers";
 
 const SessionDetails = () => {
+    const navigate = useNavigate();
     return (
         <section>
             <h1 className="mb-8 text-3xl font-semibold">Session Details</h1>
@@ -47,7 +50,7 @@ const SessionDetails = () => {
                         </div>
                     </div>
                     <div className="mt-5 grid grid-cols-2 gap-x-7 ">
-                        <button className="flex items-center gap-2 rounded-lg bg-darkSlate px-6 py-2 text-darkText">
+                        <button onClick={()=>navigate(routes.massages.path)} className="flex items-center gap-2 rounded-lg bg-darkSlate px-6 py-2 text-darkText">
                             <AiFillMessage className="text-Primary" /> Message
                         </button>
                         <button className="flex items-center justify-center gap-2 rounded-lg bg-darkSlate px-6 py-2 text-darkText">

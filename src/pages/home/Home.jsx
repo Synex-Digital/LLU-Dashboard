@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import SessionCard from "../../components/SessionCard";
 import { FiPlusCircle } from "react-icons/fi";
@@ -11,11 +11,14 @@ import PageHeading from "../../components/common/PageHeading";
 const Home = () => {
     const navigate = useNavigate();
     const token = Cookies.get("llu-token");
+    const baseUrl = import.meta.env.VITE_BASE_URL;
+    const [upcomingSessions, setUpcomingSessions] = useState([]);
+    const [ongoingSessions, setOngoingSessions] = useState([]);
 
     async function apiCall() {
         try {
             let response = await axios.get(
-                "http://localhost:8080/api/facilitator/sessions",
+                `${baseUrl}/api/facilitator/sessions`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -23,11 +26,12 @@ const Home = () => {
                     },
                 }
             );
+            console.log(response.data);
+            
 
-            console.log(response);
-        } catch (error) {
-            console.log("e", error);
-        }
+            setOngoingSessions(response.data.data.ongoingSessions);
+            setUpcomingSessions(response.data.data.upcomingSessions);
+        } catch (error) {}
     }
 
     useEffect(() => {
@@ -39,9 +43,6 @@ const Home = () => {
             <section>
                 <div className="flex items-center justify-between">
                     <PageHeading className={"mb-0"} title={"Ongoing Session"} />
-                    <Link className="text-sm text-Primary" to={"/"}>
-                        See all
-                    </Link>
                 </div>
                 <div className="mt-8 grid xl:grid-cols-3 sm:grid-cols-2 gap-3">
                     {Array.from({ length: 4 }).map((_, index) => (
@@ -65,11 +66,11 @@ const Home = () => {
             <section className="my-10">
                 <div className="flex items-center justify-between">
                     <div className="flex gap-x-3">
-                        <PageHeading className={"mb-0"} title={"Upcoming Session"} />
+                        <PageHeading
+                            className={"mb-0"}
+                            title={"Upcoming Session"}
+                        />
                     </div>
-                    <Link className="text-sm text-Primary" to={"/"}>
-                        See all
-                    </Link>
                 </div>
                 <div className="mt-8">
                     <ReactCalendar />
@@ -97,9 +98,6 @@ const Home = () => {
             <section>
                 <div className="flex items-center justify-between">
                     <PageHeading className={"mb-0"} title={"Session History"} />
-                    <Link className="text-sm text-Primary" to={"/"}>
-                        See all
-                    </Link>
                 </div>
                 <div className="mt-8 grid xl:grid-cols-3 sm:grid-cols-2 gap-3">
                     {Array.from({ length: 4 }).map((_, index) => (

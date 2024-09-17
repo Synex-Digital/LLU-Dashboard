@@ -19,7 +19,7 @@ const SignUp = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
-
+    const baseUrl = import.meta.env.VITE_BASE_URL;
     const navigate = useNavigate();
 
     const notify = (message) => toast.success(message);
@@ -46,7 +46,7 @@ const SignUp = () => {
 
             try {
                 let response = await axios.post(
-                    "http://localhost:8080/auth/register",
+                    `${baseUrl}/auth/register`,
                     data,
                     {
                         headers: {
@@ -56,7 +56,7 @@ const SignUp = () => {
                 );
 
                 await axios.post(
-                    `http://localhost:8080/auth/register_special_user/${response.data.user_id}?type=facilitator`,
+                    `${baseUrl}/auth/register_special_user/${response.data.user_id}?type=facilitator`,
                     {
                         no_of_professionals: response.data.user_id,
                     }
@@ -75,8 +75,8 @@ const SignUp = () => {
 
     let handleGoogleLogin = async () => {
         try {
-            let response = (window.location.href =
-                "http://localhost:8080/auth/google");
+            let response =
+                (window.location.href = `${baseUrl}:8080/auth/google`);
             console.log(response);
         } catch (error) {
             // console.log(error);

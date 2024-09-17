@@ -10,7 +10,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import GetStarted from "../pages/auth/GetStarted";
-import SignUp from "../pages/auth/Signup";
+import SignUp from "../pages/auth/SignUp";
 import Login from "../pages/auth/Login";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import VerifiedOtp from "../pages/auth/VerifiedOtp";
@@ -22,7 +22,6 @@ import RotLayOut from "../components/RotLayOut";
 import Session from "../pages/Session";
 import SessionDetails from "../pages/SessionDetails";
 import Notifications from "../pages/Notifications";
-import AthleteRequest from "../pages/AthleteRequest";
 import CreateSession from "../pages/CreateSession";
 import Profile from "../pages/Profile";
 import FacilityView from "../pages/FacilityView";
@@ -35,6 +34,7 @@ import ChangeEmailAddress from "../pages/ChangeEmailAddress";
 import PublicRoute from "./PublicRoute";
 import Community from "../pages/Community";
 import UserProfile from "../pages/UserProfile";
+import MassagePage from "../pages/MassagePage";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -409,6 +409,21 @@ const router = createBrowserRouter(
                                 />
                             </Helmet>
                             <UserProfile />
+                        </>
+                    }
+                />
+                <Route
+                    path={routes.massages.path}
+                    element={
+                        <>
+                            <Helmet>
+                                <title>{routes.massages.title}</title>
+                                <meta
+                                    name="description"
+                                    content="LLU Description"
+                                />
+                            </Helmet>
+                            <MassagePage />
                         </>
                     }
                 />

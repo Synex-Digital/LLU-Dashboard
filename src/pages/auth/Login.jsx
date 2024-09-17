@@ -15,9 +15,8 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
-
+    const baseUrl = import.meta.env.VITE_BASE_URL;
     const navigate = useNavigate();
-
     const notify = (message) => toast.success(message);
     const notifyError = (message) => toast.error(message);
 
@@ -39,25 +38,25 @@ const Login = () => {
             };
 
             try {
-                let response = await axios.post(
-                    "http://localhost:8080/auth/login",
-                    data,
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }
-                );
+                let response = await axios.post(`${baseUrl}/auth/login`, data, {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
 
                 if (response.data && response.data.token) {
+                    const expireTime = new Date();
+                    expireTime.setTime(expireTime.getTime() + 30 * 60 * 1000);
+                    console.log(expireTime);
+
                     Cookies.set("llu-token", response.data.token, {
                         secure: true,
-                        expires: 30, // Expires in 30 days
+                        expires: expireTime,
                     });
-
+                    const { email, ...userWithoutEmail } = response.data.user;
                     localStorage.setItem(
                         "user",
-                        JSON.stringify(response.data.user)
+                        JSON.stringify(userWithoutEmail)
                     );
                     notify("Login successful");
                     navigate(routes.dashboard.path);

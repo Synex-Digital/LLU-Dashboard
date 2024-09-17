@@ -5,8 +5,11 @@ import SubPageTitle from "../components/common/SubPageTitle";
 import { IoIosTimer } from "react-icons/io";
 import { FaRegComments } from "react-icons/fa6";
 import { AiFillLike } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
+import { routes } from "../routes/Routers";
 
 const UserProfile = () => {
+    const navigate = useNavigate();
     return (
         <section>
             <div className="sm:flex xl:gap-x-16 gap-x-10">
@@ -45,8 +48,11 @@ const UserProfile = () => {
                 </div>
             </div>
             <div className="mt-5 grid grid-cols-2 gap-x-7 sm:w-1/2 mx-auto">
-                <button className="flex items-center justify-center gap-2 rounded-lg bg-darkSlate px-6 py-2 text-white">
-                    See Full Profile
+                <button
+                    onClick={() => navigate(routes.massages.path)}
+                    className="flex items-center justify-center gap-2 rounded-lg bg-darkSlate px-6 py-2 text-white"
+                >
+                    Massage
                 </button>
                 <button className="flex items-center justify-center gap-2 rounded-lg bg-Primary px-6 py-2 text-white">
                     Follow

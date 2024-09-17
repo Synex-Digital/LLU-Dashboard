@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PageHeading from "../components/common/PageHeading";
 
 import profile from "../assets/image/pp.png";
@@ -11,9 +11,36 @@ import { MdVerified } from "react-icons/md";
 import { IoIosStar, IoMdStarOutline } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../routes/Routers";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const Profile = () => {
     const navigate = useNavigate();
+    const baseUrl = import.meta.env.VITE_BASE_URL;
+    const token = Cookies.get("llu-token");
+    const [basicInfo, setBasicInfo] = useState("");
+    async function apiCall() {
+        try {
+            let response = await axios.get(
+                `${baseUrl}/api/facilitator/profile?page=1&limit=5`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+            setBasicInfo(response.data.data.basicInfo.user);
+            console.log(response.data.data);
+            
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        apiCall();
+    }, []);
     return (
         <section>
             <div className="flex justify-between">
@@ -25,10 +52,17 @@ const Profile = () => {
             </div>
             <div className="mb-5 sm:flex items-center gap-x-60 border-b border-b-darkSlate pb-5">
                 <div className="flex items-center gap-6">
-                    <Image className={"w-24 rounded-full"} src={profile} />
+                    <Image
+                        className={"w-24 rounded-full"}
+                        src={
+                            basicInfo?.profile_picture
+                                ? basicInfo?.profile_picture
+                                : basicInfo?.img
+                        }
+                    />
                     <div>
                         <p className="mt-2.5 text-lg font-medium">
-                            Denish Anderson
+                            {basicInfo?.first_name} {basicInfo?.last_name}
                         </p>
                         <p className="font-medium text-darkText">
                             Facilitator Owner
@@ -37,7 +71,7 @@ const Profile = () => {
                 </div>
                 <div>
                     <p className="mb-2 mt-5 font-medium">Profile Completion</p>
-                    <input className="w-64" value={"80"} type="range" />
+                    <input className="w-64" value="80" type="range" readOnly />
                 </div>
             </div>
             <div className="grid sm:grid-cols-4 gap-3">
