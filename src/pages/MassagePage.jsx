@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import PageHeading from "../components/common/PageHeading";
 import { IoIosSend } from "react-icons/io";
+import clsx from "clsx";
+import { FaArrowLeftLong } from "react-icons/fa6";
 
 const MassagePage = () => {
     const [messages, setMessages] = useState([
@@ -35,21 +37,8 @@ const MassagePage = () => {
     ]);
 
     const [newMessage, setNewMessage] = useState("");
+    const [userClick, setUserClick] = useState(false);
 
-    const handleSendMessage = () => {
-        if (newMessage.trim()) {
-            setMessages([
-                ...messages,
-                {
-                    time: "Now",
-                    content: newMessage,
-                    sender: "sent",
-                    type: "text",
-                },
-            ]);
-            setNewMessage("");
-        }
-    };
     const chats = [
         {
             name: "Jane Cooper",
@@ -59,6 +48,15 @@ const MassagePage = () => {
             imgUrl: "https://randomuser.me/api/portraits/women/1.jpg",
             unreadCount: 2,
             status: "online",
+        },
+        {
+            name: "Guy Hawkins",
+            message:
+                "Lorem ipsum dolor sit amet consectetur. Nunc mi ultrices est fringilla in. Pulvinar vestibulum",
+            time: "7:11 PM",
+            imgUrl: "https://randomuser.me/api/portraits/men/2.jpg",
+            unreadCount: 0,
+            status: "offline",
         },
         {
             name: "Guy Hawkins",
@@ -87,10 +85,34 @@ const MassagePage = () => {
             status: "offline",
         },
     ];
+
+    const handleSendMessage = () => {
+        if (newMessage.trim()) {
+            setMessages([
+                ...messages,
+                {
+                    time: "Now",
+                    content: newMessage,
+                    sender: "sent",
+                    type: "text",
+                },
+            ]);
+            setNewMessage("");
+        }
+    };
+
+    const handleUser = (item) => {
+        console.log(item);
+        setUserClick((prev) => !prev);
+    };
     return (
-        <section>
-            <div className="flex gap-x-3 h-[540px]">
-                <div className="bg-darkSlate text-white p-3 w-1/3 overflow-y-scroll">
+        <section className="-m-5">
+            <div className="flex gap-x-3 xl:h-[540px]">
+                <div
+                    className={clsx(
+                        `${userClick ? "max-xl:hidden" : "max-xl:block"} bg-darkSlate text-white p-3 xl:w-1/3 w-full flex-1 overflow-y-auto`
+                    )}
+                >
                     <div className="mb-3">
                         <input
                             type="text"
@@ -104,6 +126,7 @@ const MassagePage = () => {
                             <div
                                 key={index}
                                 className="flex items-center p-2 bg-background rounded-lg space-x-3"
+                                onClick={() => handleUser(chat)}
                             >
                                 <div className="relative">
                                     <img
@@ -143,10 +166,16 @@ const MassagePage = () => {
                         ))}
                     </div>
                 </div>
-                <div className="w-2/3">
+                <div
+                    className={`${userClick ? "max-xl:block" : "max-xl:hidden"} xl:w-2/3 w-full `}
+                >
                     <div className="h-full flex flex-col bg-darkSlate text-white">
                         {/* Header */}
                         <div className="flex items-center p-3 bg-darkSlate border-b border-b-background">
+                            <FaArrowLeftLong
+                                onClick={() => setUserClick((prev) => !prev)}
+                                className="mr-3"
+                            />
                             <img
                                 src="https://randomuser.me/api/portraits/women/1.jpg"
                                 alt="Jane Cooper"
@@ -167,7 +196,7 @@ const MassagePage = () => {
                         </div>
 
                         {/* Chat Messages */}
-                        <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+                        <div className="flex-1 p-3 space-y-3 overflow-y-auto">
                             {messages.map((msg, index) => (
                                 <div
                                     key={index}
@@ -210,13 +239,13 @@ const MassagePage = () => {
                             ))}
                         </div>
 
-                        <div className="p-4 bg-gray-800 flex items-center">
+                        <div className="p-4 bg-darkSlate flex border-t border-t-background items-center">
                             <input
                                 type="text"
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
                                 placeholder="Write message..."
-                                className="flex-1 p-2 rounded-lg bg-gray-700 text-gray-300"
+                                className="flex-1 p-2 rounded-lg bg-background text-gray-300"
                             />
                             <button
                                 onClick={handleSendMessage}

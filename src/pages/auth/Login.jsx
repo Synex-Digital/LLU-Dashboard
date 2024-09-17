@@ -53,6 +53,8 @@ const Login = () => {
                         secure: true,
                         expires: expireTime,
                     });
+                    console.log(response.data);
+                    
                     const { email, ...userWithoutEmail } = response.data.user;
                     localStorage.setItem(
                         "user",

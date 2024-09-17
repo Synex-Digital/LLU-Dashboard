@@ -9,8 +9,10 @@ import {
     GoogleMap,
     useLoadScript,
     Marker,
-    Autocomplete
+    Autocomplete,
 } from "@react-google-maps/api";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const libraries = ["places"];
 const mapContainerStyle = {
@@ -18,18 +20,20 @@ const mapContainerStyle = {
     height: "450px",
 };
 const center = {
-    lat: 23.8103, // Default lat
-    lng: 90.4125, // Default lng
+    lat: 23.8103,
+    lng: 90.4125,
 };
 
 const AddFacility = () => {
+    const token = Cookies.get("llu-token");
+    const baseUrl = import.meta.env.VITE_BASE_URL;
     const [facilities, setFacilities] = useState([]);
     const [inputValue, setInputValue] = useState("");
     const [images, setImages] = useState([]);
     const [fullName, setFullName] = useState("");
     const [hourlyRate, setHourlyRate] = useState("");
     const [establishedIn, setEstablishedIn] = useState("");
-    const [professionalResources, setProfessionalResources] = useState("");
+    const [capacity, setCapacity] = useState("");
     const [trainer, setTrainer] = useState("");
     const [days, setDays] = useState({
         mon: true,
@@ -53,38 +57,9 @@ const AddFacility = () => {
     const [location, setLocation] = useState({ lat: null, lng: null });
     const [autocomplete, setAutocomplete] = useState(null);
     const { isLoaded, loadError } = useLoadScript({
-        googleMapsApiKey: `${import.meta.env.VITE_GOOGLE_MAP_KEY}&loading=async`, // Replace with your API key
+        googleMapsApiKey: `${import.meta.env.VITE_GOOGLE_MAP_KEY}&loading=async`,
         libraries,
     });
-
-    // Handle location based on search
-    const onPlaceChanged = () => {
-        if (autocomplete !== null) {
-            const place = autocomplete.getPlace();
-            const lat = place.geometry.location.lat();
-            const lng = place.geometry.location.lng();
-            setLocation({ lat, lng });
-        }
-    };
-
-    const onLoad = (autocompleteInstance) => {
-        setAutocomplete(autocompleteInstance);
-    };
-
-    // Handle getting the user's current location
-    const getLocation = () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    setLocation({
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                    });
-                },
-                (error) => console.error(error)
-            );
-        }
-    };
 
     if (loadError) return "Error loading maps";
     if (!isLoaded) return "Loading Maps";
@@ -152,20 +127,67 @@ const AddFacility = () => {
     };
 
     const handleClick = () => {
-        const formData = {
-            fullName,
-            hourlyRate,
-            establishedIn,
-            professionalResources,
-            facilities,
-            days,
-            timeRange,
-            trainer,
-            images,
+        const convertTime = (time) => {
+            const [hour, minute] = time.split(":");
+            const ampm = hour >= 12 ? "PM" : "AM";
+            const adjustedHour = hour % 12 || 12;
+            return `${adjustedHour}:${minute} ${ampm}`;
         };
-        console.log(formData);
 
-        console.log({ name: fullName, hourly_rate: hourlyRate });
+        const dayMapping = {
+            fri: "friday",
+            mon: "monday",
+            sat: "saturday",
+            sun: "sunday",
+            thu: "thursday",
+            tue: "tuesday",
+            wed: "wednesday",
+        };
+
+        const transformedData = Object.entries(days).reduce(
+            (acc, [day, isSelected]) => {
+                if (!isSelected) {
+                    acc[dayMapping[day]] = "Not available";
+                } else if (!timeRange[day].from || !timeRange[day].to) {
+                    acc[dayMapping[day]] = "Not available";
+                } else {
+                    acc[dayMapping[day]] =
+                        `${convertTime(timeRange[day].from)} - ${convertTime(timeRange[day].to)}`;
+                }
+                return acc;
+            },
+            {}
+        );
+
+        const data = {
+            name: fullName,
+            hourly_rate: +hourlyRate,
+            latitude: center.lat,
+            longitude: center.lng,
+            capacity: +capacity,
+            established_in: +establishedIn,
+            available_hours: transformedData,
+        };
+
+        async function apiPost() {
+            try {
+                let response = await axios.post(
+                    `${baseUrl}/api/facilitator/3/add_facility`,
+                    data,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                        },
+                    }
+                );
+                console.log(response.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        apiPost();
     };
 
     return (
@@ -186,6 +208,7 @@ const AddFacility = () => {
             <div className="mb-5 mt-2 flex items-center gap-2 rounded-lg bg-darkSlate pl-3">
                 <div className="border-r border-Secondary pr-2">USD</div>
                 <input
+                    type="number"
                     onChange={(e) => setHourlyRate(e.target.value)}
                     placeholder="Hourly Rate"
                     className="w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
@@ -195,16 +218,18 @@ const AddFacility = () => {
                 Established in<span className="text-redText">*</span>
             </p>
             <input
+                type="number"
                 onChange={(e) => setEstablishedIn(e.target.value)}
                 placeholder="2004"
                 className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
             />
             <p>
-                Professionals Resources
+                Capacity
                 <span className="text-redText">*</span>
             </p>
             <input
-                onChange={(e) => setProfessionalResources(e.target.value)}
+                type="number"
+                onChange={(e) => setCapacity(e.target.value)}
                 placeholder="25"
                 className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
             />
