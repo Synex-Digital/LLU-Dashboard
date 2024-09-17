@@ -8,12 +8,15 @@ import { AiFillLike } from "react-icons/ai";
 import { FaRegComments } from "react-icons/fa6";
 import Button from "../components/common/Button";
 import CreatePost from "../components/CreatePost";
+import { useNavigate } from "react-router-dom";
+import { routes } from "../routes/Routers";
 
 const Community = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const [comments, setComments] = useState(false);
     const [createPost, setCreatePost] = useState(true);
+    const navigate = useNavigate();
 
     const images = [
         profile,
@@ -60,9 +63,17 @@ const Community = () => {
                                 className={
                                     "w-16 h-16 rounded-full cursor-pointer"
                                 }
+                                onClick={() =>
+                                    navigate(routes.userProfile.path)
+                                }
                             />
                             <div>
-                                <h3 className="text-lg cursor-pointer">
+                                <h3
+                                    onClick={() =>
+                                        navigate(routes.userProfile.path)
+                                    }
+                                    className="text-lg cursor-pointer"
+                                >
                                     Mickael W.
                                 </h3>
                                 <time className="text-darkText flex items-center">

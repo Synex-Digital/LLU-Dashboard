@@ -34,6 +34,7 @@ import Settings from "../pages/Settings";
 import ChangeEmailAddress from "../pages/ChangeEmailAddress";
 import PublicRoute from "./PublicRoute";
 import Community from "../pages/Community";
+import UserProfile from "../pages/UserProfile";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -245,21 +246,7 @@ const router = createBrowserRouter(
                         </>
                     }
                 />
-                <Route
-                    path={routes.athleteRequest.path}
-                    element={
-                        <>
-                            <Helmet>
-                                <title>{routes.athleteRequest.title}</title>
-                                <meta
-                                    name="description"
-                                    content="LLU Description"
-                                />
-                            </Helmet>
-                            <AthleteRequest />
-                        </>
-                    }
-                />
+
                 <Route
                     path={routes.createSession.path}
                     element={
@@ -407,6 +394,21 @@ const router = createBrowserRouter(
                                 />
                             </Helmet>
                             <Community />
+                        </>
+                    }
+                />
+                <Route
+                    path={routes.userProfile.path}
+                    element={
+                        <>
+                            <Helmet>
+                                <title>{routes.userProfile.title}</title>
+                                <meta
+                                    name="description"
+                                    content="LLU Description"
+                                />
+                            </Helmet>
+                            <UserProfile />
                         </>
                     }
                 />

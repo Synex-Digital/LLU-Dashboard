@@ -66,7 +66,7 @@ const EditDetails = () => {
         <CiCirclePlus className="text-3xl" />
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid md:grid-cols-3 gap-3">
         <div className="flex items-center justify-between rounded-lg bg-darkSlate p-3">
           <p>Ark Indoor Stadium</p>
           <FaAngleRight />
