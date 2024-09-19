@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import PageHeading from "../components/common/PageHeading";
 import SubPageTitle from "../components/common/SubPageTitle";
+import Button from "../components/common/Button";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const AddTrainerDetails = () => {
+    const token = Cookies.get("llu-token");
+    const baseUrl = import.meta.env.VITE_BASE_URL;
     const [days, setDays] = useState({
         mon: true,
         tue: true,
@@ -48,6 +53,28 @@ const AddTrainerDetails = () => {
                 ></div>
             </div>
         );
+    };
+
+    let handleClick = () => {
+        async function apiPost() {
+            try {
+                let response = await axios.post(
+                    `${baseUrl}/api/facilitator/3/add_employee/3`,
+                    data,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                        },
+                    }
+                );
+                console.log(response.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        apiPost();
     };
 
     return (
@@ -140,6 +167,11 @@ const AddTrainerDetails = () => {
             <input
                 placeholder="34543"
                 className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
+            />
+            <Button
+                onClick={handleClick}
+                className={"mt-5 w-full"}
+                title={"Confirm"}
             />
         </section>
     );

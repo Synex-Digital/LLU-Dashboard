@@ -125,4 +125,9 @@ export const routes = {
         key: "massage",
         path: "/massage",
     },
+    syncTrainer: {
+        title: "Sync Trainer",
+        key: "sync-trainer",
+        path: "/sync-trainer",
+    },
 };

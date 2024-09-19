@@ -35,6 +35,7 @@ import PublicRoute from "./PublicRoute";
 import Community from "../pages/Community";
 import UserProfile from "../pages/UserProfile";
 import MassagePage from "../pages/MassagePage";
+import SyncTrainer from "../pages/SyncTrainer";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -424,6 +425,21 @@ const router = createBrowserRouter(
                                 />
                             </Helmet>
                             <MassagePage />
+                        </>
+                    }
+                />
+                <Route
+                    path={routes.syncTrainer.path}
+                    element={
+                        <>
+                            <Helmet>
+                                <title>{routes.syncTrainer.title}</title>
+                                <meta
+                                    name="description"
+                                    content="LLU Description"
+                                />
+                            </Helmet>
+                            <SyncTrainer />
                         </>
                     }
                 />

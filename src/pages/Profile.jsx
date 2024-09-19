@@ -32,7 +32,6 @@ const Profile = () => {
             );
             setBasicInfo(response.data.data.basicInfo.user);
             console.log(response.data.data);
-            
         } catch (error) {
             console.log(error);
         }
@@ -107,7 +106,10 @@ const Profile = () => {
             </div>
             <div className="flex items-center justify-between text-xl font-medium">
                 <SubPageTitle title={"Add/Sync Trainer"} />
-                <CiCirclePlus className="text-3xl" />
+                <CiCirclePlus
+                    className="text-3xl cursor-pointer"
+                    onClick={() => navigate(routes.syncTrainer.path)}
+                />
             </div>
             <div className="flex w-fit max-sm:w-full gap-x-3 rounded-lg bg-darkSlate p-3">
                 <Image className={"w-36 rounded-lg"} src={profile} />
