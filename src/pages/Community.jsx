@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PageHeading from "../components/common/PageHeading";
 import { FiPlus } from "react-icons/fi";
 import Image from "../components/common/Image";
@@ -10,13 +10,38 @@ import Button from "../components/common/Button";
 import CreatePost from "../components/CreatePost";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../routes/Routers";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const Community = () => {
+    const baseUrl = import.meta.env.VITE_BASE_URL;
+    const token = Cookies.get("llu-token");
     const [isOpen, setIsOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const [comments, setComments] = useState(false);
     const [createPost, setCreatePost] = useState(true);
     const navigate = useNavigate();
+
+    async function apiCall() {
+        try {
+            let response = await axios.get(
+                `${baseUrl}/api/user/posts?page=1&limit=10`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+            console.log(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        apiCall();
+    }, []);
 
     const images = [
         profile,

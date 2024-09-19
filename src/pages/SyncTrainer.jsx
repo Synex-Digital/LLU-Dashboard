@@ -10,13 +10,14 @@ const SyncTrainer = () => {
 
     async function apiCall() {
         try {
-            const center = {
+            const data = {
                 latitude: 40.7128,
                 longitude: -73.906,
             };
-            let response = await axios.get(
+
+            let response = await axios.post(
                 `${baseUrl}/api/facilitator/nearby_trainers`,
-                center,
+                data,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -24,6 +25,7 @@ const SyncTrainer = () => {
                     },
                 }
             );
+
             console.log(response.data);
         } catch (error) {
             console.log(error);
@@ -33,7 +35,7 @@ const SyncTrainer = () => {
     useEffect(() => {
         apiCall();
     }, []);
-    
+
     return (
         <section>
             <div className="flex items-center gap-3 w-full">

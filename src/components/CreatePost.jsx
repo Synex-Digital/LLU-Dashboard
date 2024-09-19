@@ -4,9 +4,14 @@ import profile from "../assets/image/pp.png";
 import Button from "./common/Button";
 import { RxCross2 } from "react-icons/rx";
 import { IoImages } from "react-icons/io5";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const CreatePost = ({ toggleComments }) => {
+    const [values, setValues] = useState("");
     const [images, setImages] = useState([]);
+    const token = Cookies.get("llu-token");
+    const baseUrl = import.meta.env.VITE_BASE_URL;
 
     const handleFile = (e) => {
         const files = Array.from(e.target.files);
@@ -29,6 +34,32 @@ const CreatePost = ({ toggleComments }) => {
             .catch((error) => console.error("Error loading images", error));
     };
 
+    const handleClick = async () => {
+        console.log(images);
+        
+        try {
+            const data = {
+                content: values,
+                img: images,
+            };
+
+            let response = await axios.post(
+                `${baseUrl}/api/user/add_post`,
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+
+            console.log(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <section>
             <div className="flex items-center justify-between">
@@ -42,6 +73,7 @@ const CreatePost = ({ toggleComments }) => {
                 </div>
             </div>
             <textarea
+                onChange={(e) => setValues(e.target.value)}
                 className="bg-transparent mt-5 p-2 w-full focus:outline-none resize-none overflow-hidden"
                 placeholder="Share your thoughts..."
                 rows="1"
@@ -65,7 +97,11 @@ const CreatePost = ({ toggleComments }) => {
                 <input onChange={handleFile} type="file" hidden />
                 <IoImages className="float-right mt-3 text-3xl text-Primary cursor-pointer" />
             </label>
-            <Button className={"px-5 w-1/5"} title={"Post"} />
+            <Button
+                onClick={handleClick}
+                className={"px-5 w-1/5"}
+                title={"Post"}
+            />
         </section>
     );
 };
