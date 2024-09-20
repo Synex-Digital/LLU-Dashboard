@@ -105,28 +105,6 @@ const AddFacility = () => {
         );
     };
 
-    // const handleFile = (e) => {
-    //     const files = Array.from(e.target.files);
-    //     const imagePromises = files.map((file) => {
-    //         return new Promise((resolve, reject) => {
-    //             const reader = new FileReader();
-
-    //             reader.onload = (event) => {
-    //                 resolve(event.target.result);
-    //             };
-
-    //             reader.onerror = reject;
-    //             reader.readAsDataURL(file);
-    //         });
-    //     });
-
-    //     Promise.all(imagePromises)
-    //         .then((imageUrls) => {
-    //             setImages((prevImages) => [...prevImages, ...imageUrls]);
-    //         })
-    //         .catch((error) => console.error("Error loading images", error));
-    // };
-
     const handleFile = (e) => {
         const files = Array.from(e.target.files);
         const newImageFiles = [...imageFiles, ...files]; // For uploading
@@ -135,7 +113,6 @@ const AddFacility = () => {
         setImages((prevImages) => [...prevImages, ...imageUrls]);
         setImageFiles(newImageFiles);
     };
-    console.log(images);
 
     const handleClick = () => {
         const convertTime = (time) => {

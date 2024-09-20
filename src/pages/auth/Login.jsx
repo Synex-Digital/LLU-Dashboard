@@ -44,27 +44,37 @@ const Login = () => {
                     },
                 });
 
-                if (response.data && response.data.token) {
-                    const expireTime = new Date();
-                    expireTime.setTime(expireTime.getTime() + 30 * 60 * 1000);
-                    console.log(expireTime);
+                if (response.data && response.data.accessToken) {
+                    // const expireTime = new Date();
+                    // expireTime.setTime(expireTime.getTime() + 30 * 60 * 1000);
 
-                    Cookies.set("llu-token", response.data.token, {
+                    // Cookies.set("llu-token", response.data.token, {
+                    //     secure: true,
+                    //     expires: expireTime,
+                    // });
+                    Cookies.set("llu-token", response.data.accessToken, {
                         secure: true,
-                        expires: expireTime,
+                        sameSite: "Strict",
+                        expires: 1 / 96,
                     });
-                    console.log(response.data);
-                    
-                    const { email, ...userWithoutEmail } = response.data.user;
-                    localStorage.setItem(
-                        "user",
-                        JSON.stringify(userWithoutEmail)
-                    );
-                    notify("Login successful");
-                    navigate(routes.dashboard.path);
-                }
+                    Cookies.set("ref-token", response.data.refreshToken, {
+                        secure: true,
+                        sameSite: "Strict",
+                        expires: 7,
+                    });
+                    console.log("login", response.data);
 
-                console.log(response.data);
+                    if (response.data.loginStatus) {
+                        const { email, ...userWithoutEmail } =
+                            response.data.user;
+                        localStorage.setItem(
+                            "user",
+                            JSON.stringify(userWithoutEmail)
+                        );
+                        notify("Login successful");
+                        navigate(routes.dashboard.path);
+                    }
+                }
             } catch (error) {
                 notifyError("Login failed");
             }

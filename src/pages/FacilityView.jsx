@@ -116,12 +116,11 @@ const FacilityView = () => {
             </div>
             <SubPageTitle title={"Gallery"} />
             <div className="grid sm:grid-cols-3 grid-cols-2 gap-3">
-                <Image className={"w-full rounded-lg"} src={profile} />
-                <Image className={"w-full rounded-lg"} src={profile} />
-                <Image className={"w-full rounded-lg"} src={profile} />
-                <Image className={"w-full rounded-lg"} src={profile} />
-                <Image className={"w-full rounded-lg"} src={profile} />
-                <Image className={"w-full rounded-lg"} src={profile} />
+                {facilityData.gallery.map((item, index) => (
+                    <div key={index}>
+                        <Image className={"w-full rounded-lg"} src={item.img} />
+                    </div>
+                ))}
             </div>
             <h2 className="mb-3 mt-8 text-xl font-medium">
                 Reviews <span className="text-Primary">(210)</span>
