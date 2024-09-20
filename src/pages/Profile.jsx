@@ -53,10 +53,26 @@ const Profile = () => {
         apiCall();
     }, []);
 
-    const handleFacilityView = (item) => {
+    const handleFacilityView = async (item) => {
         console.log(item.facility_id);
+        try {
+            let response = await axios.get(
+                `${baseUrl}/api/facilitator/facility/${item.facility_id}?page=1&limit=5`,
 
-        navigate(routes.facilityView.path);
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+            console.log(response.data.data);
+            navigate(routes.facilityView.path, {
+                state: { facility: response.data.data },
+            });
+        } catch (error) {
+            console.log(error);
+        }
     };
     return (
         <section>
@@ -113,8 +129,11 @@ const Profile = () => {
                     <p>{details.no_of_professionals}+ Professionals</p>
                 </div>
             </div>
-            <div className="flex items-center justify-between text-xl font-medium">
-                <SubPageTitle title={"Facility List"} />
+            <div className="flex mb-3 mt-8 items-center justify-between text-xl font-medium">
+                <SubPageTitle
+                    className={"!mb-0 !mt-0"}
+                    title={"Facility List"}
+                />
                 <CiCirclePlus
                     onClick={() => navigate(routes.addFacility.path)}
                     className="cursor-pointer text-3xl"
@@ -133,8 +152,11 @@ const Profile = () => {
                     </div>
                 ))}
             </div>
-            <div className="flex items-center justify-between text-xl font-medium">
-                <SubPageTitle title={"Add/Sync Trainer"} />
+            <div className="flex mb-3 mt-8 items-center justify-between text-xl font-medium">
+                <SubPageTitle
+                    className={"!mb-0 !mt-0"}
+                    title={"Add/Sync Trainer"}
+                />
                 <CiCirclePlus
                     className="text-3xl cursor-pointer"
                     onClick={() => navigate(routes.syncTrainer.path)}
@@ -150,7 +172,10 @@ const Profile = () => {
                         <div>
                             <div className="flex items-center gap-x-2 rounded-full bg-background px-3 py-1 text-darkText">
                                 <MdVerified className="text-lg text-Primary" />
-                                <span className="capitalize">{item.specialization_level}</span> trainer
+                                <span className="capitalize">
+                                    {item.specialization_level}
+                                </span>{" "}
+                                trainer
                             </div>
                             <h2 className="mt-2 font-medium">Jhony Deep</h2>
                             <p className="mb-4 mt-2 text-darkText">Trainer</p>

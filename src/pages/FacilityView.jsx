@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PageHeading from "../components/common/PageHeading";
 import { CiEdit } from "react-icons/ci";
 import SubPageTitle from "../components/common/SubPageTitle";
@@ -8,21 +8,41 @@ import { BiDollar } from "react-icons/bi";
 import profile from "../assets/image/pp.png";
 import Image from "../components/common/Image";
 import { IoIosStar } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { routes } from "../routes/Routers";
-
-const schedule = [
-    { day: "Monday", time: "10:00 - 12:00" },
-    { day: "Tuesday", time: "10:00 - 12:00" },
-    { day: "Wednesday", time: "10:00 - 12:00" },
-    { day: "Thursday", time: "10:00 - 12:00" },
-    { day: "Friday", time: "10:00 - 12:00" },
-    { day: "Saturday", time: "Closed" },
-    { day: "Sunday", time: "Closed" },
-];
+import {
+    GoogleMap,
+    useLoadScript,
+    Marker,
+    Autocomplete,
+} from "@react-google-maps/api";
+const libraries = ["places"];
+const mapContainerStyle = {
+    width: "100%",
+    height: "300px",
+};
 
 const FacilityView = () => {
+    const location = useLocation();
     const navigate = useNavigate();
+    const facilityData = location.state?.facility;
+    console.log(facilityData);
+
+    const [locations, setLocations] = useState({ lat: null, lng: null });
+    const [autocomplete, setAutocomplete] = useState(null);
+    const { isLoaded, loadError } = useLoadScript({
+        googleMapsApiKey: `${import.meta.env.VITE_GOOGLE_MAP_KEY}&loading=async`,
+        libraries,
+    });
+
+    const center = {
+        lat: facilityData.facilityInfo.latitude,
+        lng: facilityData.facilityInfo.longitude,
+    };
+
+    if (loadError) return "Error loading maps";
+    if (!isLoaded) return "Loading Maps";
+
     return (
         <section>
             <div className="flex justify-between">
@@ -38,15 +58,19 @@ const FacilityView = () => {
                     <SubPageTitle title={"Available Hours"} />
                     <div className="rounded-lg bg-gray-900 p-4 text-white">
                         <ul className="space-y-2">
-                            {schedule.map((item, index) => (
-                                <li
-                                    key={index}
-                                    className="flex justify-between"
-                                >
-                                    <span>{item.day}</span>
-                                    <span>{item.time}</span>
-                                </li>
-                            ))}
+                            {facilityData?.availableHours?.map(
+                                (item, index) => (
+                                    <li
+                                        key={index}
+                                        className="flex justify-between"
+                                    >
+                                        <span className="capitalize">
+                                            {item.week_day}
+                                        </span>
+                                        <span>{item.available_hours}</span>
+                                    </li>
+                                )
+                            )}
                         </ul>
                     </div>
                     <div className="mt-4">
@@ -54,13 +78,19 @@ const FacilityView = () => {
                             <span className="mr-2 text-xl text-Primary">
                                 <BiDollar />
                             </span>
-                            <span>Hourly Rate - $20.00</span>
+                            <span>
+                                Hourly Rate - $
+                                {facilityData.facilityInfo.hourly_rate}
+                            </span>
                         </p>
                         <p className="mt-2 flex items-center">
                             <span className="mr-2 text-xl text-Primary">
                                 <MdOutlineReduceCapacity />
                             </span>
-                            <span>Capacity: 26 Person</span>
+                            <span>
+                                Capacity: {facilityData.facilityInfo.capacity}{" "}
+                                Person
+                            </span>
                         </p>
                     </div>
                 </div>
@@ -71,15 +101,13 @@ const FacilityView = () => {
                         <p className="text-darkText">View on map</p>
                     </div>
 
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d4967.308022344391!2d90.36704350771629!3d23.807506139831705!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sbd!4v1725902792584!5m2!1sen!2sbd"
-                        width="600"
-                        height="300"
-                        className="w-full rounded-2xl"
-                        allowfullscreen=""
-                        loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"
-                    ></iframe>
+                    <GoogleMap
+                        mapContainerStyle={mapContainerStyle}
+                        zoom={12}
+                        center={locations.lat ? locations : center}
+                    >
+                        {locations.lat && <Marker position={locations} />}
+                    </GoogleMap>
                     <p className="mt-2 text-sm text-gray-400">
                         <MdLocationPin className="inline-block text-xl text-Primary" />
                         Green Valley, Hill road, NY
