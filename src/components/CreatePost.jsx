@@ -4,29 +4,51 @@ import profile from "../assets/image/pp.png";
 import Button from "./common/Button";
 import { RxCross2 } from "react-icons/rx";
 import { IoImages } from "react-icons/io5";
+import axios from "axios";
+import { useAuth } from "../AuthProvider"
 
 const CreatePost = ({ toggleComments }) => {
+    const [values, setValues] = useState("");
     const [images, setImages] = useState([]);
+    const [imageFiles, setImageFiles] = useState([]);
+    const { token } = useAuth();
+    const baseUrl = import.meta.env.VITE_BASE_URL;
 
     const handleFile = (e) => {
         const files = Array.from(e.target.files);
-        const imagePromises = files.map((file) => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
+        const newImageFiles = [...imageFiles, ...files]; // For uploading
 
-                reader.onload = (event) => {
-                    resolve(event.target.result);
-                };
+        const imageUrls = files.map((file) => URL.createObjectURL(file)); // For preview
+        setImages((prevImages) => [...prevImages, ...imageUrls]);
+        setImageFiles(newImageFiles);
+    };
 
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
+    const handleClick = async () => {
+        const formData = new FormData();
+
+        formData.append("content", values);
+
+        imageFiles.forEach((file) => {
+            formData.append("img", file);
         });
-        Promise.all(imagePromises)
-            .then((imageUrls) => {
-                setImages((prevImages) => [...prevImages, ...imageUrls]);
-            })
-            .catch((error) => console.error("Error loading images", error));
+
+        try {
+            const response = await axios.post(
+                `${baseUrl}/api/user/add_post`,
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            console.log(response.data);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
@@ -42,6 +64,7 @@ const CreatePost = ({ toggleComments }) => {
                 </div>
             </div>
             <textarea
+                onChange={(e) => setValues(e.target.value)}
                 className="bg-transparent mt-5 p-2 w-full focus:outline-none resize-none overflow-hidden"
                 placeholder="Share your thoughts..."
                 rows="1"
@@ -65,7 +88,11 @@ const CreatePost = ({ toggleComments }) => {
                 <input onChange={handleFile} type="file" hidden />
                 <IoImages className="float-right mt-3 text-3xl text-Primary cursor-pointer" />
             </label>
-            <Button className={"px-5 w-1/5"} title={"Post"} />
+            <Button
+                onClick={handleClick}
+                className={"px-5 w-1/5"}
+                title={"Post"}
+            />
         </section>
     );
 };

@@ -30,6 +30,7 @@ const AddFacility = () => {
     const [facilities, setFacilities] = useState([]);
     const [inputValue, setInputValue] = useState("");
     const [images, setImages] = useState([]);
+    const [imageFiles, setImageFiles] = useState([]);
     const [fullName, setFullName] = useState("");
     const [hourlyRate, setHourlyRate] = useState("");
     const [establishedIn, setEstablishedIn] = useState("");
@@ -106,24 +107,11 @@ const AddFacility = () => {
 
     const handleFile = (e) => {
         const files = Array.from(e.target.files);
-        const imagePromises = files.map((file) => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
+        const newImageFiles = [...imageFiles, ...files]; // For uploading
 
-                reader.onload = (event) => {
-                    resolve(event.target.result);
-                };
-
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        });
-
-        Promise.all(imagePromises)
-            .then((imageUrls) => {
-                setImages((prevImages) => [...prevImages, ...imageUrls]);
-            })
-            .catch((error) => console.error("Error loading images", error));
+        const imageUrls = files.map((file) => URL.createObjectURL(file)); // For preview
+        setImages((prevImages) => [...prevImages, ...imageUrls]);
+        setImageFiles(newImageFiles);
     };
 
     const handleClick = () => {
@@ -169,6 +157,11 @@ const AddFacility = () => {
             available_hours: transformedData,
         };
 
+        const formData = new FormData();
+        imageFiles.forEach((file) => {
+            formData.append("img", file);
+        });
+
         async function apiPost() {
             try {
                 let response = await axios.post(
@@ -182,6 +175,18 @@ const AddFacility = () => {
                     }
                 );
                 console.log(response.data);
+                let imageResponse = await axios.post(
+                    `${baseUrl}/api/facilitator/3/add_img`,
+                    formData,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                            "Content-Type": "multipart/form-data",
+                        },
+                    }
+                );
+                console.log("Images uploaded:", imageResponse.data);
             } catch (error) {
                 console.log(error);
             }

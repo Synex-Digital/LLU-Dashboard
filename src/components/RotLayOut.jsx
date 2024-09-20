@@ -3,14 +3,14 @@ import Navbar from "./Navbar";
 import SideBar from "./SideBar";
 import { Navigate, Outlet } from "react-router-dom";
 import { routes } from "../routes/Routers";
-import Cookies from "js-cookie";
+import { useAuth } from "../AuthProvider";
 
 const PrivateRoute = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(true); //change for design value is false
     const [loading, setLoading] = useState(true);
+    const { token } = useAuth();
 
     useEffect(() => {
-        const token = Cookies.get("llu-token");
         if (token) {
             setIsAuthenticated(true);
         }
