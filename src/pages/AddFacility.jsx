@@ -26,6 +26,7 @@ const center = {
 
 const AddFacility = () => {
     const token = Cookies.get("llu-token");
+    const storedUser = JSON.parse(localStorage.getItem('user'));
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const [facilities, setFacilities] = useState([]);
     const [inputValue, setInputValue] = useState("");
@@ -45,6 +46,7 @@ const AddFacility = () => {
         sat: false,
         sun: false,
     });
+    
     const [timeRange, setTimeRange] = useState({
         mon: { from: "10:00", to: "22:00" },
         tue: { from: "10:00", to: "22:00" },
@@ -54,6 +56,9 @@ const AddFacility = () => {
         sat: { from: "10:00", to: "22:00" },
         sun: { from: "10:00", to: "22:00" },
     });
+
+    console.log(storedUser.user_id);
+    
 
     const [location, setLocation] = useState({ lat: null, lng: null });
     const [autocomplete, setAutocomplete] = useState(null);

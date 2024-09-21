@@ -26,7 +26,6 @@ const FacilityView = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const facilityData = location.state?.facility;
-    console.log(facilityData);
 
     const [locations, setLocations] = useState({ lat: null, lng: null });
     const [autocomplete, setAutocomplete] = useState(null);
@@ -46,9 +45,12 @@ const FacilityView = () => {
     return (
         <section>
             <div className="flex justify-between">
-                <PageHeading className={"max-xl:!mb-0"} title={"Ark Indoor"} />
+                <PageHeading
+                    className={"max-xl:!mb-0"}
+                    title={facilityData.facilityInfo.name}
+                />
                 <CiEdit
-                    onClick={() => navigate(routes.editArkIndoor.path)}
+                    onClick={() => navigate(routes.editFacility.path)}
                     className="xl:h-10 xl:w-10 w-7 h-7 cursor-pointer rounded-full border border-darkText xl:p-2 p-1"
                 />
             </div>

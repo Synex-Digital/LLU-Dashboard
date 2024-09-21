@@ -5,19 +5,20 @@ import Cookies from "js-cookie";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [token, setToken] = useState(null);
+    const [token, setToken] = useState(Cookies.get("llu-token") || null);
     const baseUrl = import.meta.env.VITE_BASE_URL;
-    const accToken = Cookies.get("llu-token");
     const refToken = Cookies.get("ref-token");
+    const accToken = Cookies.get("llu-token");
 
     const refreshToken = async () => {
+        if (!refToken) {
+            console.error("No refresh token available.");
+            return;
+        }
         try {
             const response = await axios.post(`${baseUrl}/auth/token`, {
                 token: refToken,
             });
-            console.log(response);
-            console.log("ref", refToken);
-            console.log("acc", accToken);
 
             const newToken = response.data.accessToken;
             setToken(newToken);
@@ -29,15 +30,26 @@ export const AuthProvider = ({ children }) => {
             });
         } catch (error) {
             console.error("Error refreshing token", error);
+
+            if (error.response?.status === 401) {
+                // Token is invalid, clear both tokens and log out the user
+                Cookies.remove("llu-token");
+                Cookies.remove("ref-token");
+                setToken(null);
+            }
         }
     };
 
     useEffect(() => {
+        if (!accToken) {
+            refreshToken();
+        }
+
         const interval = setInterval(
             () => {
                 refreshToken();
             },
-            15 * 60 * 1000
+            14 * 60 * 1000
         );
 
         return () => clearInterval(interval);
