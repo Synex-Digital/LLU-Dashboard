@@ -85,10 +85,10 @@ export const routes = {
         key: "edit-details",
         path: "/edit-details",
     },
-    editArkIndoor: {
-        title: "Edit Ark Indoor",
-        key: "edit-ark-indoor",
-        path: "/edit-ark-indoor",
+    editFacility: {
+        title: "Edit Facility",
+        key: "edit-facility",
+        path: "/edit-facility",
     },
     addFacility: {
         title: "Add Facility",

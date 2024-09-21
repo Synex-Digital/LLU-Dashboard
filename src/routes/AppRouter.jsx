@@ -26,7 +26,7 @@ import CreateSession from "../pages/CreateSession";
 import Profile from "../pages/Profile";
 import FacilityView from "../pages/FacilityView";
 import EditDetails from "../pages/EditDetails";
-import EditArkIndoor from "../pages/EditArkIndoor";
+import EditFacility from "../pages/EditFacility";
 import AddFacility from "../pages/AddFacility";
 import AddTrainerDetails from "../pages/AddTrainerDetails";
 import Settings from "../pages/Settings";
@@ -309,17 +309,17 @@ const router = createBrowserRouter(
                     }
                 />
                 <Route
-                    path={routes.editArkIndoor.path}
+                    path={routes.editFacility.path}
                     element={
                         <>
                             <Helmet>
-                                <title>{routes.editArkIndoor.title}</title>
+                                <title>{routes.editFacility.title}</title>
                                 <meta
                                     name="description"
                                     content="LLU Description"
                                 />
                             </Helmet>
-                            <EditArkIndoor />
+                            <EditFacility />
                         </>
                     }
                 />
