@@ -4,11 +4,17 @@ import SubPageTitle from "../components/common/SubPageTitle";
 import { BsPlusSquareDotted } from "react-icons/bs";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { useLocation, useNavigate } from "react-router-dom";
+import Button from "../components/common/Button";
 
 const EditFacility = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const facility_id = location.state?.facility_id;
     const token = Cookies.get("llu-token");
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const [images, setImages] = useState([]);
+    const [imageFiles, setImageFiles] = useState([]);
     const [facilityData, setFacilityData] = useState("");
     const [days, setDays] = useState({
         mon: true,
@@ -19,7 +25,6 @@ const EditFacility = () => {
         sat: false,
         sun: false,
     });
-    
 
     const [timeRange, setTimeRange] = useState({
         mon: { from: "10:00", to: "22:00" },
@@ -30,13 +35,24 @@ const EditFacility = () => {
         sat: { from: "10:00", to: "22:00" },
         sun: { from: "10:00", to: "22:00" },
     });
-
+    const availability = facilityData.availableHours;
+    const convertTo24HourFormat = (time) => {
+        const [hours, minutes] = time.split(":");
+        let [minutePart, period] = minutes.split(" ");
+        let hour = parseInt(hours);
+        let minute = parseInt(minutePart);
+        if (period === "PM" && hour !== 12) {
+            hour += 12;
+        } else if (period === "AM" && hour === 12) {
+            hour = 0; // Midnight case
+        }
+        return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+    };
     useEffect(() => {
         async function apiCall() {
             try {
                 let response = await axios.get(
-                    `${baseUrl}/api/facilitator/facility/3?page=1&limit=5`,
-
+                    `${baseUrl}/api/facilitator/facility/${facility_id}?page=1&limit=5`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -44,14 +60,53 @@ const EditFacility = () => {
                         },
                     }
                 );
-                console.log(response.data.data);
+                console.log(response.data.data.availableHours);
                 setFacilityData(response.data.data);
+
+                // If availableHours is defined, map to timeRange
+                if (response.data.data.availableHours) {
+                    const newTimeRange = mapAvailabilityToTimeRange(
+                        response.data.data.availableHours
+                    );
+                    setTimeRange(newTimeRange);
+                }
             } catch (error) {
                 console.log(error);
             }
         }
+
         apiCall();
-    }, []);
+    }, [facility_id, token]);
+
+    const mapAvailabilityToTimeRange = (availability) => {
+        if (!availability) return {};
+
+        const weekDayMap = {
+            monday: "mon",
+            tuesday: "tue",
+            wednesday: "wed",
+            thursday: "thu",
+            friday: "fri",
+            saturday: "sat",
+            sunday: "sun",
+        };
+
+        const timeRange = {};
+
+        availability.forEach(({ week_day, available_hours }) => {
+            if (available_hours === "Not available") {
+                timeRange[weekDayMap[week_day]] = { from: null, to: null };
+            } else {
+                const [from, to] = available_hours.split(" - ");
+                timeRange[weekDayMap[week_day]] = {
+                    from: convertTo24HourFormat(from),
+                    to: convertTo24HourFormat(to),
+                };
+            }
+        });
+
+        return timeRange;
+    };
 
     if (!facilityData) {
         return;
@@ -62,15 +117,20 @@ const EditFacility = () => {
     };
 
     const updateTime = (day, key, value) => {
-        setTimeRange({
-            ...timeRange,
-            [day]: { ...timeRange[day], [key]: value },
-        });
+        setTimeRange((prevState) => ({
+            ...prevState,
+            [day]: {
+                ...prevState[day],
+                [key]: value,
+            },
+        }));
     };
 
-    console.log(facilityData.facilityInfo);
-
     const handleFile = (e) => {
+        const imgfiles = Array.from(e.target.files);
+        const newImageFiles = [...imageFiles, ...imgfiles];
+        setImageFiles(newImageFiles);
+
         const files = Array.from(e.target.files);
         const imagePromises = files.map((file) => {
             return new Promise((resolve, reject) => {
@@ -122,26 +182,94 @@ const EditFacility = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // try {
-        //     await axios.put(
-        //         `${baseUrl}/api/facilitator/facility/update/3`,
-        //         {
-        //             ...facilityData, // Send updated facility data
-        //             days, // Send updated days and times
-        //             timeRange,
-        //         },
-        //         {
-        //             headers: {
-        //                 Authorization: `Bearer ${token}`,
-        //                 Accept: "application/json",
-        //             },
-        //         }
-        //     );
-        //     alert("Facility updated successfully!");
-        // } catch (error) {
-        //     console.log("Error updating facility", error);
-        // }
-        console.log({ ...facilityData, days, timeRange });
+
+        const convertToAMPMFormat = (time) => {
+            let [hours, minutes] = time.split(":");
+            let period = "AM";
+            hours = parseInt(hours);
+
+            if (hours >= 12) {
+                period = "PM";
+                if (hours > 12) hours -= 12;
+            } else if (hours === 0) {
+                hours = 12;
+            }
+
+            return `${hours}:${minutes} ${period}`;
+        };
+
+        const formattedAvailableHours = {};
+        const dayMap = {
+            mon: "monday",
+            tue: "tuesday",
+            wed: "wednesday",
+            thu: "thursday",
+            fri: "friday",
+            sat: "saturday",
+            sun: "sunday",
+        };
+
+        Object.keys(days).forEach((dayKey) => {
+            if (days[dayKey]) {
+                const fromTime = convertToAMPMFormat(timeRange[dayKey].from);
+                const toTime = convertToAMPMFormat(timeRange[dayKey].to);
+                formattedAvailableHours[dayMap[dayKey]] =
+                    `${fromTime} - ${toTime}`;
+            } else {
+                formattedAvailableHours[dayMap[dayKey]] = "Not available";
+            }
+        });
+
+        const updatedFacilityData = {
+            ...facilityData,
+            availableHours: formattedAvailableHours,
+        };
+
+        let data = {
+            description: "It's a good Stadium",
+            capacity: +facilityData.facilityInfo.capacity,
+            latitude: 40.7128,
+            longitude: -74.006,
+            name: facilityData.facilityInfo.name,
+            hourly_rate: facilityData.facilityInfo.hourly_rate,
+            available_hours: updatedFacilityData.availableHours,
+        };
+
+        console.log("in", data);
+
+        const formData = new FormData();
+        imageFiles.forEach((file) => {
+            formData.append("img", file);
+        });
+
+        try {
+            await axios.patch(
+                `${baseUrl}/api/facilitator/facility/${facility_id}`,
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+            alert("Facility updated successfully!");
+            let imageResponse = await axios.post(
+                `${baseUrl}/api/facilitator/${facility_id}/add_img`,
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            console.log("image", imageResponse.data);
+        } catch (error) {
+            console.log("Error updating facility", error);
+        }
     };
 
     return (
@@ -160,6 +288,7 @@ const EditFacility = () => {
                 <p>Capacity</p>
                 <input
                     name="capacity"
+                    type="number"
                     value={facilityData.facilityInfo.capacity}
                     onChange={handleInputChange}
                     placeholder="Enter capacity amount"
@@ -229,12 +358,11 @@ const EditFacility = () => {
                         />
                     ))}
                 </div>
-                <button
+                <Button
+                    title={"Save Changes"}
                     type="submit"
-                    className="mt-5 w-full bg-primary text-white p-2 rounded-lg"
-                >
-                    Save Changes
-                </button>
+                    className="mt-5 w-full bg-primary text-white "
+                />
             </form>
         </section>
     );

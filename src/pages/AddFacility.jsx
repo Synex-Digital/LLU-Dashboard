@@ -1,16 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SubPageTitle from "../components/common/SubPageTitle";
 import { MdLocationPin } from "react-icons/md";
 import PageHeading from "../components/common/PageHeading";
 import { RxCross2 } from "react-icons/rx";
 import { BsPlusSquareDotted } from "react-icons/bs";
 import Button from "../components/common/Button";
-import {
-    GoogleMap,
-    useLoadScript,
-    Marker,
-    Autocomplete,
-} from "@react-google-maps/api";
+import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -26,7 +21,7 @@ const center = {
 
 const AddFacility = () => {
     const token = Cookies.get("llu-token");
-    const storedUser = JSON.parse(localStorage.getItem('user'));
+    const storedUser = JSON.parse(localStorage.getItem("user"));
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const [facilities, setFacilities] = useState([]);
     const [inputValue, setInputValue] = useState("");
@@ -37,6 +32,7 @@ const AddFacility = () => {
     const [establishedIn, setEstablishedIn] = useState("");
     const [capacity, setCapacity] = useState("");
     const [trainer, setTrainer] = useState("");
+    const [locationName, setLocationName] = useState("");
     const [days, setDays] = useState({
         mon: true,
         tue: true,
@@ -46,7 +42,7 @@ const AddFacility = () => {
         sat: false,
         sun: false,
     });
-    
+
     const [timeRange, setTimeRange] = useState({
         mon: { from: "10:00", to: "22:00" },
         tue: { from: "10:00", to: "22:00" },
@@ -57,18 +53,96 @@ const AddFacility = () => {
         sun: { from: "10:00", to: "22:00" },
     });
 
-    console.log(storedUser.user_id);
-    
-
     const [location, setLocation] = useState({ lat: null, lng: null });
-    const [autocomplete, setAutocomplete] = useState(null);
+    const mapRef = useRef(null);
+    const markerRef = useRef(null);
     const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: `${import.meta.env.VITE_GOOGLE_MAP_KEY}&loading=async`,
         libraries,
     });
 
-    if (loadError) return "Error loading maps";
-    if (!isLoaded) return "Loading Maps";
+    useEffect(() => {
+        if (location.lat && location.lng) {
+            reverseGeocode();
+        }
+    }, [location]);
+    console.log(locationName, "local");
+    const reverseGeocode = async () => {
+        const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.lat},${location.lng}&key=${import.meta.env.VITE_GOOGLE_MAP_KEY}`;
+
+        try {
+            const response = await axios.get(geocodingUrl);
+            console.log(response);
+
+            if (response.data.status === "OK") {
+                const address =
+                    response.data.results[0]?.formatted_address ||
+                    "Unknown location";
+                setLocationName(address);
+            } else {
+                console.error("Geocoding error:", response.data.status);
+            }
+        } catch (error) {
+            console.error("Error with reverse geocoding:", error);
+        }
+    };
+
+    useEffect(() => {
+        // Get current location on component mount
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setLocation({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                });
+            },
+            (error) => console.error("Error getting location: ", error),
+            { enableHighAccuracy: true }
+        );
+    }, []);
+
+    useEffect(() => {
+        if (mapRef.current && location.lat && location.lng) {
+            const loadMarker = async () => {
+                try {
+                    // Dynamically import the marker library
+                    const { AdvancedMarkerElement } =
+                        await google.maps.importLibrary("marker");
+
+                    if (markerRef.current) {
+                        // Update the position of the existing marker
+                        markerRef.current.position = new google.maps.LatLng(
+                            location.lat,
+                            location.lng
+                        );
+                    } else {
+                        // Create a new marker if it doesn't exist
+                        markerRef.current = new AdvancedMarkerElement({
+                            map: mapRef.current,
+                            position: new google.maps.LatLng(
+                                location.lat,
+                                location.lng
+                            ),
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error loading marker: ", error);
+                }
+            };
+
+            loadMarker();
+        }
+    }, [location, isLoaded]);
+
+    const handleMapClick = (event) => {
+        const lat = event.latLng.lat();
+        const lng = event.latLng.lng();
+        setLocation({ lat, lng });
+    };
+
+    const onLoad = (map) => {
+        mapRef.current = map;
+    };
 
     const handleKeyDown = (e) => {
         if (e.key === "Enter" && inputValue.trim() !== "") {
@@ -155,8 +229,8 @@ const AddFacility = () => {
         const data = {
             name: fullName,
             hourly_rate: +hourlyRate,
-            latitude: center.lat,
-            longitude: center.lng,
+            latitude: location.lat || center.lat,
+            longitude: location.lng || center.lng,
             capacity: +capacity,
             established_in: +establishedIn,
             available_hours: transformedData,
@@ -199,6 +273,9 @@ const AddFacility = () => {
 
         apiPost();
     };
+
+    if (loadError) return "Error loading maps";
+    if (!isLoaded) return "Loading Maps";
 
     return (
         <section>
@@ -356,6 +433,8 @@ const AddFacility = () => {
                 mapContainerStyle={mapContainerStyle}
                 zoom={12}
                 center={location.lat ? location : center}
+                onClick={handleMapClick}
+                onLoad={onLoad}
             >
                 {location.lat && <Marker position={location} />}
             </GoogleMap>

@@ -37,7 +37,7 @@ const SideBar = () => {
                             : userData?.img
                     }
                 />
-                <h2 className="text-center text-xl font-semibold">
+                <h2 className="text-center text-xl font-semibold capitalize">
                     {userData?.first_name} {userData?.last_name}
                 </h2>
             </div>
