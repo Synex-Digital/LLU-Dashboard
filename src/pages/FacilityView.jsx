@@ -42,6 +42,12 @@ const FacilityView = () => {
     if (loadError) return "Error loading maps";
     if (!isLoaded) return "Loading Maps";
 
+    const handleEdit = () => {
+        navigate(routes.editFacility.path, {
+            state: { facility_id: facilityData.facilityInfo.facility_id },
+        });
+    };
+
     return (
         <section>
             <div className="flex justify-between">
@@ -50,7 +56,7 @@ const FacilityView = () => {
                     title={facilityData.facilityInfo.name}
                 />
                 <CiEdit
-                    onClick={() => navigate(routes.editFacility.path)}
+                    onClick={handleEdit}
                     className="xl:h-10 xl:w-10 w-7 h-7 cursor-pointer rounded-full border border-darkText xl:p-2 p-1"
                 />
             </div>

@@ -54,7 +54,6 @@ const Profile = () => {
     }, []);
 
     const handleFacilityView = async (item) => {
-        console.log(item.facility_id);
         try {
             let response = await axios.get(
                 `${baseUrl}/api/facilitator/facility/${item.facility_id}?page=1&limit=5`,
