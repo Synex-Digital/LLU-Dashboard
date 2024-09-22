@@ -36,6 +36,7 @@ import Community from "../pages/Community";
 import UserProfile from "../pages/UserProfile";
 import MassagePage from "../pages/MassagePage";
 import SyncTrainer from "../pages/SyncTrainer";
+import { AuthProvider } from "../AuthProvider";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -183,7 +184,9 @@ const router = createBrowserRouter(
                                 content="LLU Description"
                             />
                         </Helmet>
-                        <RotLayOut />
+                        <AuthProvider>
+                            <RotLayOut />
+                        </AuthProvider>
                     </>
                 }
             >

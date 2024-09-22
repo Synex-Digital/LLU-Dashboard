@@ -43,15 +43,8 @@ const Login = () => {
                         "Content-Type": "application/json",
                     },
                 });
-
+                console.log("login", response.data);
                 if (response.data && response.data.accessToken) {
-                    // const expireTime = new Date();
-                    // expireTime.setTime(expireTime.getTime() + 30 * 60 * 1000);
-
-                    // Cookies.set("llu-token", response.data.token, {
-                    //     secure: true,
-                    //     expires: expireTime,
-                    // });
                     Cookies.set("llu-token", response.data.accessToken, {
                         secure: true,
                         sameSite: "Strict",
@@ -62,7 +55,6 @@ const Login = () => {
                         sameSite: "Strict",
                         expires: 7,
                     });
-                    console.log("login", response.data);
 
                     if (response.data.loginStatus) {
                         const { email, ...userWithoutEmail } =

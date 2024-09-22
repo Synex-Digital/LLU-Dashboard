@@ -5,6 +5,7 @@ import { BsPlusSquareDotted } from "react-icons/bs";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useLocation, useNavigate } from "react-router-dom";
+import Button from "../components/common/Button";
 
 const EditFacility = () => {
     const location = useLocation();
@@ -13,6 +14,7 @@ const EditFacility = () => {
     const token = Cookies.get("llu-token");
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const [images, setImages] = useState([]);
+    const [imageFiles, setImageFiles] = useState([]);
     const [facilityData, setFacilityData] = useState("");
     const [days, setDays] = useState({
         mon: true,
@@ -125,6 +127,10 @@ const EditFacility = () => {
     };
 
     const handleFile = (e) => {
+        const imgfiles = Array.from(e.target.files);
+        const newImageFiles = [...imageFiles, ...imgfiles];
+        setImageFiles(newImageFiles);
+
         const files = Array.from(e.target.files);
         const imagePromises = files.map((file) => {
             return new Promise((resolve, reject) => {
@@ -231,6 +237,11 @@ const EditFacility = () => {
 
         console.log("in", data);
 
+        const formData = new FormData();
+        imageFiles.forEach((file) => {
+            formData.append("img", file);
+        });
+
         try {
             await axios.patch(
                 `${baseUrl}/api/facilitator/facility/${facility_id}`,
@@ -243,6 +254,19 @@ const EditFacility = () => {
                 }
             );
             alert("Facility updated successfully!");
+            let imageResponse = await axios.post(
+                `${baseUrl}/api/facilitator/${facility_id}/add_img`,
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            console.log("image", imageResponse.data);
         } catch (error) {
             console.log("Error updating facility", error);
         }
@@ -334,12 +358,11 @@ const EditFacility = () => {
                         />
                     ))}
                 </div>
-                <button
+                <Button
+                    title={"Save Changes"}
                     type="submit"
-                    className="mt-5 w-full bg-primary text-white p-2 rounded-lg"
-                >
-                    Save Changes
-                </button>
+                    className="mt-5 w-full bg-primary text-white "
+                />
             </form>
         </section>
     );

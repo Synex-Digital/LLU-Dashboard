@@ -32,7 +32,6 @@ export const AuthProvider = ({ children }) => {
             console.error("Error refreshing token", error);
 
             if (error.response?.status === 401) {
-                // Token is invalid, clear both tokens and log out the user
                 Cookies.remove("llu-token");
                 Cookies.remove("ref-token");
                 setToken(null);
@@ -40,14 +39,19 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    
+    
+
     useEffect(() => {
         if (!accToken) {
             refreshToken();
+            console.log("tamim");
         }
 
         const interval = setInterval(
             () => {
                 refreshToken();
+                console.log("tamim2");
             },
             14 * 60 * 1000
         );

@@ -94,17 +94,14 @@ const Profile = () => {
                     />
                     <div>
                         <p className="mt-2.5 text-lg font-medium capitalize">
-                            {basicInfo?.first_name} {basicInfo?.last_name}
+                            {basicInfo?.first_name || "Facilitator"}{" "}
+                            {basicInfo?.last_name}
                         </p>
                         <p className="font-medium text-darkText">
                             Facilitator Owner
                         </p>
                     </div>
                 </div>
-                {/* <div>
-                    <p className="mb-2 mt-5 font-medium">Profile Completion</p>
-                    <input className="w-64" value="80" type="range" readOnly />
-                </div> */}
             </div>
             <div className="grid sm:grid-cols-3 gap-3">
                 <div className="rounded-lg bg-darkSlate p-5 max-sm:flex max-sm:flex-col max-sm:items-center">

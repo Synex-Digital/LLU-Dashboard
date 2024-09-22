@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import PageHeading from "../components/common/PageHeading";
 import { CiEdit } from "react-icons/ci";
 import SubPageTitle from "../components/common/SubPageTitle";
@@ -23,30 +23,85 @@ const mapContainerStyle = {
 };
 
 const FacilityView = () => {
-    const location = useLocation();
+    const locations = useLocation();
     const navigate = useNavigate();
-    const facilityData = location.state?.facility;
+    const facilityData = locations.state?.facility;
 
-    const [locations, setLocations] = useState({ lat: null, lng: null });
-    const [autocomplete, setAutocomplete] = useState(null);
+    const [location, setLocation] = useState({ lat: null, lng: null });
     const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: `${import.meta.env.VITE_GOOGLE_MAP_KEY}&loading=async`,
         libraries,
     });
+    const mapRef = useRef(null);
+    const markerRef = useRef(null);
 
     const center = {
         lat: facilityData.facilityInfo.latitude,
         lng: facilityData.facilityInfo.longitude,
     };
 
-    if (loadError) return "Error loading maps";
-    if (!isLoaded) return "Loading Maps";
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setLocation({
+                    center,
+                });
+            },
+            (error) => console.error("Error getting location: ", error),
+            { enableHighAccuracy: true }
+        );
+    }, []);
+
+    useEffect(() => {
+        if (mapRef.current && location.lat && location.lng) {
+            const loadMarker = async () => {
+                try {
+                    // Dynamically import the marker library
+                    const { AdvancedMarkerElement } =
+                        await google.maps.importLibrary("marker");
+
+                    if (markerRef.current) {
+                        // Update the position of the existing marker
+                        markerRef.current.position = new google.maps.LatLng(
+                            location.lat,
+                            location.lng
+                        );
+                    } else {
+                        // Create a new marker if it doesn't exist
+                        markerRef.current = new AdvancedMarkerElement({
+                            map: mapRef.current,
+                            position: new google.maps.LatLng(
+                                location.lat,
+                                location.lng
+                            ),
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error loading marker: ", error);
+                }
+            };
+
+            loadMarker();
+        }
+    }, [location, isLoaded]);
+
+    const handleMapClick = (event) => {
+        const lat = event.latLng.lat();
+        const lng = event.latLng.lng();
+        setLocation(center);
+    };
+
+    const onLoad = (map) => {
+        mapRef.current = map;
+    };
 
     const handleEdit = () => {
         navigate(routes.editFacility.path, {
             state: { facility_id: facilityData.facilityInfo.facility_id },
         });
     };
+    if (loadError) return "Error loading maps";
+    if (!isLoaded) return "Loading Maps";
 
     return (
         <section>
@@ -112,9 +167,11 @@ const FacilityView = () => {
                     <GoogleMap
                         mapContainerStyle={mapContainerStyle}
                         zoom={12}
-                        center={locations.lat ? locations : center}
+                        center={location.lat ? location : center}
+                        onClick={handleMapClick}
+                        onLoad={onLoad}
                     >
-                        {locations.lat && <Marker position={locations} />}
+                        {location.lat && <Marker position={location} />}
                     </GoogleMap>
                     <p className="mt-2 text-sm text-gray-400">
                         <MdLocationPin className="inline-block text-xl text-Primary" />
