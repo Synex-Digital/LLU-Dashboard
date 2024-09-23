@@ -34,7 +34,6 @@ const Community = () => {
                     },
                 }
             );
-            console.log(response.data.data);
             setPosts(response.data.data);
         } catch (error) {
             console.log(error);
@@ -43,7 +42,7 @@ const Community = () => {
 
     useEffect(() => {
         apiCall();
-    }, []);
+    }, [createPost]);
 
     const images = [
         profile,

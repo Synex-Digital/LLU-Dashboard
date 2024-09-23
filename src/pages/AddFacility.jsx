@@ -8,6 +8,8 @@ import Button from "../components/common/Button";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { routes } from "../routes/Routers";
+import { useNavigate } from "react-router-dom";
 
 const libraries = ["places"];
 const mapContainerStyle = {
@@ -23,6 +25,7 @@ const AddFacility = () => {
     const token = Cookies.get("llu-token");
     const storedUser = JSON.parse(localStorage.getItem("user"));
     const baseUrl = import.meta.env.VITE_BASE_URL;
+    const navigate = useNavigate();
     const [facilities, setFacilities] = useState([]);
     const [inputValue, setInputValue] = useState("");
     const [images, setImages] = useState([]);
@@ -31,7 +34,6 @@ const AddFacility = () => {
     const [hourlyRate, setHourlyRate] = useState("");
     const [establishedIn, setEstablishedIn] = useState("");
     const [capacity, setCapacity] = useState("");
-    const [trainer, setTrainer] = useState("");
     const [locationName, setLocationName] = useState("");
     const [days, setDays] = useState({
         mon: true,
@@ -66,7 +68,7 @@ const AddFacility = () => {
             reverseGeocode();
         }
     }, [location]);
-    console.log(locationName, "local");
+    console.log(location, "local");
     const reverseGeocode = async () => {
         const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.lat},${location.lng}&key=${import.meta.env.VITE_GOOGLE_MAP_KEY}`;
 
@@ -244,7 +246,7 @@ const AddFacility = () => {
         async function apiPost() {
             try {
                 let response = await axios.post(
-                    `${baseUrl}/api/facilitator/3/add_facility`,
+                    `${baseUrl}/api/facilitator/${storedUser.specializedUserId}/add_facility`,
                     data,
                     {
                         headers: {
@@ -254,8 +256,12 @@ const AddFacility = () => {
                     }
                 );
                 console.log(response.data);
+                if (response.data) {
+                    alert("Facility Add successfully!");
+                    navigate(routes.profile.path);
+                }
                 let imageResponse = await axios.post(
-                    `${baseUrl}/api/facilitator/3/add_img`,
+                    `${baseUrl}/api/facilitator/${storedUser.specializedUserId}/add_img`,
                     formData,
                     {
                         headers: {

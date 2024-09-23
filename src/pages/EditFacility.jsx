@@ -6,6 +6,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../components/common/Button";
+import { routes } from "../routes/Routers";
 
 const EditFacility = () => {
     const location = useLocation();
@@ -254,6 +255,7 @@ const EditFacility = () => {
                 }
             );
             alert("Facility updated successfully!");
+            navigate(routes.profile.path)
             let imageResponse = await axios.post(
                 `${baseUrl}/api/facilitator/${facility_id}/add_img`,
                 formData,
