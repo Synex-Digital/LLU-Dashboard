@@ -59,10 +59,12 @@ const Login = () => {
                     if (response.data.loginStatus) {
                         const { email, ...userWithoutEmail } =
                             response.data.user;
-                        localStorage.setItem(
-                            "user",
-                            JSON.stringify(userWithoutEmail)
-                        );
+
+                        const userData = {
+                            userWithoutEmail,
+                            specializedUserId: response.data.specializedUserId,
+                        };
+                        localStorage.setItem("user", JSON.stringify(userData));
                         notify("Login successful");
                         navigate(routes.dashboard.path);
                     }

@@ -8,7 +8,6 @@ import {
     GoogleMap,
     useLoadScript,
     Marker,
-    Autocomplete,
 } from "@react-google-maps/api";
 import Button from "../components/common/Button";
 

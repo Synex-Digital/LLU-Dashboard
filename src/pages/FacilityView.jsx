@@ -14,7 +14,6 @@ import {
     GoogleMap,
     useLoadScript,
     Marker,
-    Autocomplete,
 } from "@react-google-maps/api";
 const libraries = ["places"];
 const mapContainerStyle = {
@@ -172,7 +171,7 @@ const FacilityView = () => {
                         onClick={handleMapClick}
                         onLoad={onLoad}
                     >
-                        {location.lat && <Marker position={location} />}
+                        {/* {location.lat && <Marker position={location} />} */}
                     </GoogleMap>
                     <p className="mt-2 text-sm text-gray-400">
                         <MdLocationPin className="inline-block text-xl text-Primary" />

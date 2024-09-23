@@ -3,15 +3,15 @@ import Navbar from "./Navbar";
 import SideBar from "./SideBar";
 import { Navigate, Outlet } from "react-router-dom";
 import { routes } from "../routes/Routers";
-import { useAuth } from "../AuthProvider";
+import Cookies from "js-cookie";
 
 const PrivateRoute = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(true); //change for design value is false
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
-    const { token } = useAuth();
+    const refToken = Cookies.get("ref-token");
 
     useEffect(() => {
-        if (token) {
+        if (refToken) {
             setIsAuthenticated(true);
         }
         setLoading(false);

@@ -5,13 +5,13 @@ import Button from "./common/Button";
 import { RxCross2 } from "react-icons/rx";
 import { IoImages } from "react-icons/io5";
 import axios from "axios";
-import { useAuth } from "../AuthProvider"
+import Cookies from "js-cookie";
 
 const CreatePost = ({ toggleComments }) => {
     const [values, setValues] = useState("");
     const [images, setImages] = useState([]);
     const [imageFiles, setImageFiles] = useState([]);
-    const { token } = useAuth();
+    const token = Cookies.get("llu-token");
     const baseUrl = import.meta.env.VITE_BASE_URL;
 
     const handleFile = (e) => {
@@ -45,7 +45,9 @@ const CreatePost = ({ toggleComments }) => {
                 }
             );
 
-            console.log(response.data);
+            if (response.data.message) {
+                toggleComments();
+            }
         } catch (error) {
             console.log(error);
         }

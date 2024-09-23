@@ -39,25 +39,21 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    
-    
-
     useEffect(() => {
         if (!accToken) {
             refreshToken();
-            console.log("tamim");
         }
 
         const interval = setInterval(
             () => {
+                console.log("Calling refreshToken every 14 minutes...");
                 refreshToken();
-                console.log("tamim2");
             },
             14 * 60 * 1000
-        );
+        ); // 14 minutes
 
         return () => clearInterval(interval);
-    }, [token]);
+    }, []);
 
     return (
         <AuthContext.Provider value={{ token, setToken }}>

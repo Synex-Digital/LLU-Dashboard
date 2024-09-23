@@ -23,6 +23,7 @@ const Profile = () => {
     const [details, setDetails] = useState("");
     const [facilityList, setFacilityList] = useState([]);
     const [trainers, setTrainers] = useState([]);
+
     async function apiCall() {
         try {
             const data = {
@@ -43,7 +44,6 @@ const Profile = () => {
             setDetails(response.data.data.basicInfo.details);
             setFacilityList(response.data.data.facilityList);
             setTrainers(response.data.data.trainers);
-            console.log(response.data);
         } catch (error) {
             console.log(error);
         }

@@ -8,6 +8,7 @@ import Cookies from "js-cookie";
 const AddTrainerDetails = () => {
     const token = Cookies.get("llu-token");
     const baseUrl = import.meta.env.VITE_BASE_URL;
+    const storedUser = JSON.parse(localStorage.getItem("user"));
     const [days, setDays] = useState({
         mon: true,
         tue: true,
@@ -59,7 +60,7 @@ const AddTrainerDetails = () => {
         async function apiPost() {
             try {
                 let response = await axios.post(
-                    `${baseUrl}/api/facilitator/3/add_employee/3`,
+                    `${baseUrl}/api/facilitator/${storedUser.specializedUserId}/add_employee/3`,
                     data,
                     {
                         headers: {
