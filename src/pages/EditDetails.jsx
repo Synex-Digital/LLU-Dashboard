@@ -1,19 +1,98 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SubPageTitle from "../components/common/SubPageTitle";
 import PageHeading from "../components/common/PageHeading";
 import { MdLocationPin } from "react-icons/md";
 import axios from "axios";
 import Cookies from "js-cookie";
+import {
+    GoogleMap,
+    useLoadScript,
+    Marker,
+    Autocomplete,
+} from "@react-google-maps/api";
+import Button from "../components/common/Button";
+
+const libraries = ["places"];
+const mapContainerStyle = {
+    width: "100%",
+    height: "300px",
+};
+const center = {
+    lat: 40.7128,
+    lng: -74.106,
+};
 
 const EditDetails = () => {
     const token = Cookies.get("llu-token");
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const [formData, setFormData] = useState({
         fullName: "",
-        establishedIn: "",
         professionalsResources: "",
-        address: "Green Valley, Hill road, NY",
     });
+    const [location, setLocation] = useState({ lat: null, lng: null });
+    const { isLoaded, loadError } = useLoadScript({
+        googleMapsApiKey: `${import.meta.env.VITE_GOOGLE_MAP_KEY}&loading=async`,
+        libraries,
+    });
+    const mapRef = useRef(null);
+    const markerRef = useRef(null);
+
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setLocation({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                });
+            },
+            (error) => console.error("Error getting location: ", error),
+            { enableHighAccuracy: true }
+        );
+    }, []);
+
+    useEffect(() => {
+        if (mapRef.current && location.lat && location.lng) {
+            const loadMarker = async () => {
+                try {
+                    // Dynamically import the marker library
+                    const { AdvancedMarkerElement } =
+                        await google.maps.importLibrary("marker");
+
+                    if (markerRef.current) {
+                        // Update the position of the existing marker
+                        markerRef.current.position = new google.maps.LatLng(
+                            location.lat,
+                            location.lng
+                        );
+                    } else {
+                        // Create a new marker if it doesn't exist
+                        markerRef.current = new AdvancedMarkerElement({
+                            map: mapRef.current,
+                            position: new google.maps.LatLng(
+                                location.lat,
+                                location.lng
+                            ),
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error loading marker: ", error);
+                }
+            };
+
+            loadMarker();
+        }
+    }, [location, isLoaded]);
+
+    const handleMapClick = (event) => {
+        const lat = event.latLng.lat();
+        const lng = event.latLng.lng();
+
+        setLocation({ lat, lng });
+    };
+
+    const onLoad = (map) => {
+        mapRef.current = map;
+    };
 
     useEffect(() => {
         async function apiCall() {
@@ -28,20 +107,9 @@ const EditDetails = () => {
                     }
                 );
 
-                const {
-                    first_name,
-                    last_name,
-                    latitude,
-                    longitude,
-                    no_of_professionals,
-                } = response.data.data.facilitatorInfo[0];
-                console.log(
-                    first_name,
-                    last_name,
-                    latitude,
-                    longitude,
-                    no_of_professionals
-                );
+                const { first_name, last_name, no_of_professionals } =
+                    response.data.data.facilitatorInfo[0];
+
                 const fullName = `${first_name} ${last_name}`;
                 setFormData({
                     fullName,
@@ -59,6 +127,33 @@ const EditDetails = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    if (loadError) return "Error loading maps";
+    if (!isLoaded) return "Loading Maps";
+
+    const handleClick = async () => {
+        let data = {
+            full_name: formData.fullName,
+            no_of_professionals: formData.professionalsResources,
+            latitude: location.lat || center.lat,
+            longitude: location.lng || center.lng,
+        };
+        try {
+            let response = await axios.patch(
+                `${baseUrl}/api/facilitator/edit_details`,
+                data,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+            console.log(response.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <section>
             <PageHeading title={"Edit Facilitator Details"} />
@@ -71,17 +166,6 @@ const EditDetails = () => {
                 value={formData.fullName}
                 onChange={handleChange}
                 placeholder="Write full name here"
-                className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
-            />
-
-            <p>
-                Established in<span className="text-redText">*</span>
-            </p>
-            <input
-                name="establishedIn"
-                value={formData.establishedIn}
-                onChange={handleChange}
-                placeholder="2004"
                 className="mb-5 mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
             />
 
@@ -105,15 +189,20 @@ const EditDetails = () => {
                 <MdLocationPin className="inline-block text-xl text-Primary" />
                 {formData.address}
             </p>
-            <iframe
-                src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d4967.308022344391!2d90.36704350771629!3d23.807506139831705!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sbd!4v1725902792584!5m2!1sen!2sbd"
-                width="600"
-                height="300"
-                className="w-full rounded-2xl"
-                allowfullscreen=""
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-            ></iframe>
+            <GoogleMap
+                mapContainerStyle={mapContainerStyle}
+                zoom={12}
+                center={location.lat ? location : center}
+                onClick={handleMapClick}
+                onLoad={onLoad}
+            >
+                {location.lat && <Marker position={location} />}
+            </GoogleMap>
+            <Button
+                className={"w-full mt-5"}
+                onClick={handleClick}
+                title={"Save Change"}
+            ></Button>
         </section>
     );
 };

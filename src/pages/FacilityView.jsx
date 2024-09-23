@@ -44,7 +44,8 @@ const FacilityView = () => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 setLocation({
-                    center,
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
                 });
             },
             (error) => console.error("Error getting location: ", error),
@@ -88,7 +89,7 @@ const FacilityView = () => {
     const handleMapClick = (event) => {
         const lat = event.latLng.lat();
         const lng = event.latLng.lng();
-        setLocation(center);
+        setLocation({ lat, lng });
     };
 
     const onLoad = (map) => {

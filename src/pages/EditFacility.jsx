@@ -35,7 +35,7 @@ const EditFacility = () => {
         sat: { from: "10:00", to: "22:00" },
         sun: { from: "10:00", to: "22:00" },
     });
-    const availability = facilityData.availableHours;
+
     const convertTo24HourFormat = (time) => {
         const [hours, minutes] = time.split(":");
         let [minutePart, period] = minutes.split(" ");
@@ -48,6 +48,7 @@ const EditFacility = () => {
         }
         return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
     };
+
     useEffect(() => {
         async function apiCall() {
             try {
@@ -63,7 +64,6 @@ const EditFacility = () => {
                 console.log(response.data.data.availableHours);
                 setFacilityData(response.data.data);
 
-                // If availableHours is defined, map to timeRange
                 if (response.data.data.availableHours) {
                     const newTimeRange = mapAvailabilityToTimeRange(
                         response.data.data.availableHours
