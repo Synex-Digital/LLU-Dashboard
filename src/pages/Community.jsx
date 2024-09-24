@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { routes } from "../routes/Routers";
 import axios from "axios";
 import Cookies from "js-cookie";
+import defaultImg from "../assets/image/default-pp.jpg";
 
 const Community = () => {
     const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -71,6 +72,27 @@ const Community = () => {
         setCreatePost((prevState) => !prevState);
     };
 
+    const handleMag = async (item) => {
+
+        try {
+            let response = await axios.get(
+                `${baseUrl}/api/user/profile/${item.user_id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+
+            navigate(routes.userProfile.path, {
+                state: { userData: response.data },
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <>
             {createPost ? (
@@ -93,24 +115,17 @@ const Community = () => {
                                                 src={
                                                     item?.profile_picture
                                                         ? item?.profile_picture
-                                                        : item?.img
+                                                        : item?.img || defaultImg
                                                 }
                                                 className={
                                                     "w-16 h-16 rounded-full cursor-pointer"
                                                 }
-                                                onClick={() =>
-                                                    navigate(
-                                                        routes.userProfile.path
-                                                    )
-                                                }
+                                                onClick={() => handleMag(item)}
                                             />
                                             <div>
                                                 <h3
                                                     onClick={() =>
-                                                        navigate(
-                                                            routes.userProfile
-                                                                .path
-                                                        )
+                                                        handleMag(item)
                                                     }
                                                     className="text-lg cursor-pointer"
                                                 >

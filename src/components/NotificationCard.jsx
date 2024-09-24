@@ -7,8 +7,8 @@ const NotificationCard = ({ title, subtitle, times }) => {
             <div className=" rounded-full flex items-center w-12 h-12 bg-darkSlate p-3 group-hover:bg-background">
                 <PiMailboxFill className="text-2xl" />
             </div>
-            <div>
-                <p className="text-lg font-medium">
+            <div className="w-full">
+                <p className="text-lg font-medium ">
                     {title}
                     <span className="float-right text-darkText">{times}</span>
                 </p>

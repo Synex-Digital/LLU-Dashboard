@@ -1,11 +1,4 @@
 import React, { useState } from "react";
-import Image from "./common/Image";
-
-import appointment from "../assets/icon/appointment.svg";
-import helpCenter from "../assets/icon/help-center.svg";
-import paymentMethod from "../assets/icon/payment-method.svg";
-import setting from "../assets/icon/setting.svg";
-import profileIcon from "../assets/icon/profile-icon.svg";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../routes/Routers";
 import { FaAnglesLeft } from "react-icons/fa6";
@@ -13,6 +6,14 @@ import clsx from "clsx";
 import navBarStore from "../features/navSlice";
 import { BiLogOut } from "react-icons/bi";
 import Cookies from "js-cookie";
+
+import Image from "./common/Image";
+import appointment from "../assets/icon/appointment.svg";
+import helpCenter from "../assets/icon/help-center.svg";
+import paymentMethod from "../assets/icon/payment-method.svg";
+import setting from "../assets/icon/setting.svg";
+import profileIcon from "../assets/icon/profile-icon.svg";
+import defaultImage from "../assets/image/default-pp.jpg";
 
 const SideBar = () => {
     const navigate = useNavigate();
@@ -37,15 +38,16 @@ const SideBar = () => {
             </p>
             <div className="flex flex-col items-center justify-center gap-2">
                 <Image
-                    className={"xl:w-28 lg:w-24 w-20 rounded-full bg-red-400"}
+                    className={"xl:w-28 lg:w-24 w-20 rounded-full"}
                     src={
                         userData?.profile_picture
                             ? userData?.profile_picture
-                            : userData?.img
+                            : defaultImage
                     }
                 />
-                <h2 className="text-center text-xl font-semibold capitalize">
-                    {userData?.first_name} {userData?.last_name}
+                <h2 className="text-center text-xl font-semibold mt-3 capitalize">
+                    {userData?.userWithoutEmail?.first_name}{" "}
+                    {userData?.userWithoutEmail?.last_name}
                 </h2>
             </div>
             <div className="mt-8 flex flex-col gap-y-6">

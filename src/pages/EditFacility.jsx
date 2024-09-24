@@ -255,7 +255,7 @@ const EditFacility = () => {
                 }
             );
             alert("Facility updated successfully!");
-            navigate(routes.profile.path)
+            navigate(routes.profile.path);
             let imageResponse = await axios.post(
                 `${baseUrl}/api/facilitator/${facility_id}/add_img`,
                 formData,
@@ -354,7 +354,7 @@ const EditFacility = () => {
                     {images.map((imageSrc, index) => (
                         <img
                             key={index}
-                            className="h-[400px] w-[800px] rounded-lg"
+                            className=" w-full rounded-lg"
                             src={imageSrc}
                             alt={`Preview ${index}`}
                         />

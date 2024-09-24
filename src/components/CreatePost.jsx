@@ -44,8 +44,10 @@ const CreatePost = ({ toggleComments }) => {
                     },
                 }
             );
+            console.log(response);
 
             if (response.data.message) {
+                alert("New post create");
                 toggleComments();
             }
         } catch (error) {

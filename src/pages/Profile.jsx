@@ -14,6 +14,7 @@ import { routes } from "../routes/Routers";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { FaUserGroup } from "react-icons/fa6";
+import defaultImage from "../assets/image/default-pp.jpg"
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -89,7 +90,7 @@ const Profile = () => {
                         src={
                             basicInfo?.profile_picture
                                 ? basicInfo?.profile_picture
-                                : basicInfo?.img
+                                : defaultImage
                         }
                     />
                     <div>

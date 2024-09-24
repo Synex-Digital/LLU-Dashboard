@@ -1,10 +1,14 @@
-import React, { useState } from "react";
-import PageHeading from "../components/common/PageHeading";
+import React, { useEffect, useState } from "react";
 import { IoIosSend } from "react-icons/io";
 import clsx from "clsx";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import axios from "axios";
+import Cookies from "js-cookie";
+import defaultImg from "../assets/image/default-pp.jpg";
 
 const MassagePage = () => {
+    const baseUrl = import.meta.env.VITE_BASE_URL;
+    const token = Cookies.get("llu-token");
     const [messages, setMessages] = useState([
         {
             time: "11:08 PM",
@@ -37,54 +41,32 @@ const MassagePage = () => {
     ]);
 
     const [newMessage, setNewMessage] = useState("");
+    const [usersMessage, setUsersMessage] = useState([]);
+    const [usersUnreadMessage, setUsersUnreadMessage] = useState([]);
     const [userClick, setUserClick] = useState(false);
 
-    const chats = [
-        {
-            name: "Jane Cooper",
-            message:
-                "Lorem ipsum dolor sit amet consectetur. Nunc mi ultrices est fringilla in. Pulvinar vestibulum",
-            time: "7:11 PM",
-            imgUrl: "https://randomuser.me/api/portraits/women/1.jpg",
-            unreadCount: 2,
-            status: "online",
-        },
-        {
-            name: "Guy Hawkins",
-            message:
-                "Lorem ipsum dolor sit amet consectetur. Nunc mi ultrices est fringilla in. Pulvinar vestibulum",
-            time: "7:11 PM",
-            imgUrl: "https://randomuser.me/api/portraits/men/2.jpg",
-            unreadCount: 0,
-            status: "offline",
-        },
-        {
-            name: "Guy Hawkins",
-            message:
-                "Lorem ipsum dolor sit amet consectetur. Nunc mi ultrices est fringilla in. Pulvinar vestibulum",
-            time: "7:11 PM",
-            imgUrl: "https://randomuser.me/api/portraits/men/2.jpg",
-            unreadCount: 0,
-            status: "offline",
-        },
-        {
-            name: "Floyd Miles",
-            message: "Typing...",
-            time: "7:11 PM",
-            imgUrl: "https://randomuser.me/api/portraits/men/3.jpg",
-            unreadCount: 0,
-            status: "online",
-        },
-        {
-            name: "Annette Black",
-            message:
-                "Lorem ipsum dolor sit amet consectetur. Nunc mi ultrices est fringilla in. Pulvinar vestibulum",
-            time: "7:11 PM",
-            imgUrl: "https://randomuser.me/api/portraits/women/4.jpg",
-            unreadCount: 1,
-            status: "offline",
-        },
-    ];
+    useEffect(() => {
+        async function apiCall() {
+            try {
+                let response = await axios.get(
+                    `${baseUrl}/api/user/chats?page=1&limit=10`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                        },
+                    }
+                );
+
+                console.log(response.data.data);
+                setUsersMessage(response.data.data.chats);
+                setUsersUnreadMessage(response.data.data.unread_chats);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        apiCall();
+    }, []);
 
     const handleSendMessage = () => {
         if (newMessage.trim()) {
@@ -102,7 +84,7 @@ const MassagePage = () => {
     };
 
     const handleUser = (item) => {
-        console.log(item);
+        console.log(item.room_id);
         setUserClick((prev) => !prev);
     };
     return (
@@ -122,21 +104,21 @@ const MassagePage = () => {
                     </div>
 
                     <div className="space-y-2">
-                        {chats.map((chat, index) => (
+                        {usersMessage.map((chat, index) => (
                             <div
                                 key={index}
-                                className="flex items-center p-2 bg-background rounded-lg space-x-3"
+                                className="flex items-center p-2 bg-background rounded-lg space-x-3 cursor-pointer"
                                 onClick={() => handleUser(chat)}
                             >
                                 <div className="relative">
                                     <img
-                                        src={chat.imgUrl}
-                                        alt={chat.name}
+                                        src={chat.img || defaultImg}
+                                        alt={chat.first_name}
                                         className="w-12 h-12 rounded-full"
                                     />
                                     <span
                                         className={`absolute bottom-0 right-0 w-3 h-3 rounded-full ${
-                                            chat.status === "online"
+                                            chat.active === 1
                                                 ? "bg-green-500"
                                                 : "bg-gray-500"
                                         }`}
@@ -145,23 +127,23 @@ const MassagePage = () => {
 
                                 <div className="flex-1">
                                     <div className="flex justify-between items-center">
-                                        <h4 className="text-lg font-semibold">
-                                            {chat.name}
+                                        <h4 className="text-lg font-semibold capitalize">
+                                            {chat.first_name} {chat.last_name}
                                         </h4>
                                         <span className="text-sm text-darkText">
-                                            {chat.time}
+                                            {chat.last_message_time}
                                         </span>
                                     </div>
                                     <p className="text-sm text-darkText">
-                                        {chat.message}
+                                        {chat.latest_message_content}
                                     </p>
                                 </div>
 
-                                {chat.unreadCount > 0 && (
+                                {/* {chat.unreadCount > 0 && (
                                     <div className="flex items-center justify-center w-6 h-6 bg-yellow-500 text-black rounded-full text-sm">
                                         {chat.unreadCount}
                                     </div>
-                                )}
+                                )} */}
                             </div>
                         ))}
                     </div>
