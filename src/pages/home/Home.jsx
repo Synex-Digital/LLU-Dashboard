@@ -14,11 +14,12 @@ const Home = () => {
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const [upcomingSessions, setUpcomingSessions] = useState([]);
     const [ongoingSessions, setOngoingSessions] = useState([]);
+    const [completedSessions, setCompletedSessions] = useState([]);
 
     async function apiCall() {
         try {
             let response = await axios.get(
-                `${baseUrl}/api/facilitator/sessions`,
+                `${baseUrl}/api/facilitator/home?page=1&limit=5`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -27,10 +28,10 @@ const Home = () => {
                 }
             );
             console.log(response.data);
-            
 
             setOngoingSessions(response.data.data.ongoingSessions);
             setUpcomingSessions(response.data.data.upcomingSessions);
+            setCompletedSessions(response.data.data.completedSessions);
         } catch (error) {}
     }
 
@@ -100,16 +101,23 @@ const Home = () => {
                     <PageHeading className={"mb-0"} title={"Session History"} />
                 </div>
                 <div className="mt-8 grid xl:grid-cols-3 sm:grid-cols-2 gap-3">
-                    {Array.from({ length: 4 }).map((_, index) => (
+                    {completedSessions.map((item, index) => (
                         <div key={index}>
                             <SessionCard
                                 bTrue={true}
-                                times={"05:00 PM - 06:00 PM"}
+                                startTime={new Date(
+                                    item.start_time
+                                ).toLocaleTimeString("en-US", {
+                                    hour12: true,
+                                })}
+                                endTime={new Date(
+                                    item.end_time
+                                ).toLocaleTimeString("en-US", {
+                                    hour12: true,
+                                })}
                                 locations={"Ark Sports Club, NY"}
-                                sessionDetails={
-                                    "There are many variations of passages of Lorem Ipsum available, but the majority..."
-                                }
-                                title={"Football Keeping Session"}
+                                sessionDetails={item.description}
+                                title={item.name}
                                 lTrue={true}
                             />
                         </div>

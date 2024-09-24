@@ -184,9 +184,9 @@ const router = createBrowserRouter(
                                 content="LLU Description"
                             />
                         </Helmet>
-                        <AuthProvider>
+                        {/* <AuthProvider> */}
                             <RotLayOut />
-                        </AuthProvider>
+                        {/* </AuthProvider> */}
                     </>
                 }
             >

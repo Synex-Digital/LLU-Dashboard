@@ -39,6 +39,9 @@ const FacilityView = () => {
         lng: facilityData.facilityInfo.longitude,
     };
 
+    console.log(facilityData);
+    
+
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             (position) => {

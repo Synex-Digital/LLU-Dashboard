@@ -8,7 +8,8 @@ import { routes } from "../routes/Routers";
 const SessionCard = ({
     title,
     locations,
-    times,
+    startTime,
+    endTime,
     dates,
     bTrue,
     lTrue,
@@ -30,7 +31,10 @@ const SessionCard = ({
             <div className="flex items-end justify-between">
                 <div className="flex items-center text-sm text-gray-400">
                     <FaRegCalendarAlt className=" text-lg text-Primary" />
-                    <p className="mx-2">{times}</p>
+                    <p className="mx-2">
+                        {startTime} 
+                        {" - "} {endTime}
+                    </p>
                     <p>{dates}</p>
                 </div>
                 {bTrue && (
