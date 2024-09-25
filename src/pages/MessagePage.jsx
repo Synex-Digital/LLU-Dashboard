@@ -6,9 +6,12 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import defaultImg from "../assets/image/default-pp.jpg";
 
-const MassagePage = () => {
+const MessagePage = ({ socket }) => {
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const token = Cookies.get("llu-token");
+    const localValue = localStorage.getItem("user");
+    const loginUser = localValue ? JSON.parse(localValue) : null;
+
     const [messages, setMessages] = useState([
         {
             time: "11:08 PM",
@@ -39,11 +42,46 @@ const MassagePage = () => {
             type: "images",
         },
     ]);
-
     const [newMessage, setNewMessage] = useState("");
     const [usersMessage, setUsersMessage] = useState([]);
     const [usersUnreadMessage, setUsersUnreadMessage] = useState([]);
     const [userClick, setUserClick] = useState(false);
+    const [message, setMessage] = useState("");
+    const [typingStatus, setTypingStatus] = useState("");
+    const [roomId, setRoomId] = useState("");
+    const [chatId, setChatId] = useState("");
+
+    useEffect(() => {
+        async function apiCall() {
+            const today = new Date();
+
+            const fiveDaysAgo = new Date(today);
+            fiveDaysAgo.setDate(today.getDate() - 5);
+
+            const oneDayAfter = new Date(today);
+            oneDayAfter.setDate(today.getDate() + 1);
+
+            const startDate = fiveDaysAgo.toISOString().split("T")[0];
+            const endDate = oneDayAfter.toISOString().split("T")[0];
+
+            try {
+                let response = await axios.get(
+                    `${baseUrl}/api/user/chats/${loginUser.userWithoutEmail.user_id}?start_time=${startDate}&end_time=${endDate}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                        },
+                    }
+                );
+
+                console.log("new message", response.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        apiCall();
+    }, []);
 
     useEffect(() => {
         async function apiCall() {
@@ -58,7 +96,6 @@ const MassagePage = () => {
                     }
                 );
 
-                console.log(response.data.data);
                 setUsersMessage(response.data.data.chats);
                 setUsersUnreadMessage(response.data.data.unread_chats);
             } catch (error) {
@@ -68,31 +105,82 @@ const MassagePage = () => {
         apiCall();
     }, []);
 
+    useEffect(() => {
+        socket.emit("connect_user", {
+            token: token,
+        });
+
+        socket.on("stop_typing", (data) => {
+            console.log("stop_typing", data);
+        });
+        socket.on("typing", (data) => {
+            console.log("typing", data);
+        });
+        socket.on("validation", (data) => {
+            console.log("validation", data);
+        });
+        socket.on("status", (data) => console.log("status", data));
+
+        socket.on("send_message", (data) => console.log("send_message", data));
+
+        socket.on("receive_message", (data) =>
+            console.log("receive_message", data)
+        );
+
+        // socket.on("receive_message", (data) => {
+        //     setMessages([...messages, data]);
+        // });
+
+        // return () => {
+        //     // Clean up listeners when component unmounts
+        //     socket.off("typing");
+        //     socket.off("connect_user");
+        //     socket.off("join_chat");
+        //     socket.off("status");
+        // };
+    }, [socket, token]);
+
     const handleSendMessage = () => {
-        if (newMessage.trim()) {
-            setMessages([
-                ...messages,
-                {
-                    time: "Now",
-                    content: newMessage,
-                    sender: "sent",
-                    type: "text",
-                },
-            ]);
-            setNewMessage("");
-        }
+        let trMeg = message.trim();
+
+        socket.emit("send_message", {
+            // token, room_id, chat_id, content, time, user_id
+            token: token,
+            room_id: roomId,
+            user_id: loginUser.userWithoutEmail.user_id,
+            chat_id: chatId,
+            content: trMeg,
+            time: new Date().toISOString(),
+        });
+
+        // setMessage("");
+    };
+
+    const handleOnchange = (e) => {
+        socket.emit("typing", {
+            room_id: roomId,
+            user_id: chatId,
+        });
+        setMessage(e.target.value);
     };
 
     const handleUser = (item) => {
-        console.log(item.room_id);
+        socket.emit("join_chat", {
+            token: token,
+            friend_user_id: item.chat_id,
+        });
+
+        setRoomId(item.room_id);
+        setChatId(item.chat_id);
         setUserClick((prev) => !prev);
     };
+
     return (
         <section className="-m-5">
-            <div className="flex gap-x-3 xl:h-[540px]">
+            <div className="flex xl:h-[540px]">
                 <div
                     className={clsx(
-                        `${userClick ? "max-xl:hidden" : "max-xl:block"} bg-darkSlate text-white p-3 xl:w-1/3 w-full flex-1 overflow-y-auto`
+                        `${userClick ? "max-xl:hidden" : "max-xl:block"} bg-darkSlate text-white p-3 xl:w-1/3 w-full overflow-y-auto border-r border-r-background `
                     )}
                 >
                     <div className="mb-3">
@@ -131,7 +219,13 @@ const MassagePage = () => {
                                             {chat.first_name} {chat.last_name}
                                         </h4>
                                         <span className="text-sm text-darkText">
-                                            {chat.last_message_time}
+                                            {new Date(
+                                                chat.last_message_time
+                                            ).toLocaleTimeString("en-US", {
+                                                hour: "numeric",
+                                                minute: "numeric",
+                                                hour12: true,
+                                            })}
                                         </span>
                                     </div>
                                     <p className="text-sm text-darkText">
@@ -170,15 +264,13 @@ const MassagePage = () => {
                                 </p>
                             </div>
                             <div className="ml-auto">
-                                {/* Settings icon */}
                                 <button className="text-gray-400">
                                     <i className="fas fa-ellipsis-v"></i>
                                 </button>
                             </div>
                         </div>
 
-                        {/* Chat Messages */}
-                        <div className="flex-1 p-3 space-y-3 overflow-y-auto">
+                        <div className="p-3 space-y-3 overflow-y-auto">
                             {messages.map((msg, index) => (
                                 <div
                                     key={index}
@@ -224,8 +316,8 @@ const MassagePage = () => {
                         <div className="p-4 bg-darkSlate flex border-t border-t-background items-center">
                             <input
                                 type="text"
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
+                                value={message}
+                                onChange={handleOnchange}
                                 placeholder="Write message..."
                                 className="flex-1 p-2 rounded-lg bg-background text-gray-300"
                             />
@@ -243,4 +335,4 @@ const MassagePage = () => {
     );
 };
 
-export default MassagePage;
+export default MessagePage;

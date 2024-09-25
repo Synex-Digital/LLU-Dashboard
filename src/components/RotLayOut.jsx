@@ -74,7 +74,7 @@ const RotLayOut = () => {
         ); // 14 minutes
 
         return () => clearInterval(interval);
-    }, []);
+    }, [accToken]);
 
     return (
         <PrivateRoute>

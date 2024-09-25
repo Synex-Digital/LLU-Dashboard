@@ -31,7 +31,7 @@ const UserProfile = () => {
                 }
             );
 
-            navigate(routes.massages.path);
+            navigate(routes.messages.path);
         } catch (error) {
             console.log(error);
         }

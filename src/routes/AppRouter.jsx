@@ -8,6 +8,7 @@ import { Helmet } from "react-helmet-async";
 import { routes } from "./Routers";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import socketIO from "socket.io-client";
 
 import GetStarted from "../pages/auth/GetStarted";
 import SignUp from "../pages/auth/SignUp";
@@ -34,9 +35,10 @@ import ChangeEmailAddress from "../pages/ChangeEmailAddress";
 import PublicRoute from "./PublicRoute";
 import Community from "../pages/Community";
 import UserProfile from "../pages/UserProfile";
-import MassagePage from "../pages/MassagePage";
+import MessagePage from "../pages/MessagePage";
 import SyncTrainer from "../pages/SyncTrainer";
-import { AuthProvider } from "../AuthProvider";
+
+const socket = socketIO.connect("ws://18.188.214.41:3000");
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -185,7 +187,7 @@ const router = createBrowserRouter(
                             />
                         </Helmet>
                         {/* <AuthProvider> */}
-                            <RotLayOut />
+                        <RotLayOut />
                         {/* </AuthProvider> */}
                     </>
                 }
@@ -417,17 +419,17 @@ const router = createBrowserRouter(
                     }
                 />
                 <Route
-                    path={routes.massages.path}
+                    path={routes.messages.path}
                     element={
                         <>
                             <Helmet>
-                                <title>{routes.massages.title}</title>
+                                <title>{routes.messages.title}</title>
                                 <meta
                                     name="description"
                                     content="LLU Description"
                                 />
                             </Helmet>
-                            <MassagePage />
+                            <MessagePage socket={socket} />
                         </>
                     }
                 />

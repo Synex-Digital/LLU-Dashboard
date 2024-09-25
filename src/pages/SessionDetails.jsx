@@ -50,7 +50,7 @@ const SessionDetails = () => {
                         </div>
                     </div>
                     <div className="mt-5 grid grid-cols-2 gap-x-7 ">
-                        <button onClick={()=>navigate(routes.massages.path)} className="flex items-center gap-2 rounded-lg bg-darkSlate px-6 py-2 text-darkText">
+                        <button onClick={()=>navigate(routes.messages.path)} className="flex items-center gap-2 rounded-lg bg-darkSlate px-6 py-2 text-darkText">
                             <AiFillMessage className="text-Primary" /> Message
                         </button>
                         <button className="flex items-center justify-center gap-2 rounded-lg bg-darkSlate px-6 py-2 text-darkText">

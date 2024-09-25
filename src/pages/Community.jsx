@@ -127,7 +127,7 @@ const Community = () => {
                                                     onClick={() =>
                                                         handleMag(item)
                                                     }
-                                                    className="text-lg cursor-pointer"
+                                                    className="text-lg cursor-pointer capitalize"
                                                 >
                                                     {item.first_name}{" "}
                                                     {item.last_name}
