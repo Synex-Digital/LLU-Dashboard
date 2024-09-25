@@ -120,10 +120,10 @@ export const routes = {
         key: "user-profile",
         path: "/user-profile",
     },
-    massages: {
-        title: "Massages",
-        key: "massage",
-        path: "/massage",
+    messages: {
+        title: "Messages",
+        key: "message",
+        path: "/message",
     },
     syncTrainer: {
         title: "Sync Trainer",
