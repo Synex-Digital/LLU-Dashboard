@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../components/common/Button";
 import Modal from "react-modal";
 import { RxCrossCircled } from "react-icons/rx";
+import Cookies from "js-cookie";
 
 const customStyles = {
     content: {
@@ -18,7 +19,7 @@ const customStyles = {
         width: "50%",
     },
     overlay: {
-        backgroundColor: 'rgba(0, 0, 0, 0.75)', // Add background color with some opacity
+        backgroundColor: "rgba(0, 0, 0, 0.75)", // Add background color with some opacity
         zIndex: 999, // Set z-index
     },
 };
@@ -28,18 +29,22 @@ const Settings = () => {
     let subtitle;
     const [modalIsOpen, setIsOpen] = React.useState(false);
 
-    function openModal() {
+    let openModal = () => {
         setIsOpen(true);
-    }
-
-    function afterOpenModal() {
-        // references are now sync'd and can be accessed.
+    };
+    let afterOpenModal = () => {
         subtitle.style.color = "#f00";
-    }
-
-    function closeModal() {
+    };
+    let closeModal = () => {
         setIsOpen(false);
-    }
+    };
+
+    let handleLogout = () => {
+        localStorage.removeItem("user");
+        Cookies.remove("ref-token");
+        Cookies.remove("llu-token");
+        navigate(routes.login.path);
+    };
     return (
         <section>
             <PageHeading title={"Settings"} />
@@ -66,7 +71,11 @@ const Settings = () => {
                     className={"border border-darkText bg-transparent"}
                     title={"Delete account"}
                 />
-                <Button className={"bg-redText px-7"} title={"Sign out"} />
+                <Button
+                    className={"bg-redText px-7"}
+                    onClick={handleLogout}
+                    title={"Sign out"}
+                />
             </div>
 
             <Modal

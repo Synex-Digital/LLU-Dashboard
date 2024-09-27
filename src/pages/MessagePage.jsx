@@ -52,6 +52,24 @@ const MessagePage = ({ socket }) => {
     const [chatId, setChatId] = useState("");
 
     useEffect(() => {
+        socket.emit("connect_user", {
+            token: token,
+        });
+
+        const handleBeforeUnload = () => {
+            socket.emit("disconnect_user", { token: token });
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return () => {
+            socket.emit("disconnect_user", { token: token });
+
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, [socket, token]);
+
+    useEffect(() => {
         async function apiCall() {
             const today = new Date();
 
@@ -75,7 +93,7 @@ const MessagePage = ({ socket }) => {
                     }
                 );
 
-                console.log("new message", response.data);
+                // console.log("new message", response.data);
             } catch (error) {
                 console.log(error);
             }
@@ -106,14 +124,12 @@ const MessagePage = ({ socket }) => {
     }, []);
 
     useEffect(() => {
-        socket.emit("connect_user", {
-            token: token,
-        });
-
         socket.on("stop_typing", (data) => {
+            // setTypingStatus(data);
             console.log("stop_typing", data);
         });
         socket.on("typing", (data) => {
+            // setTypingStatus(data);
             console.log("typing", data);
         });
         socket.on("validation", (data) => {
@@ -127,12 +143,13 @@ const MessagePage = ({ socket }) => {
             console.log("receive_message", data)
         );
 
-        // socket.on("receive_message", (data) => {
-        //     setMessages([...messages, data]);
+        // socket.on("receive_message", (data, serverOffset) => {
+        //     setMessages((prevMessages) => [...prevMessages, data]);
+        //     console.log(data);
+        //     console.log(serverOffset);
         // });
 
         // return () => {
-        //     // Clean up listeners when component unmounts
         //     socket.off("typing");
         //     socket.off("connect_user");
         //     socket.off("join_chat");
@@ -141,33 +158,58 @@ const MessagePage = ({ socket }) => {
     }, [socket, token]);
 
     const handleSendMessage = () => {
-        let trMeg = message.trim();
-
+        const trMeg = message.trim();
+        if (!trMeg) return;
+        const user_id = loginUser.userWithoutEmail.user_id;
         socket.emit("send_message", {
-            // token, room_id, chat_id, content, time, user_id
             token: token,
             room_id: roomId,
-            user_id: loginUser.userWithoutEmail.user_id,
+            friend_user_id: 19,
+            user_id: user_id,
             chat_id: chatId,
             content: trMeg,
             time: new Date().toISOString(),
         });
-
         // setMessage("");
     };
 
-    const handleOnchange = (e) => {
+    let typingTimeout;
+
+    let handleTyping = () => {
+        let user_id = loginUser.userWithoutEmail.user_id;
         socket.emit("typing", {
             room_id: roomId,
-            user_id: chatId,
+            user_id: user_id,
         });
+    };
+
+    const handleOnchange = (e) => {
         setMessage(e.target.value);
+
+        // if (typingTimeout) {
+        //     clearTimeout(typingTimeout);
+        // }
+        let user_id = loginUser.userWithoutEmail.user_id;
+
+        socket.emit("typing", {
+            room_id: roomId,
+            user_id: user_id,
+        });
+
+        // typingTimeout = setTimeout(() => {
+        //     socket.emit("stop_typing", {
+        //         room_id: roomId,
+        //         user_id: chatId,
+        //     });
+        // }, 1000);
     };
 
     const handleUser = (item) => {
+        console.log(item);
+
         socket.emit("join_chat", {
             token: token,
-            friend_user_id: item.chat_id,
+            friend_user_id: 19,
         });
 
         setRoomId(item.room_id);
@@ -318,6 +360,7 @@ const MessagePage = ({ socket }) => {
                                 type="text"
                                 value={message}
                                 onChange={handleOnchange}
+                                onKeyDown={handleTyping}
                                 placeholder="Write message..."
                                 className="flex-1 p-2 rounded-lg bg-background text-gray-300"
                             />
