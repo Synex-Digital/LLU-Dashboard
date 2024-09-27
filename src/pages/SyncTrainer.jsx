@@ -59,10 +59,12 @@ const SyncTrainer = () => {
     let handleEmployee = async (item) => {
         const localValue = localStorage.getItem("user");
         const loginUser = localValue ? JSON.parse(localValue) : null;
-
+        console.log(`${baseUrl}/api/facilitator/${loginUser.specializedUserId}/add_employee/${item.trainer_id}`);
+        let data = {};
         try {
             let response = await axios.post(
                 `${baseUrl}/api/facilitator/${loginUser.specializedUserId}/add_employee/${item.trainer_id}`,
+                data,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
