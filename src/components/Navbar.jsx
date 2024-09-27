@@ -11,6 +11,7 @@ import { HiHome } from "react-icons/hi";
 import { SiSession } from "react-icons/si";
 import { RiQuestionnaireFill } from "react-icons/ri";
 import clsx from "clsx";
+import { PiMessengerLogoBold } from "react-icons/pi";
 
 const Navbar = () => {
     const { toggleBears } = navBarStore();
@@ -30,6 +31,13 @@ const Navbar = () => {
                         <div className="flex items-center gap-x-1 rounded bg-darkSlate px-2 py-1">
                             <MdLocationPin className="text-xl" />
                             <p className="text-xs">New York, USA</p>
+                        </div>
+                        <div className="relative">
+                            <PiMessengerLogoBold
+                                onClick={() => navigate(routes.messages.path)}
+                                className="text-2xl cursor-pointer"
+                            />
+                            <div className="absolute right-0 top-1 h-2 w-2 rounded-full bg-green-500"></div>
                         </div>
                         <div className="relative">
                             <Image
@@ -71,6 +79,13 @@ const Navbar = () => {
                     <div className="flex items-center gap-x-1 rounded bg-darkSlate px-2 py-1">
                         <MdLocationPin className="text-xl" />
                         <p className="text-xs">New York, USA</p>
+                    </div>
+                    <div className="relative">
+                        <PiMessengerLogoBold
+                            onClick={() => navigate(routes.messages.path)}
+                            className="text-2xl cursor-pointer"
+                        />
+                        <div className="absolute right-0 top-1 h-2 w-2 rounded-full bg-green-500"></div>
                     </div>
                     <div className="relative">
                         <Image

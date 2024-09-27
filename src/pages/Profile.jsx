@@ -14,7 +14,7 @@ import { routes } from "../routes/Routers";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { FaUserGroup } from "react-icons/fa6";
-import defaultImage from "../assets/image/default-pp.jpg"
+import defaultImage from "../assets/image/default-pp.jpg";
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -28,8 +28,8 @@ const Profile = () => {
     async function apiCall() {
         try {
             const data = {
-                latitude: 40.7128,
-                longitude: -73.906,
+                latitude: 23.7918436,
+                longitude: 90.3666064,
             };
             let response = await axios.post(
                 `${baseUrl}/api/facilitator/profile?page=1&limit=5`,
@@ -41,6 +41,8 @@ const Profile = () => {
                     },
                 }
             );
+            console.log(response.data);
+
             setBasicInfo(response.data.data.basicInfo.user);
             setDetails(response.data.data.basicInfo.details);
             setFacilityList(response.data.data.facilityList);

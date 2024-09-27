@@ -5,12 +5,14 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import axios from "axios";
 import Cookies from "js-cookie";
 import defaultImg from "../assets/image/default-pp.jpg";
+import typingIcon from "../assets/icon/typing-icon.svg";
 
 const MessagePage = ({ socket }) => {
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const token = Cookies.get("llu-token");
     const localValue = localStorage.getItem("user");
     const loginUser = localValue ? JSON.parse(localValue) : null;
+    const login_user_id = loginUser.userWithoutEmail.user_id;
 
     const [messages, setMessages] = useState([
         {
@@ -52,36 +54,54 @@ const MessagePage = ({ socket }) => {
     const [chatId, setChatId] = useState("");
 
     useEffect(() => {
-        async function apiCall() {
-            const today = new Date();
+        socket.emit("connect_user", {
+            token: token,
+        });
 
-            const fiveDaysAgo = new Date(today);
-            fiveDaysAgo.setDate(today.getDate() - 5);
+        const handleBeforeUnload = () => {
+            socket.emit("disconnect_user", { token: token });
+        };
 
-            const oneDayAfter = new Date(today);
-            oneDayAfter.setDate(today.getDate() + 1);
+        window.addEventListener("beforeunload", handleBeforeUnload);
 
-            const startDate = fiveDaysAgo.toISOString().split("T")[0];
-            const endDate = oneDayAfter.toISOString().split("T")[0];
+        return () => {
+            socket.emit("disconnect_user", { token: token });
 
-            try {
-                let response = await axios.get(
-                    `${baseUrl}/api/user/chats/${loginUser.userWithoutEmail.user_id}?start_time=${startDate}&end_time=${endDate}`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            Accept: "application/json",
-                        },
-                    }
-                );
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, [socket, token]);
 
-                console.log("new message", response.data);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        apiCall();
-    }, []);
+    // useEffect(() => {
+    //     async function apiCall() {
+    //         const today = new Date();
+
+    //         const fiveDaysAgo = new Date(today);
+    //         fiveDaysAgo.setDate(today.getDate() - 5);
+
+    //         const oneDayAfter = new Date(today);
+    //         oneDayAfter.setDate(today.getDate() + 1);
+
+    //         const startDate = fiveDaysAgo.toISOString().split("T")[0];
+    //         const endDate = oneDayAfter.toISOString().split("T")[0];
+
+    //         try {
+    //             let response = await axios.get(
+    //                 `${baseUrl}/api/user/chats/${roomId}?start_time=${startDate}&end_time=${endDate}`,
+    //                 {
+    //                     headers: {
+    //                         Authorization: `Bearer ${token}`,
+    //                         Accept: "application/json",
+    //                     },
+    //                 }
+    //             );
+
+    //             console.log("new message", response.data);
+    //         } catch (error) {
+    //             console.log(error);
+    //         }
+    //     }
+    //     apiCall();
+    // }, []);
 
     useEffect(() => {
         async function apiCall() {
@@ -106,15 +126,13 @@ const MessagePage = ({ socket }) => {
     }, []);
 
     useEffect(() => {
-        socket.emit("connect_user", {
-            token: token,
-        });
-
         socket.on("stop_typing", (data) => {
-            console.log("stop_typing", data);
+            setTypingStatus(data.message);
+            console.log("stop_typing", data.message);
         });
         socket.on("typing", (data) => {
-            console.log("typing", data);
+            setTypingStatus(data.message);
+            console.log("typing", data.message);
         });
         socket.on("validation", (data) => {
             console.log("validation", data);
@@ -123,56 +141,109 @@ const MessagePage = ({ socket }) => {
 
         socket.on("send_message", (data) => console.log("send_message", data));
 
-        socket.on("receive_message", (data) =>
-            console.log("receive_message", data)
-        );
+        socket.on("receive_message", (data) => {
+            const newMessage = {
+                time: new Date().toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                }),
+                content: data.message_content || "",
+                sender: "received",
+                type: "text",
+            };
+            setMessages((prevMessages) => [...prevMessages, newMessage]);
+            // console.log(data.message_content);
+        });
 
-        // socket.on("receive_message", (data) => {
-        //     setMessages([...messages, data]);
-        // });
-
-        // return () => {
-        //     // Clean up listeners when component unmounts
-        //     socket.off("typing");
-        //     socket.off("connect_user");
-        //     socket.off("join_chat");
-        //     socket.off("status");
-        // };
+        return () => {
+            socket.off("typing");
+            socket.off("connect_user");
+            socket.off("join_chat");
+            socket.off("status");
+            socket.off("receive_message");
+        };
     }, [socket, token]);
 
     const handleSendMessage = () => {
-        let trMeg = message.trim();
-
+        const trMeg = message.trim();
+        if (!trMeg) return;
+        const user_id = loginUser.userWithoutEmail.user_id;
         socket.emit("send_message", {
-            // token, room_id, chat_id, content, time, user_id
             token: token,
             room_id: roomId,
-            user_id: loginUser.userWithoutEmail.user_id,
+            friend_user_id: 19,
+            user_id: user_id,
             chat_id: chatId,
             content: trMeg,
             time: new Date().toISOString(),
         });
-
-        // setMessage("");
+        setMessage("");
     };
 
+    let typingTimeout;
+
     const handleOnchange = (e) => {
+        setMessage(e.target.value);
+
+        if (typingTimeout) {
+            clearTimeout(typingTimeout);
+        }
+        let user_id = loginUser.userWithoutEmail.user_id;
+
         socket.emit("typing", {
             room_id: roomId,
-            user_id: chatId,
+            user_id: user_id,
         });
-        setMessage(e.target.value);
+
+        typingTimeout = setTimeout(() => {
+            socket.emit("stop_typing", {
+                room_id: roomId,
+                user_id: user_id,
+            });
+        }, 5000);
     };
 
     const handleUser = (item) => {
+        console.log(item);
+
         socket.emit("join_chat", {
             token: token,
-            friend_user_id: item.chat_id,
+            friend_user_id: item.friend_user_id,
         });
 
         setRoomId(item.room_id);
         setChatId(item.chat_id);
         setUserClick((prev) => !prev);
+        async function apiCall() {
+            const today = new Date();
+
+            const fiveDaysAgo = new Date(today);
+            fiveDaysAgo.setDate(today.getDate() - 5);
+
+            const oneDayAfter = new Date(today);
+            oneDayAfter.setDate(today.getDate() + 1);
+
+            const startDate = fiveDaysAgo.toISOString().split("T")[0];
+            const endDate = oneDayAfter.toISOString().split("T")[0];
+
+            try {
+                let response = await axios.get(
+                    `${baseUrl}/api/user/chats/${item.room_id}?start_time=${startDate}&end_time=${endDate}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                        },
+                    }
+                );
+
+                console.log("new message", response.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        apiCall();
     };
 
     return (
@@ -192,54 +263,61 @@ const MessagePage = ({ socket }) => {
                     </div>
 
                     <div className="space-y-2">
-                        {usersMessage.map((chat, index) => (
-                            <div
-                                key={index}
-                                className="flex items-center p-2 bg-background rounded-lg space-x-3 cursor-pointer"
-                                onClick={() => handleUser(chat)}
-                            >
-                                <div className="relative">
-                                    <img
-                                        src={chat.img || defaultImg}
-                                        alt={chat.first_name}
-                                        className="w-12 h-12 rounded-full"
-                                    />
-                                    <span
-                                        className={`absolute bottom-0 right-0 w-3 h-3 rounded-full ${
-                                            chat.active === 1
-                                                ? "bg-green-500"
-                                                : "bg-gray-500"
-                                        }`}
-                                    ></span>
-                                </div>
+                        {usersMessage.map(
+                            (chat, index) =>
+                                chat.friend_user_id !== login_user_id && (
+                                    <div
+                                        key={index}
+                                        className="flex items-center p-2 bg-background rounded-lg space-x-3 cursor-pointer"
+                                        onClick={() => handleUser(chat)}
+                                    >
+                                        <div className="relative">
+                                            <img
+                                                src={chat.img || defaultImg}
+                                                alt={chat.first_name}
+                                                className="w-12 h-12 rounded-full"
+                                            />
+                                            <span
+                                                className={`absolute bottom-0 right-0 w-3 h-3 rounded-full ${
+                                                    chat.active === 1
+                                                        ? "bg-green-500"
+                                                        : "bg-gray-500"
+                                                }`}
+                                            ></span>
+                                        </div>
 
-                                <div className="flex-1">
-                                    <div className="flex justify-between items-center">
-                                        <h4 className="text-lg font-semibold capitalize">
-                                            {chat.first_name} {chat.last_name}
-                                        </h4>
-                                        <span className="text-sm text-darkText">
-                                            {new Date(
-                                                chat.last_message_time
-                                            ).toLocaleTimeString("en-US", {
-                                                hour: "numeric",
-                                                minute: "numeric",
-                                                hour12: true,
-                                            })}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-darkText">
-                                        {chat.latest_message_content}
-                                    </p>
-                                </div>
+                                        <div className="flex-1">
+                                            <div className="flex justify-between items-center">
+                                                <h4 className="text-lg font-semibold capitalize">
+                                                    {chat.first_name}{" "}
+                                                    {chat.last_name}
+                                                </h4>
+                                                <span className="text-sm text-darkText">
+                                                    {new Date(
+                                                        chat.last_message_time
+                                                    ).toLocaleTimeString(
+                                                        "en-US",
+                                                        {
+                                                            hour: "numeric",
+                                                            minute: "numeric",
+                                                            hour12: true,
+                                                        }
+                                                    )}
+                                                </span>
+                                            </div>
+                                            <p className="text-sm text-darkText">
+                                                {chat.latest_message_content}
+                                            </p>
+                                        </div>
 
-                                {/* {chat.unreadCount > 0 && (
+                                        {/* {chat.unreadCount > 0 && (
                                     <div className="flex items-center justify-center w-6 h-6 bg-yellow-500 text-black rounded-full text-sm">
                                         {chat.unreadCount}
                                     </div>
                                 )} */}
-                            </div>
-                        ))}
+                                    </div>
+                                )
+                        )}
                     </div>
                 </div>
                 <div
@@ -311,8 +389,16 @@ const MessagePage = ({ socket }) => {
                                     </div>
                                 </div>
                             ))}
+                            {typingStatus == "User started typing" && (
+                                <p className="p-3 rounded-lg text-sm whitespace-pre-wrap bg-background w-fit">
+                                    <img
+                                        src={typingIcon}
+                                        className="w-10"
+                                        alt="Typing icon"
+                                    />
+                                </p>
+                            )}
                         </div>
-
                         <div className="p-4 bg-darkSlate flex border-t border-t-background items-center">
                             <input
                                 type="text"

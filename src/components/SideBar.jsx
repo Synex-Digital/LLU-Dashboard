@@ -4,8 +4,6 @@ import { routes } from "../routes/Routers";
 import { FaAnglesLeft } from "react-icons/fa6";
 import clsx from "clsx";
 import navBarStore from "../features/navSlice";
-import { BiLogOut } from "react-icons/bi";
-import Cookies from "js-cookie";
 
 import Image from "./common/Image";
 import appointment from "../assets/icon/appointment.svg";
@@ -19,13 +17,6 @@ const SideBar = () => {
     const navigate = useNavigate();
     const userData = JSON.parse(localStorage.getItem("user"));
     const { bears, toggleBears } = navBarStore();
-
-    let handleLogout = () => {
-        localStorage.removeItem("user");
-        Cookies.remove("ref-token");
-        Cookies.remove("llu-token");
-        navigate(routes.login.path);
-    };
 
     return (
         <aside
@@ -77,13 +68,6 @@ const SideBar = () => {
                 <div className="flex cursor-pointer items-center gap-x-4 rounded-lg px-3 py-2 hover:bg-background">
                     <Image src={helpCenter} />
                     <p>Help Center</p>
-                </div>
-                <div
-                    onClick={handleLogout}
-                    className="flex cursor-pointer items-center gap-x-4 rounded-lg px-3 py-2 hover:bg-background"
-                >
-                    <BiLogOut className="text-2xl text-blue-400" />
-                    <p>Log out</p>
                 </div>
             </div>
         </aside>
