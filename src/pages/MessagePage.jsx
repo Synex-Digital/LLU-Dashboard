@@ -6,6 +6,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import defaultImg from "../assets/image/default-pp.jpg";
 import typingIcon from "../assets/icon/typing-icon.svg";
+import ScrollableFeed from 'react-scrollable-feed'
 
 const MessagePage = ({ socket }) => {
     const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -14,36 +15,7 @@ const MessagePage = ({ socket }) => {
     const loginUser = localValue ? JSON.parse(localValue) : null;
     const login_user_id = loginUser.userWithoutEmail.user_id;
 
-    const [messages, setMessages] = useState([
-        {
-            time: "11:08 PM",
-            content: "Hi, Jubaer Riyad! How are you?\nHow can I help you?",
-            sender: "received",
-            type: "text",
-        },
-        {
-            time: "11:10 PM",
-            content:
-                "Ok then we need to first check out the vet we let you know.\nThen let you know in 24 Hours.",
-            sender: "received",
-            type: "text",
-        },
-        {
-            time: "11:12 PM",
-            content: "Ok great.\nI will waiting for your response.",
-            sender: "sent",
-            type: "text",
-        },
-        {
-            time: "11:15 PM",
-            content: [
-                { img: "https://via.placeholder.com/150" },
-                { img: "https://via.placeholder.com/150" },
-            ],
-            sender: "sent",
-            type: "images",
-        },
-    ]);
+    const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const [usersMessage, setUsersMessage] = useState([]);
     const [usersUnreadMessage, setUsersUnreadMessage] = useState([]);
@@ -52,6 +24,7 @@ const MessagePage = ({ socket }) => {
     const [typingStatus, setTypingStatus] = useState("");
     const [roomId, setRoomId] = useState("");
     const [chatId, setChatId] = useState("");
+    const [friendId, setFriendId] = useState("");
 
     useEffect(() => {
         socket.emit("connect_user", {
@@ -70,38 +43,6 @@ const MessagePage = ({ socket }) => {
             window.removeEventListener("beforeunload", handleBeforeUnload);
         };
     }, [socket, token]);
-
-    // useEffect(() => {
-    //     async function apiCall() {
-    //         const today = new Date();
-
-    //         const fiveDaysAgo = new Date(today);
-    //         fiveDaysAgo.setDate(today.getDate() - 5);
-
-    //         const oneDayAfter = new Date(today);
-    //         oneDayAfter.setDate(today.getDate() + 1);
-
-    //         const startDate = fiveDaysAgo.toISOString().split("T")[0];
-    //         const endDate = oneDayAfter.toISOString().split("T")[0];
-
-    //         try {
-    //             let response = await axios.get(
-    //                 `${baseUrl}/api/user/chats/${roomId}?start_time=${startDate}&end_time=${endDate}`,
-    //                 {
-    //                     headers: {
-    //                         Authorization: `Bearer ${token}`,
-    //                         Accept: "application/json",
-    //                     },
-    //                 }
-    //             );
-
-    //             console.log("new message", response.data);
-    //         } catch (error) {
-    //             console.log(error);
-    //         }
-    //     }
-    //     apiCall();
-    // }, []);
 
     useEffect(() => {
         async function apiCall() {
@@ -128,18 +69,10 @@ const MessagePage = ({ socket }) => {
     useEffect(() => {
         socket.on("stop_typing", (data) => {
             setTypingStatus(data.message);
-            console.log("stop_typing", data.message);
         });
         socket.on("typing", (data) => {
             setTypingStatus(data.message);
-            console.log("typing", data.message);
         });
-        socket.on("validation", (data) => {
-            console.log("validation", data);
-        });
-        socket.on("status", (data) => console.log("status", data));
-
-        socket.on("send_message", (data) => console.log("send_message", data));
 
         socket.on("receive_message", (data) => {
             const newMessage = {
@@ -152,8 +85,7 @@ const MessagePage = ({ socket }) => {
                 sender: "received",
                 type: "text",
             };
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
-            // console.log(data.message_content);
+            setMessages((prevMessages) => [newMessage, ...prevMessages]);
         });
 
         return () => {
@@ -169,10 +101,23 @@ const MessagePage = ({ socket }) => {
         const trMeg = message.trim();
         if (!trMeg) return;
         const user_id = loginUser.userWithoutEmail.user_id;
+
+        const newSentMessage = {
+            time: new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+            }),
+            content: trMeg,
+            sender: "sent",
+            type: "text",
+        };
+
+        setMessages((prevMessages) => [newSentMessage, ...prevMessages]);
         socket.emit("send_message", {
             token: token,
             room_id: roomId,
-            friend_user_id: 19,
+            friend_user_id: friendId,
             user_id: user_id,
             chat_id: chatId,
             content: trMeg,
@@ -204,9 +149,15 @@ const MessagePage = ({ socket }) => {
         }, 5000);
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === "Enter") {
+            handleSendMessage();
+        }
+    };
+
     const handleUser = (item) => {
         console.log(item);
-
+        setNewMessage(item);
         socket.emit("join_chat", {
             token: token,
             friend_user_id: item.friend_user_id,
@@ -214,6 +165,7 @@ const MessagePage = ({ socket }) => {
 
         setRoomId(item.room_id);
         setChatId(item.chat_id);
+        setFriendId(item.friend_user_id);
         setUserClick((prev) => !prev);
         async function apiCall() {
             const today = new Date();
@@ -238,7 +190,21 @@ const MessagePage = ({ socket }) => {
                     }
                 );
 
-                console.log("new message", response.data);
+                const newMessages = response.data.data;
+                const formattedMessages = newMessages.map((msg) => ({
+                    time: new Date(msg.time).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    }),
+                    content: msg.content,
+                    sender: msg.user_id === login_user_id ? "sent" : "received",
+                    type: "text",
+                }));
+
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    ...formattedMessages,
+                ]);
             } catch (error) {
                 console.log(error);
             }
@@ -331,15 +297,20 @@ const MessagePage = ({ socket }) => {
                                 className="mr-3"
                             />
                             <img
-                                src="https://randomuser.me/api/portraits/women/1.jpg"
+                                src={defaultImg}
                                 alt="Jane Cooper"
                                 className="w-10 h-10 rounded-full"
                             />
                             <div className="ml-4">
-                                <h4 className="font-semibold">Jane Cooper</h4>
-                                <p className="text-sm text-green-500">
-                                    Active now
-                                </p>
+                                <h4 className="font-semibold capitalize">
+                                    {newMessage.first_name}{" "}
+                                    {newMessage.last_name}
+                                </h4>
+                                {newMessage.active === 1 && (
+                                    <p className="text-sm text-green-500">
+                                        Active now
+                                    </p>
+                                )}
                             </div>
                             <div className="ml-auto">
                                 <button className="text-gray-400">
@@ -348,47 +319,53 @@ const MessagePage = ({ socket }) => {
                             </div>
                         </div>
 
+                            <ScrollableFeed>
                         <div className="p-3 space-y-3 overflow-y-auto">
-                            {messages.map((msg, index) => (
-                                <div
-                                    key={index}
-                                    className={`flex ${
-                                        msg.sender === "sent"
-                                            ? "justify-end"
-                                            : "justify-start"
-                                    }`}
-                                >
+                            {messages
+                                .slice()
+                                .reverse()
+                                .map((msg, index) => (
                                     <div
-                                        className={`max-w-xs ${
+                                        key={index}
+                                        className={`flex ${
                                             msg.sender === "sent"
-                                                ? "bg-Primary"
-                                                : "bg-background"
-                                        } p-3 rounded-lg text-sm whitespace-pre-wrap`}
+                                                ? "justify-end"
+                                                : "justify-start"
+                                        }`}
                                     >
-                                        {msg.type === "text" && (
-                                            <p>{msg.content}</p>
-                                        )}
+                                        <div
+                                            className={`max-w-xs ${
+                                                msg.sender === "sent"
+                                                    ? "bg-Primary"
+                                                    : "bg-background"
+                                            } p-3 rounded-lg text-sm whitespace-pre-wrap`}
+                                        >
+                                            {msg.type === "text" && (
+                                                <p>{msg.content}</p>
+                                            )}
 
-                                        {msg.type === "images" && (
-                                            <div className="grid grid-cols-2 gap-2">
-                                                {msg.content.map(
-                                                    (imgData, idx) => (
-                                                        <img
-                                                            key={idx}
-                                                            src={imgData.img}
-                                                            alt={`Image ${idx}`}
-                                                            className="w-full h-24 object-cover rounded-lg"
-                                                        />
-                                                    )
-                                                )}
-                                            </div>
-                                        )}
-                                        <span className="text-xs text-gray-300 block mt-2">
-                                            {msg.time}
-                                        </span>
+                                            {msg.type === "images" && (
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {msg.content.map(
+                                                        (imgData, idx) => (
+                                                            <img
+                                                                key={idx}
+                                                                src={
+                                                                    imgData.img
+                                                                }
+                                                                alt={`Image ${idx}`}
+                                                                className="w-full h-24 object-cover rounded-lg"
+                                                            />
+                                                        )
+                                                    )}
+                                                </div>
+                                            )}
+                                            <span className="text-xs text-gray-300 block mt-2">
+                                                {msg.time}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
                             {typingStatus == "User started typing" && (
                                 <p className="p-3 rounded-lg text-sm whitespace-pre-wrap bg-background w-fit">
                                     <img
@@ -399,11 +376,13 @@ const MessagePage = ({ socket }) => {
                                 </p>
                             )}
                         </div>
+                            </ScrollableFeed>
                         <div className="p-4 bg-darkSlate flex border-t border-t-background items-center">
                             <input
                                 type="text"
                                 value={message}
                                 onChange={handleOnchange}
+                                onKeyPress={handleKeyPress}
                                 placeholder="Write message..."
                                 className="flex-1 p-2 rounded-lg bg-background text-gray-300"
                             />
