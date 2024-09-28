@@ -73,23 +73,9 @@ const Community = () => {
     };
 
     const handleMag = async (item) => {
-        try {
-            let response = await axios.get(
-                `${baseUrl}/api/user/profile/${item.user_id}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        Accept: "application/json",
-                    },
-                }
-            );
-
-            navigate(routes.userProfile.path, {
-                state: { userData: response.data },
-            });
-        } catch (error) {
-            console.log(error);
-        }
+        navigate(routes.userProfile.path, {
+            state: { id: item.user_id },
+        });
     };
 
     let handleComment = async () => {
