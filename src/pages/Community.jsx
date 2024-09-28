@@ -73,7 +73,6 @@ const Community = () => {
     };
 
     const handleMag = async (item) => {
-
         try {
             let response = await axios.get(
                 `${baseUrl}/api/user/profile/${item.user_id}`,
@@ -91,6 +90,67 @@ const Community = () => {
         } catch (error) {
             console.log(error);
         }
+    };
+
+    let handleComment = async () => {
+        setComments(!comments);
+        // try {
+        //     let response = await axios.get(
+        //         `${baseUrl}/api/user/profile/${item.user_id}`,
+        //         {
+        //             headers: {
+        //                 Authorization: `Bearer ${token}`,
+        //                 Accept: "application/json",
+        //             },
+        //         }
+        //     );
+
+        //     navigate(routes.userProfile.path, {
+        //         state: { userData: response.data },
+        //     });
+        // } catch (error) {
+        //     console.log(error);
+        // }
+    };
+
+    const handleLike = async (post) => {
+        const updatedPosts = posts.map((item) => {
+            if (item.post_id === post.post_id) {
+                const isLiked = item.isLiked;
+
+                if (!isLiked) {
+                    axios.get(`${baseUrl}/api/user/like/${post.post_id}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                        },
+                    });
+                    return {
+                        ...item,
+                        isLiked: true,
+                        no_of_likes: item.no_of_likes + 1,
+                    };
+                } else {
+                    axios.get(
+                        `${baseUrl}/api/user/remove_like/${post.post_id}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                Accept: "application/json",
+                            },
+                        }
+                    );
+                    return {
+                        ...item,
+                        isLiked: false,
+                        no_of_likes: item.no_of_likes - 1,
+                    };
+                }
+            }
+            return item;
+        });
+
+        setPosts(updatedPosts);
     };
 
     return (
@@ -115,7 +175,8 @@ const Community = () => {
                                                 src={
                                                     item?.profile_picture
                                                         ? item?.profile_picture
-                                                        : item?.img || defaultImg
+                                                        : item?.img ||
+                                                          defaultImg
                                                 }
                                                 className={
                                                     "w-16 h-16 rounded-full cursor-pointer"
@@ -200,14 +261,15 @@ const Community = () => {
                                     </p> */}
 
                                         <div className="flex items-center gap-x-10 mt-3 border-t border-t-darkText pt-3">
-                                            <div className="flex items-center gap-x-2 cursor-pointer">
+                                            <div
+                                                onClick={() => handleLike(item)}
+                                                className="flex items-center gap-x-2 cursor-pointer"
+                                            >
                                                 <AiFillLike className="text-Primary text-2xl" />{" "}
                                                 <span>{item.no_of_likes}</span>
                                             </div>
                                             <div
-                                                onClick={() =>
-                                                    setComments(!comments)
-                                                }
+                                                onClick={handleComment}
                                                 className="flex items-center gap-x-2 cursor-pointer"
                                             >
                                                 <FaRegComments className="text-Primary text-2xl" />{" "}
