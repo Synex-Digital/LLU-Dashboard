@@ -6,7 +6,8 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import defaultImg from "../assets/image/default-pp.jpg";
 import typingIcon from "../assets/icon/typing-icon.svg";
-import ScrollableFeed from 'react-scrollable-feed'
+import ScrollableFeed from "react-scrollable-feed";
+import { IoImages } from "react-icons/io5";
 
 const MessagePage = ({ socket }) => {
     const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -25,6 +26,25 @@ const MessagePage = ({ socket }) => {
     const [roomId, setRoomId] = useState("");
     const [chatId, setChatId] = useState("");
     const [friendId, setFriendId] = useState("");
+
+    const uploadImage = (imageFile) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            const arrayBuffer = reader.result;
+            const imageBuffer = new Uint8Array(arrayBuffer); // Keep this as is
+
+            // Emit the image buffer and file name via Socket.IO
+            socket.emit("send_img", imageBuffer, {
+                imageName: imageFile.name,
+                chat_id: chatId, // Make sure you have this value defined
+                time: new Date().toISOString(),
+            });
+            console.log(imageBuffer, imageFile.name);
+        };
+
+        reader.readAsArrayBuffer(imageFile); // Convert file to array buffer
+    };
 
     useEffect(() => {
         socket.emit("connect_user", {
@@ -72,6 +92,10 @@ const MessagePage = ({ socket }) => {
         });
         socket.on("typing", (data) => {
             setTypingStatus(data.message);
+        });
+
+        socket.on("validation", (data) => {
+            console.log(data);
         });
 
         socket.on("receive_message", (data) => {
@@ -126,6 +150,16 @@ const MessagePage = ({ socket }) => {
         setMessage("");
     };
 
+    const handleFileChange = (e) => {
+        console.log("File input changed");
+        const file = e.target.files[0];
+
+        if (file) {
+            uploadImage(file);
+            console.log("ok");
+        }
+    };
+
     let typingTimeout;
 
     const handleOnchange = (e) => {
@@ -156,7 +190,6 @@ const MessagePage = ({ socket }) => {
     };
 
     const handleUser = (item) => {
-        console.log(item);
         setNewMessage(item);
         socket.emit("join_chat", {
             token: token,
@@ -189,6 +222,7 @@ const MessagePage = ({ socket }) => {
                         },
                     }
                 );
+                console.log(response.data);
 
                 const newMessages = response.data.data;
                 const formattedMessages = newMessages.map((msg) => ({
@@ -200,12 +234,14 @@ const MessagePage = ({ socket }) => {
                     sender: msg.user_id === login_user_id ? "sent" : "received",
                     type: "text",
                 }));
+                setMessages([]);
 
                 setMessages((prevMessages) => [
                     ...prevMessages,
                     ...formattedMessages,
                 ]);
             } catch (error) {
+                setMessages([]);
                 console.log(error);
             }
         }
@@ -319,72 +355,80 @@ const MessagePage = ({ socket }) => {
                             </div>
                         </div>
 
-                            <ScrollableFeed>
-                        <div className="p-3 space-y-3 overflow-y-auto">
-                            {messages
-                                .slice()
-                                .reverse()
-                                .map((msg, index) => (
-                                    <div
-                                        key={index}
-                                        className={`flex ${
-                                            msg.sender === "sent"
-                                                ? "justify-end"
-                                                : "justify-start"
-                                        }`}
-                                    >
+                        <ScrollableFeed>
+                            <div className="p-3 space-y-3 overflow-y-auto">
+                                {messages
+                                    .slice()
+                                    .reverse()
+                                    .map((msg, index) => (
                                         <div
-                                            className={`max-w-xs ${
+                                            key={index}
+                                            className={`flex ${
                                                 msg.sender === "sent"
-                                                    ? "bg-Primary"
-                                                    : "bg-background"
-                                            } p-3 rounded-lg text-sm whitespace-pre-wrap`}
+                                                    ? "justify-end"
+                                                    : "justify-start"
+                                            }`}
                                         >
-                                            {msg.type === "text" && (
-                                                <p>{msg.content}</p>
-                                            )}
+                                            <div
+                                                className={`max-w-xs ${
+                                                    msg.sender === "sent"
+                                                        ? "bg-Primary"
+                                                        : "bg-background"
+                                                } p-3 rounded-lg text-sm whitespace-pre-wrap`}
+                                            >
+                                                {msg.type === "text" && (
+                                                    <p>{msg.content}</p>
+                                                )}
 
-                                            {msg.type === "images" && (
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    {msg.content.map(
-                                                        (imgData, idx) => (
-                                                            <img
-                                                                key={idx}
-                                                                src={
-                                                                    imgData.img
-                                                                }
-                                                                alt={`Image ${idx}`}
-                                                                className="w-full h-24 object-cover rounded-lg"
-                                                            />
-                                                        )
-                                                    )}
-                                                </div>
-                                            )}
-                                            <span className="text-xs text-gray-300 block mt-2">
-                                                {msg.time}
-                                            </span>
+                                                {msg.type === "images" && (
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        {msg.content.map(
+                                                            (imgData, idx) => (
+                                                                <img
+                                                                    key={idx}
+                                                                    src={
+                                                                        imgData.img
+                                                                    }
+                                                                    alt={`Image ${idx}`}
+                                                                    className="w-full h-24 object-cover rounded-lg"
+                                                                />
+                                                            )
+                                                        )}
+                                                    </div>
+                                                )}
+                                                <span className="text-xs text-gray-300 block mt-2">
+                                                    {msg.time}
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
-                            {typingStatus == "User started typing" && (
-                                <p className="p-3 rounded-lg text-sm whitespace-pre-wrap bg-background w-fit">
-                                    <img
-                                        src={typingIcon}
-                                        className="w-10"
-                                        alt="Typing icon"
-                                    />
-                                </p>
-                            )}
-                        </div>
-                            </ScrollableFeed>
-                        <div className="p-4 bg-darkSlate flex border-t border-t-background items-center">
+                                    ))}
+                                {typingStatus == "User started typing" && (
+                                    <p className="p-3 rounded-lg text-sm whitespace-pre-wrap bg-background w-fit">
+                                        <img
+                                            src={typingIcon}
+                                            className="w-10"
+                                            alt="Typing icon"
+                                        />
+                                    </p>
+                                )}
+                            </div>
+                        </ScrollableFeed>
+                        <div className="p-4 bg-darkSlate flex border-t relative border-t-background items-center">
+                            <label>
+                                <input
+                                    onChange={handleFileChange}
+                                    type="file"
+                                    hidden
+                                />
+                                <IoImages className="text-xl absolute top-7 right-20 text-Primary cursor-pointer" />
+                            </label>
                             <input
                                 type="text"
                                 value={message}
                                 onChange={handleOnchange}
                                 onKeyPress={handleKeyPress}
                                 placeholder="Write message..."
-                                className="flex-1 p-2 rounded-lg bg-background text-gray-300"
+                                className="flex-1 p-2 rounded-lg pr-11 bg-background text-gray-300"
                             />
                             <button
                                 onClick={handleSendMessage}
