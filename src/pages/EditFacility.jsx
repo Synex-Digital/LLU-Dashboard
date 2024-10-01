@@ -180,6 +180,7 @@ const EditFacility = () => {
             },
         }));
     };
+    console.log(facility_id);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -254,8 +255,7 @@ const EditFacility = () => {
                     },
                 }
             );
-            alert("Facility updated successfully!");
-            navigate(routes.profile.path);
+
             let imageResponse = await axios.post(
                 `${baseUrl}/api/facilitator/${facility_id}/add_img`,
                 formData,
@@ -267,7 +267,8 @@ const EditFacility = () => {
                     },
                 }
             );
-
+            alert("Facility updated successfully!");
+            navigate(routes.profile.path);
             console.log("image", imageResponse.data);
         } catch (error) {
             console.log("Error updating facility", error);

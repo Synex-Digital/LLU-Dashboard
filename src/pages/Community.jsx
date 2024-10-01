@@ -19,15 +19,21 @@ const Community = () => {
     const token = Cookies.get("llu-token");
     const [isOpen, setIsOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
-    const [comments, setComments] = useState(false);
+    const [showComment, setShowComment] = useState(false);
+    const [showCommentId, setShowCommentId] = useState("");
+    const [getComments, setGetComments] = useState([]);
+    const [values, setValues] = useState("");
+    const [postId, setPostId] = useState("");
     const [createPost, setCreatePost] = useState(true);
     const [posts, setPosts] = useState([]);
     const navigate = useNavigate();
+    const [page, setPage] = useState(1);
+    const [hasMorePosts, setHasMorePosts] = useState(true);
 
-    async function apiCall() {
+    async function apiCalls(currentPage = 1) {
         try {
             let response = await axios.get(
-                `${baseUrl}/api/user/posts?page=1&limit=10`,
+                `${baseUrl}/api/user/posts?page=${currentPage}&limit=10`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -36,27 +42,47 @@ const Community = () => {
                 }
             );
             setPosts(response.data.data);
+            setHasMorePosts(response.data.data.length === 10);
         } catch (error) {
             console.log(error);
         }
     }
 
     useEffect(() => {
-        apiCall();
-    }, [createPost]);
+        apiCalls(page);
+    }, [page]);
 
-    const images = [
-        profile,
-        profile,
-        profile,
-        profile,
-        profile,
-        profile,
-        profile,
-        profile,
-        profile,
-        profile,
-    ];
+    useEffect(() => {
+        async function apiCall() {
+            try {
+                let response = await axios.get(
+                    `${baseUrl}/api/user/posts/${postId}?page=1&limit=10`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                        },
+                    }
+                );
+                setGetComments(response.data.data.comments);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        apiCall();
+    }, [postId]);
+
+    function formatDateTime(isoString) {
+        const date = new Date(isoString);
+
+        const hours = String(date.getUTCHours()).padStart(2, "0"); // Get hours in 24-hour format
+        const minutes = String(date.getUTCMinutes()).padStart(2, "0"); // Get minutes
+        const year = date.getUTCFullYear(); // Get year
+        const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Get month (0-based)
+        const day = String(date.getUTCDate()).padStart(2, "0"); // Get day
+
+        return `${hours}:${minutes} ${year}-${month}-${day}`; // Format: "21:46 2024-09-29"
+    }
 
     const openModal = (image) => {
         setSelectedImage(image);
@@ -73,10 +99,33 @@ const Community = () => {
     };
 
     const handleMag = async (item) => {
+        navigate(routes.userProfile.path, {
+            state: { id: item.user_id },
+        });
+    };
+
+    let handleComment = async (item) => {
+        const getCurrentTime = () => {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, "0");
+            const day = String(now.getDate()).padStart(2, "0");
+            const hours = String(now.getHours()).padStart(2, "0");
+            const minutes = String(now.getMinutes()).padStart(2, "0");
+            const seconds = String(now.getSeconds()).padStart(2, "0");
+
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        };
+
+        let data = {
+            content: values,
+            time: getCurrentTime(),
+        };
 
         try {
-            let response = await axios.get(
-                `${baseUrl}/api/user/profile/${item.user_id}`,
+            let response = await axios.post(
+                `${baseUrl}/api/user/comment/${item.post_id}`,
+                data,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -84,13 +133,129 @@ const Community = () => {
                     },
                 }
             );
-
-            navigate(routes.userProfile.path, {
-                state: { userData: response.data },
-            });
+            console.log(response.data);
+            setPostId(item.post_id);
+            setValues("");
         } catch (error) {
             console.log(error);
         }
+    };
+
+    let handleShowComment = async (item) => {
+        if (showCommentId === item.post_id) {
+            setShowCommentId("");
+            setShowComment(false);
+        } else {
+            setShowCommentId(item.post_id);
+            setShowComment(true);
+        }
+        try {
+            let response = await axios.get(
+                `${baseUrl}/api/user/posts/${item.post_id}?page=1&limit=10`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+            setGetComments(response.data.data.comments);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleLike = async (post) => {
+        const updatedPosts = posts.map((item) => {
+            if (item.post_id === post.post_id) {
+                const isLiked = item.isLiked;
+
+                if (!isLiked) {
+                    axios.get(`${baseUrl}/api/user/like/${post.post_id}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                        },
+                    });
+                    return {
+                        ...item,
+                        isLiked: true,
+                        no_of_likes: item.no_of_likes + 1,
+                    };
+                } else {
+                    axios.get(
+                        `${baseUrl}/api/user/remove_like/${post.post_id}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                Accept: "application/json",
+                            },
+                        }
+                    );
+                    return {
+                        ...item,
+                        isLiked: false,
+                        no_of_likes: item.no_of_likes - 1,
+                    };
+                }
+            }
+            return item;
+        });
+
+        setPosts(updatedPosts);
+    };
+
+    const handleCommentLike = async (post) => {
+        console.log(post);
+
+        const updatedCom = getComments.map((item) => {
+            if (item.comment_id === post.comment_id) {
+                const isLiked = item.isLiked;
+
+                if (!isLiked) {
+                    axios.get(
+                        `${baseUrl}/api/user/like_comment/${post.comment_id}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                Accept: "application/json",
+                            },
+                        }
+                    );
+                    return {
+                        ...item,
+                        isLiked: true,
+                        no_of_likes: item.no_of_likes + 1,
+                    };
+                } else {
+                    // axios.get(
+                    //     `${baseUrl}/api/user/remove_like/${post.post_id}`,
+                    //     {
+                    //         headers: {
+                    //             Authorization: `Bearer ${token}`,
+                    //             Accept: "application/json",
+                    //         },
+                    //     }
+                    // );
+                    // return {
+                    //     ...item,
+                    //     isLiked: false,
+                    //     no_of_likes: item.no_of_likes - 1,
+                    // };
+                }
+            }
+            return item;
+        });
+
+        setGetComments(updatedCom);
+    };
+
+    const handleNextPage = () => {
+        if (hasMorePosts) setPage((prevPage) => prevPage + 1);
+    };
+
+    const handlePreviousPage = () => {
+        if (page > 1) setPage((prevPage) => prevPage - 1);
     };
 
     return (
@@ -98,7 +263,7 @@ const Community = () => {
             {createPost ? (
                 <section className="relative">
                     <PageHeading title={"Community"} />
-                    {!comments && (
+                    {!showComment && (
                         <FiPlus
                             onClick={() => setCreatePost(!createPost)}
                             className="xl:w-12 xl:h-12 lg:w-10 lg:h-10 w-10 h-10 lg:bottom-8 bottom-20 right-5 cursor-pointer fixed bg-Primary rounded-full p-2"
@@ -115,7 +280,8 @@ const Community = () => {
                                                 src={
                                                     item?.profile_picture
                                                         ? item?.profile_picture
-                                                        : item?.img || defaultImg
+                                                        : item?.img ||
+                                                          defaultImg
                                                 }
                                                 className={
                                                     "w-16 h-16 rounded-full cursor-pointer"
@@ -200,13 +366,16 @@ const Community = () => {
                                     </p> */}
 
                                         <div className="flex items-center gap-x-10 mt-3 border-t border-t-darkText pt-3">
-                                            <div className="flex items-center gap-x-2 cursor-pointer">
+                                            <div
+                                                onClick={() => handleLike(item)}
+                                                className="flex items-center gap-x-2 cursor-pointer"
+                                            >
                                                 <AiFillLike className="text-Primary text-2xl" />{" "}
                                                 <span>{item.no_of_likes}</span>
                                             </div>
                                             <div
                                                 onClick={() =>
-                                                    setComments(!comments)
+                                                    handleShowComment(item)
                                                 }
                                                 className="flex items-center gap-x-2 cursor-pointer"
                                             >
@@ -219,81 +388,63 @@ const Community = () => {
                                     </div>
                                     <div
                                         className={`transition-all duration-1000 ease-in-out overflow-hidden ${
-                                            comments
+                                            showCommentId == item.post_id
                                                 ? "max-h-[1000px] opacity-100"
                                                 : "max-h-0 opacity-0"
                                         }`}
                                     >
                                         <div className="space-y-3 mt-3">
-                                            <div className=" p-4 rounded-lg">
-                                                <div className="flex gap-x-3">
-                                                    <Image
-                                                        src={profile}
-                                                        className="w-12 h-12 rounded-full"
-                                                    />
-                                                    <div>
-                                                        <div className="flex items-center gap-x-3">
-                                                            <h3 className="text-lg cursor-pointer">
-                                                                Aman RIchman
-                                                            </h3>
-                                                            <time className="text-darkText flex items-center">
-                                                                <IoIosTimer className="text-white text-sm mr-2" />
-                                                                30 min ago
-                                                            </time>
-                                                        </div>
-                                                        <p className="mt-2">
-                                                            Lorem ipsum dolor
-                                                            sit amet
-                                                            consectetur. Aenean
-                                                            commodo.
-                                                        </p>
-                                                        <div className="flex items-center gap-x-5 mt-3 text-gray-400">
-                                                            <div className="flex items-center gap-x-1">
-                                                                <AiFillLike className="text-Primary text-xl" />
-                                                                <span>50</span>
+                                            {getComments?.map((gitem) => (
+                                                <div className=" p-4 rounded-lg">
+                                                    <div className="flex gap-x-3">
+                                                        <Image
+                                                            src={profile}
+                                                            className="w-12 h-12 rounded-full"
+                                                        />
+                                                        <div>
+                                                            <div className="flex items-center gap-x-3">
+                                                                <h3 className="text-lg capitalize cursor-pointer">
+                                                                    {
+                                                                        gitem.first_name
+                                                                    }{" "}
+                                                                    {
+                                                                        gitem.last_name
+                                                                    }
+                                                                </h3>
+                                                                <time className="text-darkText flex items-center">
+                                                                    <IoIosTimer className="text-white text-sm mr-2" />
+                                                                    {formatDateTime(
+                                                                        gitem.time
+                                                                    )}
+                                                                </time>
                                                             </div>
-                                                            <div className="cursor-pointer">
-                                                                Reply
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className=" p-4 rounded-lg">
-                                                <div className="flex gap-x-3">
-                                                    <Image
-                                                        src={profile}
-                                                        className="w-12 h-12 rounded-full"
-                                                    />
-                                                    <div>
-                                                        <div className="flex items-center gap-x-3">
-                                                            <h3 className="text-lg cursor-pointer">
-                                                                Aman RIchman
-                                                            </h3>
-                                                            <time className="text-darkText flex items-center">
-                                                                <IoIosTimer className="text-white text-sm mr-2" />
-                                                                30 min ago
-                                                            </time>
-                                                        </div>
-                                                        <p className="mt-2">
-                                                            Lorem ipsum dolor
-                                                            sit amet
-                                                            consectetur. Aenean
-                                                            commodo.
-                                                        </p>
-                                                        <div className="flex items-center gap-x-5 mt-3 text-gray-400">
-                                                            <div className="flex items-center gap-x-1">
-                                                                <AiFillLike className="text-Primary text-xl" />
-                                                                <span>50</span>
-                                                            </div>
-                                                            <div className="cursor-pointer">
-                                                                Reply
+                                                            <p className="mt-2">
+                                                                {gitem.content}
+                                                            </p>
+                                                            <div className="flex items-center gap-x-5 mt-3 text-gray-400">
+                                                                <div
+                                                                    className="flex items-center gap-x-1 cursor-pointer"
+                                                                    onClick={() =>
+                                                                        handleCommentLike(
+                                                                            gitem
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    <AiFillLike className="text-Primary text-xl" />
+                                                                    <span>
+                                                                        {
+                                                                            gitem.no_of_likes
+                                                                        }
+                                                                    </span>
+                                                                </div>
+                                                                {/* <div className="cursor-pointer">
+                                                                    Reply
+                                                                </div> */}
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            ))}
 
                                             <div className="bg-darkSlate rounded-t-lg flex gap-x-3 items-center p-2 ">
                                                 <Image
@@ -305,8 +456,19 @@ const Community = () => {
                                                 <input
                                                     placeholder="Leave your thoughts..."
                                                     className="bg-background rounded-lg w-full p-2"
+                                                    value={values}
+                                                    onChange={(e) =>
+                                                        setValues(
+                                                            e.target.value
+                                                        )
+                                                    }
                                                 />
-                                                <Button title={"Send"} />
+                                                <Button
+                                                    title={"Send"}
+                                                    onClick={() =>
+                                                        handleComment(item)
+                                                    }
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -329,6 +491,18 @@ const Community = () => {
                                     )}
                                 </div>
                             ))}
+                    </div>
+                    <div className="flex gap-3 mt-5">
+                        <Button
+                            title="Previous"
+                            onClick={handlePreviousPage}
+                            className={`${page === 1 && "hidden"}`}
+                        />
+                        <Button
+                            title="Next"
+                            onClick={handleNextPage}
+                            disabled={!hasMorePosts}
+                        />
                     </div>
                 </section>
             ) : (

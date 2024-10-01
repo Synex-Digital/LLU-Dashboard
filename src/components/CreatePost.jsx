@@ -16,9 +16,9 @@ const CreatePost = ({ toggleComments }) => {
 
     const handleFile = (e) => {
         const files = Array.from(e.target.files);
-        const newImageFiles = [...imageFiles, ...files]; // For uploading
+        const newImageFiles = [...imageFiles, ...files];
 
-        const imageUrls = files.map((file) => URL.createObjectURL(file)); // For preview
+        const imageUrls = files.map((file) => URL.createObjectURL(file));
         setImages((prevImages) => [...prevImages, ...imageUrls]);
         setImageFiles(newImageFiles);
     };
@@ -44,7 +44,6 @@ const CreatePost = ({ toggleComments }) => {
                     },
                 }
             );
-            console.log(response);
 
             if (response.data.message) {
                 alert("New post create");
@@ -59,10 +58,7 @@ const CreatePost = ({ toggleComments }) => {
         <section>
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-x-3">
-                    <RxCross2
-                        onClick={toggleComments}
-                        className="text-2xl cursor-pointer"
-                    />
+                    <RxCross2 onClick={()=>toggleComments()} className="text-2xl cursor-pointer" />
                     <Image className={"rounded-full"} src={profile} />
                     <p>Create post</p>
                 </div>

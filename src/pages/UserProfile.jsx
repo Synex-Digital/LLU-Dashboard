@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "../components/common/Image";
 import profile from "../assets/image/pp.png";
 import SubPageTitle from "../components/common/SubPageTitle";
@@ -12,17 +12,43 @@ import Cookies from "js-cookie";
 
 const UserProfile = () => {
     const location = useLocation();
-    const userData = location.state?.userData;
+    const userId = location.state?.id;
     const navigate = useNavigate();
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const token = Cookies.get("llu-token");
+    let [userData, setUserData] = useState("");
+    let [realTime, setRealTime] = useState(true);
 
+    async function apiCall() {
+        try {
+            let response = await axios.get(
+                `${baseUrl}/api/user/profile/${userId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+            setUserData(response.data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        apiCall();
+    }, [realTime]);
+
+    if (!userData) {
+        return;
+    }
     console.log(userData);
 
     const handleMag = async () => {
         try {
             let response = await axios.get(
-                `${baseUrl}/api/user/create_chat/${userData.data.user.user_id}`,
+                `${baseUrl}/api/user/create_chat/${userId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -34,7 +60,26 @@ const UserProfile = () => {
             navigate(routes.messages.path);
         } catch (error) {
             console.log(error);
-            alert(error.response.data.message)
+            alert(error.response.data.message);
+        }
+    };
+
+    const handleFollow = async () => {
+        try {
+            let response = await axios.get(
+                `${baseUrl}/api/user/follow/${userId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+            console.log(response.data);
+            setRealTime(false);
+        } catch (error) {
+            console.log(error);
+            alert(error.response.data.message);
         }
     };
 
@@ -48,18 +93,18 @@ const UserProfile = () => {
                     />
                     <div>
                         <p className="mt-2.5 text-lg font-medium capitalize">
-                            {userData.data.user.first_name}{" "}
-                            {userData.data.user.last_name}
+                            {userData?.user.first_name}{" "}
+                            {userData?.user.last_name}
                         </p>
                         <div className="text-center text-darkText mb-4 capitalize">
-                            {userData.data.user.type}
+                            {userData?.user.type}
                         </div>
                     </div>
                     <div className=" text-white p-4 border-y border-y-darkSlate mx-auto">
                         <div className="flex justify-center items-center">
                             <div className="text-center mr-6">
                                 <div className="text-2xl font-bold">
-                                    {userData.data.follower_no || 0}
+                                    {userData?.follower_no || 0}
                                 </div>
                                 <div className="text-sm text-darkText">
                                     Followers
@@ -70,7 +115,7 @@ const UserProfile = () => {
 
                             <div className="text-center ml-6">
                                 <div className="text-2xl font-bold">
-                                    {userData.data.following_no || 0}
+                                    {userData?.following_no || 0}
                                 </div>
                                 <div className="text-sm text-darkText">
                                     Following
@@ -87,7 +132,10 @@ const UserProfile = () => {
                 >
                     Message
                 </button>
-                <button className="flex items-center justify-center gap-2 rounded-lg bg-Primary px-6 py-2 text-white">
+                <button
+                    onClick={handleFollow}
+                    className="flex items-center justify-center gap-2 rounded-lg bg-Primary px-6 py-2 text-white"
+                >
                     Follow
                 </button>
             </div>
@@ -95,7 +143,7 @@ const UserProfile = () => {
                 <SubPageTitle className={"!mt-5"} title={"Activity"} />
             </div>
             <div className="grid gap-y-3">
-                {userData.data.posts
+                {userData?.posts
                     .sort((a, b) => new Date(b.time) - new Date(a.time))
                     .map((item, index) => (
                         <div key={index}>

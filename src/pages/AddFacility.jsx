@@ -30,11 +30,13 @@ const AddFacility = () => {
     const [inputValue, setInputValue] = useState("");
     const [images, setImages] = useState([]);
     const [imageFiles, setImageFiles] = useState([]);
+    const [trainers, setTrainers] = useState([]);
     const [fullName, setFullName] = useState("");
     const [hourlyRate, setHourlyRate] = useState("");
     const [establishedIn, setEstablishedIn] = useState("");
     const [capacity, setCapacity] = useState("");
     const [locationName, setLocationName] = useState("");
+    const [selectedTrainers, setSelectedTrainers] = useState([]);
     const [days, setDays] = useState({
         mon: true,
         tue: true,
@@ -68,7 +70,26 @@ const AddFacility = () => {
             reverseGeocode();
         }
     }, [location]);
-    console.log(location, "local");
+    useEffect(() => {
+        async function apiCall() {
+            try {
+                let response = await axios.get(
+                    `${baseUrl}/api/facilitator/${storedUser.specializedUserId}/employees`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                        },
+                    }
+                );
+                console.log(response.data.data.employees);
+                setTrainers(response.data.data.employees);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        apiCall();
+    }, []);
     const reverseGeocode = async () => {
         const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.lat},${location.lng}&key=${import.meta.env.VITE_GOOGLE_MAP_KEY}`;
 
@@ -90,7 +111,6 @@ const AddFacility = () => {
     };
 
     useEffect(() => {
-        // Get current location on component mount
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 setLocation({
@@ -107,18 +127,15 @@ const AddFacility = () => {
         if (mapRef.current && location.lat && location.lng) {
             const loadMarker = async () => {
                 try {
-                    // Dynamically import the marker library
                     const { AdvancedMarkerElement } =
                         await google.maps.importLibrary("marker");
 
                     if (markerRef.current) {
-                        // Update the position of the existing marker
                         markerRef.current.position = new google.maps.LatLng(
                             location.lat,
                             location.lng
                         );
                     } else {
-                        // Create a new marker if it doesn't exist
                         markerRef.current = new AdvancedMarkerElement({
                             map: mapRef.current,
                             position: new google.maps.LatLng(
@@ -236,7 +253,10 @@ const AddFacility = () => {
             capacity: +capacity,
             established_in: +establishedIn,
             available_hours: transformedData,
+            amenities: facilities,
+            employees: selectedTrainers,
         };
+        console.log(data);
 
         const formData = new FormData();
         imageFiles.forEach((file) => {
@@ -256,22 +276,22 @@ const AddFacility = () => {
                     }
                 );
                 console.log(response.data);
-                if (response.data) {
-                    alert("Facility Add successfully!");
-                    navigate(routes.profile.path);
-                }
-                let imageResponse = await axios.post(
-                    `${baseUrl}/api/facilitator/${storedUser.specializedUserId}/add_img`,
-                    formData,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            Accept: "application/json",
-                            "Content-Type": "multipart/form-data",
-                        },
-                    }
-                );
-                console.log("Images uploaded:", imageResponse.data);
+
+                // let imageResponse = await axios.post(
+                //     `${baseUrl}/api/facilitator/${storedUser.specializedUserId}/add_img`,
+                //     formData,
+                //     {
+                //         headers: {
+                //             Authorization: `Bearer ${token}`,
+                //             Accept: "application/json",
+                //             "Content-Type": "multipart/form-data",
+                //         },
+                //     }
+                // );
+                // console.log("Images uploaded:", imageResponse.data);
+
+                alert("Facility Add successfully!");
+                navigate(routes.profile.path);
             } catch (error) {
                 console.log(error);
             }
@@ -279,6 +299,27 @@ const AddFacility = () => {
 
         apiPost();
     };
+
+    const handleSelectChange = (event) => {
+        const selectedOptions = Array.from(event.target.selectedOptions);
+        const selectedValues = selectedOptions.map((option) => option.value);
+
+        const filteredSelectedValues = selectedValues.filter(Boolean);
+
+        setSelectedTrainers((prevSelected) => {
+            return filteredSelectedValues.reduce((acc, trainerId) => {
+                if (acc.includes(trainerId)) {
+                    return acc.filter((id) => id !== trainerId);
+                } else {
+                    return [...acc, trainerId];
+                }
+            }, prevSelected);
+        });
+    };
+
+    const selectedTrainerDetails = trainers.filter((trainer) =>
+        selectedTrainers.includes(String(trainer.trainer_id))
+    );
 
     if (loadError) return "Error loading maps";
     if (!isLoaded) return "Loading Maps";
@@ -356,10 +397,36 @@ const AddFacility = () => {
                 Select Trainer
                 <span className="text-redText">*</span>
             </p>
-            <input
-                placeholder="Select Trainer"
+            <select
                 className="mt-2 w-full rounded-lg bg-darkSlate p-2 placeholder:text-[#7F7E84]"
-            />
+                value={selectedTrainers}
+                onChange={handleSelectChange}
+                multiple={false}
+            >
+                <option value="">Select Trainer</option>
+                {trainers.map((item) => (
+                    <option key={item.trainer_id} value={item.trainer_id}>
+                        {item.first_name} {item.last_name}
+                    </option>
+                ))}
+            </select>
+
+            <div className="mt-3">
+                {selectedTrainerDetails.length > 0 ? (
+                    <ul className="flex gap-3 flex-wrap">
+                        {selectedTrainerDetails.map((trainer) => (
+                            <li
+                                key={trainer.trainer_id}
+                                className="p-2 bg-darkSlate rounded-lg"
+                            >
+                                {trainer.first_name} {trainer.last_name}
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="text-gray-500">No trainers selected</p>
+                )}
+            </div>
 
             <h2 className="mb-4 mt-5 text-lg font-semibold">Working Hours</h2>
 
@@ -406,7 +473,7 @@ const AddFacility = () => {
                 </div>
             ))}
 
-            <SubPageTitle title={"Gallery"} />
+            {/* <SubPageTitle title={"Gallery"} />
             <div>
                 <label className="flex cursor-pointer items-center gap-x-3">
                     <BsPlusSquareDotted className="text-4xl text-Primary" />
@@ -426,7 +493,8 @@ const AddFacility = () => {
                         alt={`Preview ${index}`}
                     />
                 ))}
-            </div>
+            </div> */}
+
             <div className="mt-10 flex justify-between">
                 <h2 className="text-xl font-medium">Address</h2>
                 <p className="text-Primary">View on map</p>

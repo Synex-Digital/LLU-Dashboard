@@ -6,10 +6,14 @@ import { AiFillMessage } from "react-icons/ai";
 import { IoIosCall, IoIosTime } from "react-icons/io";
 import { MdLocationPin } from "react-icons/md";
 import { FaRegCalendarAlt } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { routes } from "../routes/Routers";
 
 const SessionDetails = () => {
+    const location = useLocation();
+    const sessionData = location.state?.data.sessionDetails;
+    console.log(sessionData);
+
     const navigate = useNavigate();
     return (
         <section>
@@ -43,14 +47,19 @@ const SessionDetails = () => {
                     <div className="mt-5 flex items-center gap-6">
                         <Image className={"w-24 rounded-full"} src={profile} />
                         <div>
-                            <p className="font-medium text-darkText">Athlete</p>
+                            <p className="font-medium text-darkText capitalize">
+                                {sessionData.type}
+                            </p>
                             <p className="mt-2.5 text-lg font-medium">
-                                Mickael whisper
+                                {sessionData.first_name} {sessionData.last_name}
                             </p>
                         </div>
                     </div>
                     <div className="mt-5 grid grid-cols-2 gap-x-7 ">
-                        <button onClick={()=>navigate(routes.messages.path)} className="flex items-center gap-2 rounded-lg bg-darkSlate px-6 py-2 text-darkText">
+                        <button
+                            onClick={() => navigate(routes.messages.path)}
+                            className="flex items-center gap-2 rounded-lg bg-darkSlate px-6 py-2 text-darkText"
+                        >
                             <AiFillMessage className="text-Primary" /> Message
                         </button>
                         <button className="flex items-center justify-center gap-2 rounded-lg bg-darkSlate px-6 py-2 text-darkText">
@@ -68,7 +77,24 @@ const SessionDetails = () => {
                         <FaRegCalendarAlt className="inline-block text-lg text-Primary" />
                         <p className="ml-1 mr-3 inline-block">20th May, 2024</p>
                         <IoIosTime className="inline-block text-lg text-Primary" />
-                        <p className="ml-1 inline-block">05:00 PM - 06:00 PM</p>
+                        <p className="ml-1 inline-block">
+                            {new Date(
+                                sessionData.start_time
+                            ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                            })}{" "}
+                            -
+                            {new Date(sessionData.end_time).toLocaleTimeString(
+                                [],
+                                {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                }
+                            )}
+                        </p>
                     </div>
                 </div>
             </div>

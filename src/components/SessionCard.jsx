@@ -15,6 +15,7 @@ const SessionCard = ({
     lTrue,
     sessionDetails,
     key,
+    onclick,
 }) => {
     const navigate = useNavigate();
     return (
@@ -32,7 +33,7 @@ const SessionCard = ({
                 <div className="flex items-center text-sm text-gray-400">
                     <FaRegCalendarAlt className=" text-lg text-Primary" />
                     <p className="mx-2">
-                        {startTime} 
+                        {startTime}
                         {" - "} {endTime}
                     </p>
                     <p>{dates}</p>
@@ -43,7 +44,7 @@ const SessionCard = ({
                         className={
                             "!inline-block !rounded-full !px-2 !py-1 !text-xs !font-normal"
                         }
-                        onClick={() => navigate(routes.sessionDetails.path)}
+                        onClick={onclick}
                     />
                 )}
             </div>
