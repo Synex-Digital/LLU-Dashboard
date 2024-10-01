@@ -39,6 +39,25 @@ const Home = () => {
         apiCall();
     }, []);
 
+    const handleSessionView = async (item) => {
+        try {
+            let response = await axios.get(
+                `${baseUrl}/api/facilitator/sessions/${item.facility_sessions_id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+
+            console.log(response.data);
+            navigate(routes.sessionDetails.path, { state: response.data });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <main>
             <section>
@@ -119,6 +138,7 @@ const Home = () => {
                                 sessionDetails={item.description}
                                 title={item.name}
                                 lTrue={true}
+                                onclick={() => handleSessionView(item)}
                             />
                         </div>
                     ))}

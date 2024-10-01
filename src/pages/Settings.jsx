@@ -7,6 +7,7 @@ import Button from "../components/common/Button";
 import Modal from "react-modal";
 import { RxCrossCircled } from "react-icons/rx";
 import Cookies from "js-cookie";
+import axios from "axios";
 
 const customStyles = {
     content: {
@@ -27,7 +28,10 @@ const customStyles = {
 const Settings = () => {
     let navigate = useNavigate();
     let subtitle;
+    const baseUrl = import.meta.env.VITE_BASE_URL;
     const [modalIsOpen, setIsOpen] = React.useState(false);
+    const token = Cookies.get("llu-token");
+    const reftoken = Cookies.get("ref-token");
 
     let openModal = () => {
         setIsOpen(true);
@@ -39,11 +43,26 @@ const Settings = () => {
         setIsOpen(false);
     };
 
-    let handleLogout = () => {
-        localStorage.removeItem("user");
-        Cookies.remove("ref-token");
-        Cookies.remove("llu-token");
-        navigate(routes.login.path);
+    let handleLogout = async () => {
+        try {
+            let response = await axios.post(
+                `${baseUrl}/auth/logout`,
+                { token: reftoken },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+            console.log(response);
+            localStorage.removeItem("user");
+            Cookies.remove("ref-token");
+            Cookies.remove("llu-token");
+            navigate(routes.login.path);
+        } catch (error) {
+            console.log(error);
+        }
     };
     return (
         <section>

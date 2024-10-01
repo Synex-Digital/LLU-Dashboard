@@ -58,7 +58,7 @@ const CreatePost = ({ toggleComments }) => {
         <section>
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-x-3">
-                    <RxCross2 className="text-2xl cursor-pointer" />
+                    <RxCross2 onClick={()=>toggleComments()} className="text-2xl cursor-pointer" />
                     <Image className={"rounded-full"} src={profile} />
                     <p>Create post</p>
                 </div>

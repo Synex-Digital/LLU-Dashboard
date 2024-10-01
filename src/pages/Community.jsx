@@ -27,12 +27,13 @@ const Community = () => {
     const [createPost, setCreatePost] = useState(true);
     const [posts, setPosts] = useState([]);
     const navigate = useNavigate();
-    console.log(getComments);
+    const [page, setPage] = useState(1);
+    const [hasMorePosts, setHasMorePosts] = useState(true);
 
-    async function apiCall() {
+    async function apiCalls(currentPage = 1) {
         try {
             let response = await axios.get(
-                `${baseUrl}/api/user/posts?page=1&limit=10`,
+                `${baseUrl}/api/user/posts?page=${currentPage}&limit=10`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -41,15 +42,15 @@ const Community = () => {
                 }
             );
             setPosts(response.data.data);
-            console.log(response.data);
+            setHasMorePosts(response.data.data.length === 10);
         } catch (error) {
             console.log(error);
         }
     }
 
     useEffect(() => {
-        apiCall();
-    }, [createPost]);
+        apiCalls(page);
+    }, [page]);
 
     useEffect(() => {
         async function apiCall() {
@@ -247,6 +248,14 @@ const Community = () => {
         });
 
         setGetComments(updatedCom);
+    };
+
+    const handleNextPage = () => {
+        if (hasMorePosts) setPage((prevPage) => prevPage + 1);
+    };
+
+    const handlePreviousPage = () => {
+        if (page > 1) setPage((prevPage) => prevPage - 1);
     };
 
     return (
@@ -482,6 +491,18 @@ const Community = () => {
                                     )}
                                 </div>
                             ))}
+                    </div>
+                    <div className="flex gap-3 mt-5">
+                        <Button
+                            title="Previous"
+                            onClick={handlePreviousPage}
+                            className={`${page === 1 && "hidden"}`}
+                        />
+                        <Button
+                            title="Next"
+                            onClick={handleNextPage}
+                            disabled={!hasMorePosts}
+                        />
                     </div>
                 </section>
             ) : (

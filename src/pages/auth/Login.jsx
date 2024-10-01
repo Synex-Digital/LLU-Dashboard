@@ -157,12 +157,6 @@ const Login = () => {
                                 </span>{" "}
                                 Continue with Google
                             </button>
-                            <button className="mb-4 flex w-full items-center justify-center rounded-lg bg-black py-2 font-medium text-white">
-                                <span className="mr-2 text-xl">
-                                    <FaApple />
-                                </span>{" "}
-                                Continue with Apple
-                            </button>
                         </div>
                     </div>
                 </div>

@@ -1,8 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SessionCard from "../components/SessionCard";
 import PageHeading from "../components/common/PageHeading";
+import Cookies from "js-cookie";
+import axios from "axios";
 
 const Session = () => {
+    const baseUrl = import.meta.env.VITE_BASE_URL;
+    const token = Cookies.get("llu-token");
+    const [upcomingSession, setUpcomingSession] = useState("");
+    const [ongoingSession, setOngoingSession] = useState("");
+
+    useEffect(() => {
+        async function apiCall() {
+            try {
+                let response = await axios.get(
+                    `${baseUrl}/api/facilitator/sessions?page=1&limit=5`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                        },
+                    }
+                );
+
+                console.log(response.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        apiCall();
+    }, []);
     return (
         <section>
             <PageHeading title={"All Session"} />

@@ -43,43 +43,75 @@ const SignUp = () => {
                 email: email,
                 password: password,
             };
-
             try {
-                let response = await axios.post(
-                    `${baseUrl}/auth/register`,
-                    data,
+                let resOtp = await axios.post(
+                    `${baseUrl}/auth/request_otp`,
+                    { email: data.email },
                     {
                         headers: {
                             "Content-Type": "application/json",
                         },
                     }
                 );
-
-                await axios.post(
-                    `${baseUrl}/auth/register_special_user/${response.data.user_id}?type=facilitator`,
-                    {
-                        no_of_professionals: response.data.user_id,
-                    }
-                );
-
-                notify("Registration successful");
-
-                if (response) {
-                    navigate(routes.verifiedOtp.path);
-                }
+                console.log(resOtp);
+                notify("OTP sent to your email");
+                navigate(routes.verifiedOtp.path, { state: data });
             } catch (error) {
-                notifyError("Registration failed");
+                console.log(error);
             }
+
+            // try {
+            //     let response = await axios.post(
+            //         `${baseUrl}/auth/register`,
+            //         data,
+            //         {
+            //             headers: {
+            //                 "Content-Type": "application/json",
+            //             },
+            //         }
+            //     );
+
+            //     await axios.post(
+            //         `${baseUrl}/auth/register_special_user/${response.data.user_id}?type=facilitator`,
+            //         {
+            //             no_of_professionals: response.data.user_id,
+            //         }
+            //     );
+            //     console.log(response);
+
+            //     notify("Registration successful");
+            //     if (response) {
+            //         let data = {
+            //             email: email,
+            //         };
+            //         let resotp = await axios.post(
+            //             `${baseUrl}/auth/request_otp`,
+            //             data,
+            //             {
+            //                 headers: {
+            //                     "Content-Type": "application/json",
+            //                 },
+            //             }
+            //         );
+            //         console.log(resotp);
+
+            //         notify("OTP sent to your email");
+            //         navigate(routes.verifiedOtp.path);
+            //     }
+            // } catch (error) {
+            //     console.log(error.response.data.message);
+
+            //     notifyError(error.response.data.message);
+            // }
         }
     };
 
     let handleGoogleLogin = async () => {
         try {
-            let response =
-                (window.location.href = `${baseUrl}:8080/auth/google`);
+            let response = (window.location.href = `${baseUrl}/auth/google`);
             console.log(response);
         } catch (error) {
-            // console.log(error);
+            console.log(error);
 
             notifyError("failed");
         }
@@ -178,12 +210,6 @@ const SignUp = () => {
                                     <FcGoogle />
                                 </span>{" "}
                                 Continue with Google
-                            </button>
-                            <button className="mb-4 flex w-full items-center justify-center rounded-lg bg-black py-2 font-medium text-white">
-                                <span className="mr-2 text-xl">
-                                    <FaApple />
-                                </span>{" "}
-                                Continue with Apple
                             </button>
                             <div className="text-center">
                                 <button
