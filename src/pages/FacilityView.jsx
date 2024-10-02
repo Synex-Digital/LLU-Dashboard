@@ -2,7 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import PageHeading from "../components/common/PageHeading";
 import { CiEdit } from "react-icons/ci";
 import SubPageTitle from "../components/common/SubPageTitle";
-import { MdLocationPin, MdOutlineReduceCapacity } from "react-icons/md";
+import {
+    MdDelete,
+    MdLocationPin,
+    MdOutlineReduceCapacity,
+} from "react-icons/md";
 import Button from "../components/common/Button";
 import { BiDollar } from "react-icons/bi";
 import profile from "../assets/image/pp.png";
@@ -10,11 +14,9 @@ import Image from "../components/common/Image";
 import { IoIosStar } from "react-icons/io";
 import { useLocation, useNavigate } from "react-router-dom";
 import { routes } from "../routes/Routers";
-import {
-    GoogleMap,
-    useLoadScript,
-    Marker,
-} from "@react-google-maps/api";
+import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import axios from "axios";
+import Cookies from "js-cookie";
 const libraries = ["places"];
 const mapContainerStyle = {
     width: "100%",
@@ -25,6 +27,8 @@ const FacilityView = () => {
     const locations = useLocation();
     const navigate = useNavigate();
     const facilityData = locations.state?.facility;
+    const [facilityView, setFacilityView] = useState("");
+    const [realTime, setRealTime] = useState(false);
 
     const [location, setLocation] = useState({ lat: null, lng: null });
     const { isLoaded, loadError } = useLoadScript({
@@ -33,14 +37,34 @@ const FacilityView = () => {
     });
     const mapRef = useRef(null);
     const markerRef = useRef(null);
+    const token = Cookies.get("llu-token");
+    const baseUrl = import.meta.env.VITE_BASE_URL;
 
     const center = {
         lat: facilityData.facilityInfo.latitude,
         lng: facilityData.facilityInfo.longitude,
     };
 
-    console.log(facilityData);
-    
+    useEffect(() => {
+        async function apiCall() {
+            try {
+                let response = await axios.get(
+                    `${baseUrl}/api/facilitator/facility/${facilityData.facilityInfo.facility_id}?page=1&limit=5`,
+
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                        },
+                    }
+                );
+                setFacilityView(response.data.data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        apiCall();
+    }, [realTime]);
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
@@ -59,18 +83,15 @@ const FacilityView = () => {
         if (mapRef.current && location.lat && location.lng) {
             const loadMarker = async () => {
                 try {
-                    // Dynamically import the marker library
                     const { AdvancedMarkerElement } =
                         await google.maps.importLibrary("marker");
 
                     if (markerRef.current) {
-                        // Update the position of the existing marker
                         markerRef.current.position = new google.maps.LatLng(
                             location.lat,
                             location.lng
                         );
                     } else {
-                        // Create a new marker if it doesn't exist
                         markerRef.current = new AdvancedMarkerElement({
                             map: mapRef.current,
                             position: new google.maps.LatLng(
@@ -103,6 +124,26 @@ const FacilityView = () => {
             state: { facility_id: facilityData.facilityInfo.facility_id },
         });
     };
+
+    const handleDelete = async (item) => {
+        console.log(item.facility_img_id);
+        try {
+            let response = await axios.delete(
+                `${baseUrl}/api/facilitator/delete_img/${item.facility_img_id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+            console.log(response.data);
+            setRealTime(!realTime);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     if (loadError) return "Error loading maps";
     if (!isLoaded) return "Loading Maps";
 
@@ -111,7 +152,7 @@ const FacilityView = () => {
             <div className="flex justify-between">
                 <PageHeading
                     className={"max-xl:!mb-0"}
-                    title={facilityData.facilityInfo.name}
+                    title={facilityView.facilityInfo?.name}
                 />
                 <CiEdit
                     onClick={handleEdit}
@@ -124,7 +165,7 @@ const FacilityView = () => {
                     <SubPageTitle title={"Available Hours"} />
                     <div className="rounded-lg bg-gray-900 p-4 text-white">
                         <ul className="space-y-2">
-                            {facilityData?.availableHours?.map(
+                            {facilityView?.availableHours?.map(
                                 (item, index) => (
                                     <li
                                         key={index}
@@ -146,7 +187,7 @@ const FacilityView = () => {
                             </span>
                             <span>
                                 Hourly Rate - $
-                                {facilityData.facilityInfo.hourly_rate}
+                                {facilityView?.facilityInfo?.hourly_rate}
                             </span>
                         </p>
                         <p className="mt-2 flex items-center">
@@ -154,7 +195,7 @@ const FacilityView = () => {
                                 <MdOutlineReduceCapacity />
                             </span>
                             <span>
-                                Capacity: {facilityData.facilityInfo.capacity}{" "}
+                                Capacity: {facilityView?.facilityInfo?.capacity}{" "}
                                 Person
                             </span>
                         </p>
@@ -184,8 +225,14 @@ const FacilityView = () => {
             </div>
             <SubPageTitle title={"Gallery"} />
             <div className="grid sm:grid-cols-3 grid-cols-2 gap-3">
-                {facilityData.gallery.map((item, index) => (
-                    <div key={index}>
+                {facilityView?.gallery?.map((item, index) => (
+                    <div key={index} className="relative">
+                        <span
+                            onClick={() => handleDelete(item)}
+                            className="absolute right-1 top-1 text-background text-xl cursor-pointer shadow-xl"
+                        >
+                            <MdDelete />
+                        </span>
                         <Image className={"w-full rounded-lg"} src={item.img} />
                     </div>
                 ))}

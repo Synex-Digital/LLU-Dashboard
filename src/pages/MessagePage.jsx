@@ -249,8 +249,8 @@ const MessagePage = ({ socket }) => {
     };
 
     return (
-        <section className="-m-5">
-            <div className="flex xl:h-[540px]">
+        <section className="-m-5 xl:border-l border-background">
+            <div className="flex xl:h-[90vh]">
                 <div
                     className={clsx(
                         `${userClick ? "max-xl:hidden" : "max-xl:block"} bg-darkSlate text-white p-3 xl:w-1/3 w-full overflow-y-auto border-r border-r-background `
