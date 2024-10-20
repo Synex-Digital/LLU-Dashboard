@@ -13,12 +13,14 @@ import {
 import { routes } from "../../routes/Routers";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { LoadingIcon } from "../../assets/icon";
 
 const SignUp = () => {
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const navigate = useNavigate();
 
@@ -27,6 +29,7 @@ const SignUp = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true)
         const newErrors = {
             fullName: validateName(fullName),
             email: validateEmail(email),
@@ -56,7 +59,9 @@ const SignUp = () => {
                 console.log(resOtp);
                 notify("OTP sent to your email");
                 navigate(routes.verifiedOtp.path, { state: data });
+                setLoading(false)
             } catch (error) {
+                setLoading(false)
                 console.log(error);
             }
 
@@ -104,6 +109,7 @@ const SignUp = () => {
             //     notifyError(error.response.data.message);
             // }
         }
+        setLoading(false)
     };
 
     let handleGoogleLogin = async () => {
@@ -187,7 +193,14 @@ const SignUp = () => {
                                     </p>
                                 )}
                             </div>
-                            <Button title={"Sign Up"} className="mt-5" />
+                            {loading ? (
+                                <Button
+                                    title={<LoadingIcon />}
+                                    className="mt-5 !p-1 flex justify-center"
+                                />
+                            ) : (
+                                <Button title={"Sign Up"} className="mt-5" />
+                            )}
                         </form>
                         <p className="text-sm font-medium">
                             By continuing, you agree to LLU’s Terms of Service

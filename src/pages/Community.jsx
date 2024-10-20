@@ -13,6 +13,7 @@ import { routes } from "../routes/Routers";
 import axios from "axios";
 import Cookies from "js-cookie";
 import defaultImg from "../assets/image/default-pp.jpg";
+import { LoadingIcon } from "../assets/icon";
 
 const Community = () => {
     const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -29,6 +30,7 @@ const Community = () => {
     const navigate = useNavigate();
     const [page, setPage] = useState(1);
     const [hasMorePosts, setHasMorePosts] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     async function apiCalls(currentPage = 1) {
         try {
@@ -41,9 +43,13 @@ const Community = () => {
                     },
                 }
             );
+            setLoading(false);
+            console.log(response.data.data);
+            
             setPosts(response.data.data);
             setHasMorePosts(response.data.data.length === 10);
         } catch (error) {
+            setLoading(false);
             console.log(error);
         }
     }
@@ -206,8 +212,6 @@ const Community = () => {
     };
 
     const handleCommentLike = async (post) => {
-        console.log(post);
-
         const updatedCom = getComments.map((item) => {
             if (item.comment_id === post.comment_id) {
                 const isLiked = item.isLiked;
@@ -251,10 +255,12 @@ const Community = () => {
     };
 
     const handleNextPage = () => {
+        setLoading(true);
         if (hasMorePosts) setPage((prevPage) => prevPage + 1);
     };
 
     const handlePreviousPage = () => {
+        setLoading(true);
         if (page > 1) setPage((prevPage) => prevPage - 1);
     };
 
@@ -496,13 +502,22 @@ const Community = () => {
                         <Button
                             title="Previous"
                             onClick={handlePreviousPage}
-                            className={`${page === 1 && "hidden"}`}
+                            className={`${page === 1 && "hidden"} px-12 py-2 rounded-md`}
                         />
-                        <Button
-                            title="Next"
-                            onClick={handleNextPage}
-                            disabled={!hasMorePosts}
-                        />
+
+                        {loading ? (
+                            <Button
+                                title={<LoadingIcon />}
+                                className=" flex justify-center !px-12 !py-0 rounded-md"
+                            />
+                        ) : (
+                            <Button
+                                title="Next"
+                                onClick={handleNextPage}
+                                disabled={!hasMorePosts}
+                                className="px-12 py-2 rounded-md"
+                            />
+                        )}
                     </div>
                 </section>
             ) : (

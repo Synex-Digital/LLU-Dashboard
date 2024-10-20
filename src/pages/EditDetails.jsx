@@ -4,12 +4,11 @@ import PageHeading from "../components/common/PageHeading";
 import { MdLocationPin } from "react-icons/md";
 import axios from "axios";
 import Cookies from "js-cookie";
-import {
-    GoogleMap,
-    useLoadScript,
-    Marker,
-} from "@react-google-maps/api";
+import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 import Button from "../components/common/Button";
+import { LoadingIcon } from "../assets/icon";
+import { useNavigate } from "react-router-dom";
+import { routes } from "../routes/Routers";
 
 const libraries = ["places"];
 const mapContainerStyle = {
@@ -22,12 +21,14 @@ const center = {
 };
 
 const EditDetails = () => {
+    const navigate = useNavigate();
     const token = Cookies.get("llu-token");
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const [formData, setFormData] = useState({
         fullName: "",
         professionalsResources: "",
     });
+    const [loading, setLoading] = useState(false);
     const [location, setLocation] = useState({ lat: null, lng: null });
     const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: `${import.meta.env.VITE_GOOGLE_MAP_KEY}&loading=async`,
@@ -130,6 +131,7 @@ const EditDetails = () => {
     if (!isLoaded) return "Loading Maps";
 
     const handleClick = async () => {
+        setLoading(true);
         let data = {
             full_name: formData.fullName,
             no_of_professionals: formData.professionalsResources,
@@ -137,20 +139,17 @@ const EditDetails = () => {
             longitude: location.lng || center.lng,
         };
         try {
-            let response = await axios.patch(
-                `${baseUrl}/api/facilitator/edit_details`,
-                data,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        Accept: "application/json",
-                    },
-                }
-            );
-            console.log(response.data);
+            await axios.patch(`${baseUrl}/api/facilitator/edit_details`, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
+                },
+            });
+            navigate(routes.profile.path);
         } catch (error) {
             console.log(error);
         }
+        setLoading(false);
     };
 
     return (
@@ -197,11 +196,18 @@ const EditDetails = () => {
             >
                 {location.lat && <Marker position={location} />}
             </GoogleMap>
-            <Button
-                className={"w-full mt-5"}
-                onClick={handleClick}
-                title={"Save Change"}
-            ></Button>
+            {loading ? (
+                <Button
+                    title={<LoadingIcon />}
+                    className="w-full mt-5 flex justify-center !px-12 !py-1 rounded-md"
+                />
+            ) : (
+                <Button
+                    className={"w-full mt-5"}
+                    onClick={handleClick}
+                    title={"Save Change"}
+                ></Button>
+            )}
         </section>
     );
 };
