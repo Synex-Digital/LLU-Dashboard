@@ -32,7 +32,7 @@ const Profile = () => {
                 longitude: 90.3666064,
             };
             let response = await axios.post(
-                `${baseUrl}/api/facilitator/profile?page=1&limit=10`,
+                `${baseUrl}/api/facilitator/profile?page=1&limit=20`,
                 data,
                 {
                     headers: {

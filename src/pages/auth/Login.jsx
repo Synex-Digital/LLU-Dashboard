@@ -2,19 +2,20 @@ import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
 
-import { FaApple } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { validateEmail, validatePassword } from "../../helpers/validation";
 import { routes } from "../../routes/Routers";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
+import { LoadingIcon } from "../../assets/icon";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const navigate = useNavigate();
     const notify = (message) => toast.success(message);
@@ -22,7 +23,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        setLoading(true);
         const newErrors = {
             email: validateEmail(email),
             password: validatePassword(password),
@@ -43,7 +44,7 @@ const Login = () => {
                         "Content-Type": "application/json",
                     },
                 });
-                console.log("login", response.data);
+
                 if (response.data && response.data.accessToken) {
                     Cookies.set("llu-token", response.data.accessToken, {
                         secure: true,
@@ -69,10 +70,13 @@ const Login = () => {
                         navigate(routes.dashboard.path);
                     }
                 }
+                setLoading(false);
             } catch (error) {
+                setLoading(false);
                 notifyError("Login failed");
             }
         }
+        setLoading(false);
     };
 
     return (
@@ -126,7 +130,14 @@ const Login = () => {
                                     </p>
                                 )}
                             </div>
-                            <Button title={"Sign Up"} className="mt-5" />
+                            {loading ? (
+                                <Button
+                                    title={<LoadingIcon />}
+                                    className="mt-5 !p-1 flex justify-center"
+                                />
+                            ) : (
+                                <Button title={"Login"} className="mt-5" />
+                            )}
                         </form>
                         <div>
                             <button
