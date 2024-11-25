@@ -1,10 +1,14 @@
 export const LoadingIcon = (props) => {
     return (
-        <svg width={40} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+        <svg
+            width={40}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 200 200"
+        >
             <circle
                 fill="#FFFFFF"
                 stroke="#FFFFFF"
-                stroke-width="24"
+                strokeWidth="24"
                 r="15"
                 cx="35"
                 cy="100"
@@ -22,7 +26,7 @@ export const LoadingIcon = (props) => {
             <circle
                 fill="#FFFFFF"
                 stroke="#FFFFFF"
-                stroke-width="24"
+                strokeWidth="24"
                 opacity=".8"
                 r="15"
                 cx="35"
@@ -41,7 +45,7 @@ export const LoadingIcon = (props) => {
             <circle
                 fill="#FFFFFF"
                 stroke="#FFFFFF"
-                stroke-width="24"
+                strokeWidth="24"
                 opacity=".6"
                 r="15"
                 cx="35"
@@ -60,7 +64,7 @@ export const LoadingIcon = (props) => {
             <circle
                 fill="#FFFFFF"
                 stroke="#FFFFFF"
-                stroke-width="24"
+                strokeWidth="24"
                 opacity=".4"
                 r="15"
                 cx="35"
@@ -79,7 +83,7 @@ export const LoadingIcon = (props) => {
             <circle
                 fill="#FFFFFF"
                 stroke="#FFFFFF"
-                stroke-width="24"
+                strokeWidth="24"
                 opacity=".2"
                 r="15"
                 cx="35"

@@ -8,7 +8,7 @@ import { Helmet } from "react-helmet-async";
 import { routes } from "./Routers";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import socketIO from "socket.io-client";
+
 
 import GetStarted from "../pages/auth/GetStarted";
 import SignUp from "../pages/auth/SignUp";
@@ -38,7 +38,7 @@ import UserProfile from "../pages/UserProfile";
 import MessagePage from "../pages/MessagePage";
 import SyncTrainer from "../pages/SyncTrainer";
 
-const socket = socketIO.connect("ws://18.188.214.41:3000");
+
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -186,9 +186,7 @@ const router = createBrowserRouter(
                                 content="LLU Description"
                             />
                         </Helmet>
-                        {/* <AuthProvider> */}
                         <RotLayOut />
-                        {/* </AuthProvider> */}
                     </>
                 }
             >
@@ -429,7 +427,7 @@ const router = createBrowserRouter(
                                     content="LLU Description"
                                 />
                             </Helmet>
-                            <MessagePage socket={socket} />
+                            <MessagePage />
                         </>
                     }
                 />
