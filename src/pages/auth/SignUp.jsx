@@ -29,7 +29,7 @@ const SignUp = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true)
+        setLoading(true);
         const newErrors = {
             fullName: validateName(fullName),
             email: validateEmail(email),
@@ -48,7 +48,7 @@ const SignUp = () => {
             };
             try {
                 let resOtp = await axios.post(
-                    `${baseUrl}/auth/request_otp`,
+                    `${baseUrl}/auth/request_OTP`,
                     { email: data.email },
                     {
                         headers: {
@@ -59,10 +59,11 @@ const SignUp = () => {
                 console.log(resOtp);
                 notify("OTP sent to your email");
                 navigate(routes.verifiedOtp.path, { state: data });
-                setLoading(false)
+                setLoading(false);
             } catch (error) {
-                setLoading(false)
+                setLoading(false);
                 console.log(error);
+                notifyError("failed");
             }
 
             // try {
@@ -109,7 +110,7 @@ const SignUp = () => {
             //     notifyError(error.response.data.message);
             // }
         }
-        setLoading(false)
+        setLoading(false);
     };
 
     let handleGoogleLogin = async () => {

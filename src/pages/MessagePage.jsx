@@ -8,8 +8,10 @@ import defaultImg from "../assets/image/default-pp.jpg";
 import typingIcon from "../assets/icon/typing-icon.svg";
 import ScrollableFeed from "react-scrollable-feed";
 import { IoImages } from "react-icons/io5";
+import socketIO from "socket.io-client";
 
-const MessagePage = ({ socket }) => {
+const MessagePage = () => {
+    const socket = socketIO.connect("ws://18.188.214.41:3000");
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const token = Cookies.get("llu-token");
     const localValue = localStorage.getItem("user");

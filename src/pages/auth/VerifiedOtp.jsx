@@ -6,6 +6,7 @@ import Button from "../../components/common/Button";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { routes } from "../../routes/Routers";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const VerifiedOtp = () => {
     const [otp, setOtp] = useState(["", "", "", ""]);
@@ -13,6 +14,7 @@ const VerifiedOtp = () => {
     const inputRefs = useRef([]);
     const location = useLocation();
     const UserData = location?.state;
+    const baseUrl = import.meta.env.VITE_BASE_URL;
 
     const notify = (message) => toast.success(message);
     const notifyError = (message) => toast.error(message);
@@ -40,44 +42,50 @@ const VerifiedOtp = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("OTP Submitted:", otp.join(""));
-
+        let user_OTP = Number(otp.join(""));
         let resOtp = await axios.post(
-            `${baseUrl}/verify_OTP`,
-            { email: UserData.email },
+            `${baseUrl}/auth/verify_OTP`,
+            { email: UserData.email, user_otp: user_OTP },
             {
                 headers: {
                     "Content-Type": "application/json",
                 },
             }
         );
-        console.log(resOtp);
 
-        // try {
-        //     let response = await axios.post(
-        //         `${baseUrl}/auth/register`,
-        //         UserData,
-        //         {
-        //             headers: {
-        //                 "Content-Type": "application/json",
-        //             },
-        //         }
-        //     );
+        if (resOtp?.data?.message) {
+            let data = {
+                full_name: UserData.full_name,
+                email: UserData.email,
+                password: UserData.password,
+            };
+            console.log(data);
+            try {
+                let response = await axios.post(
+                    `${baseUrl}/auth/register`,
+                    data,
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
 
-        //     await axios.post(
-        //         `${baseUrl}/auth/register_special_user/${response.data.user_id}?type=facilitator`,
-        //         {
-        //             no_of_professionals: response.data.user_id,
-        //         }
-        //     );
-        //     console.log(response);
+                await axios.post(
+                    `${baseUrl}/auth/register_special_user/${response.data.user_id}?type=facilitator`,
+                    {
+                        no_of_professionals: response.data.user_id,
+                    }
+                );
+                console.log(response);
 
-        //     notify("Registration successful");
-        // } catch (error) {
-        //     console.log(error.response.data.message);
+                notify("Registration successful");
+            } catch (error) {
+                console.log(error.response.data.message);
 
-        //     notifyError(error.response.data.message);
-        // }
+                notifyError(error.response.data.message);
+            }
+        }
     };
 
     const handleResend = () => {
@@ -125,7 +133,7 @@ const VerifiedOtp = () => {
                                 ))}
                             </div>
 
-                            <p className="mt-4 text-center text-sm text-gray-400">
+                            {/* <p className="mt-4 text-center text-sm text-gray-400">
                                 Didn’t get any code?{" "}
                                 <span className="text-blue-400">
                                     {resendTimer > 0 ? (
@@ -144,7 +152,7 @@ const VerifiedOtp = () => {
                                         </span>
                                     )}
                                 </span>
-                            </p>
+                            </p> */}
 
                             <Button title={"Send"} className="mt-5" />
                         </form>

@@ -47,7 +47,7 @@ const Settings = () => {
         try {
             let response = await axios.post(
                 `${baseUrl}/auth/logout`,
-                { token: reftoken },
+                { refreshToken: reftoken, accessToken: token },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

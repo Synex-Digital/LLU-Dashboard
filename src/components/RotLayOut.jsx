@@ -26,7 +26,6 @@ const PrivateRoute = ({ children }) => {
 };
 
 const RotLayOut = () => {
-    const [token, setToken] = useState(Cookies.get("llu-token") || null);
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const refToken = Cookies.get("ref-token");
     const accToken = Cookies.get("llu-token");
@@ -40,14 +39,20 @@ const RotLayOut = () => {
             const response = await axios.post(`${baseUrl}/auth/token`, {
                 token: refToken,
             });
+            const fifteenMinutesFromNow = new Date(Date.now() + 15 * 60 * 1000);
 
             const newToken = response.data.accessToken;
-            setToken(newToken);
+            const newRefToken = response.data.refreshToken;
 
             Cookies.set("llu-token", newToken, {
                 secure: true,
                 sameSite: "Strict",
                 expires: 1 / 96,
+            });
+            Cookies.set("ref-token", newRefToken, {
+                secure: true,
+                sameSite: "Strict",
+                expires: fifteenMinutesFromNow,
             });
         } catch (error) {
             console.error("Error refreshing token", error);
