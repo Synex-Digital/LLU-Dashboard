@@ -8,7 +8,7 @@ import {
     InfoWindow,
     useLoadScript,
 } from "@react-google-maps/api";
-import { MdKeyboardBackspace, MdVerified } from "react-icons/md";
+import { MdKeyboardBackspace } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { routes } from "../routes/Routers";
 import profile from "../assets/image/default-pp.jpg";
@@ -59,7 +59,9 @@ const SyncTrainer = () => {
     let handleEmployee = async (item) => {
         const localValue = localStorage.getItem("user");
         const loginUser = localValue ? JSON.parse(localValue) : null;
-        console.log(`${baseUrl}/api/facilitator/${loginUser.specializedUserId}/add_employee/${item.trainer_id}`);
+        console.log(
+            `${baseUrl}/api/facilitator/${loginUser.specializedUserId}/add_employee/${item.trainer_id}`
+        );
         let data = {};
         try {
             let response = await axios.post(
@@ -144,8 +146,11 @@ const SyncTrainer = () => {
 
             <div className="flex gap-x-3 mt-5">
                 {trainers.map((trainer, index) => (
-                    <div className="w-fit max-sm:w-full rounded-lg bg-darkSlate p-3">
-                        <div key={index} className="flex gap-x-3 items-center">
+                    <div
+                        key={index}
+                        className="w-fit max-sm:w-full rounded-lg bg-darkSlate p-3"
+                    >
+                        <div className="flex gap-x-3 items-center">
                             <Image
                                 className={"w-24 rounded-lg"}
                                 src={profile}

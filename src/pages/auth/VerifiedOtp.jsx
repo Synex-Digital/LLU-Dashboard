@@ -1,20 +1,31 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
-import Input from "../../components/common/Input";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "../../components/common/Button";
 
 import { FaArrowLeftLong } from "react-icons/fa6";
 import { routes } from "../../routes/Routers";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { LoadingIcon } from "../../assets/icon";
+import {
+    GoogleMap,
+    Marker,
+    InfoWindow,
+    useLoadScript,
+} from "@react-google-maps/api";
 
 const VerifiedOtp = () => {
     const [otp, setOtp] = useState(["", "", "", ""]);
     const [resendTimer, setResendTimer] = useState(59);
+    const [loading, setLoading] = useState(false);
     const inputRefs = useRef([]);
     const location = useLocation();
     const UserData = location?.state;
     const baseUrl = import.meta.env.VITE_BASE_URL;
+    const navigate = useNavigate();
+    const { isLoaded } = useLoadScript({
+        googleMapsApiKey: `${import.meta.env.VITE_GOOGLE_MAP_KEY}&loading=async`,
+    });
 
     const notify = (message) => toast.success(message);
     const notifyError = (message) => toast.error(message);
@@ -42,55 +53,57 @@ const VerifiedOtp = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         let user_OTP = Number(otp.join(""));
-        let resOtp = await axios.post(
-            `${baseUrl}/auth/verify_OTP`,
-            { email: UserData.email, user_otp: user_OTP },
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }
-        );
+        try {
+            let resOtp = await axios.post(
+                `${baseUrl}/auth/verify_OTP`,
+                { email: UserData.email, user_otp: user_OTP },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            console.log(resOtp);
 
-        if (resOtp?.data?.message) {
             let data = {
                 full_name: UserData.full_name,
                 email: UserData.email,
                 password: UserData.password,
             };
-            console.log(data);
-            try {
-                let response = await axios.post(
-                    `${baseUrl}/auth/register`,
-                    data,
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }
-                );
 
-                await axios.post(
-                    `${baseUrl}/auth/register_special_user/${response.data.user_id}?type=facilitator`,
-                    {
-                        no_of_professionals: response.data.user_id,
-                    }
-                );
-                console.log(response);
+            let response = await axios.post(`${baseUrl}/auth/register`, data, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
 
-                notify("Registration successful");
-            } catch (error) {
-                console.log(error.response.data.message);
+            console.log(response);
+            let vip_user = await axios.post(
+                `${baseUrl}/auth/register_special_user/${response.data.user_id}?type=facilitator`,
+                {
+                    no_of_professionals: response.data.user_id,
+                    latitude: 40.712776,
+                    longitude: -74.005974,
+                }
+            );
+            console.log(vip_user);
 
-                notifyError(error.response.data.message);
-            }
+            setLoading(false);
+            notify("Registration successful");
+            navigate(routes.dashboard.path);
+        } catch (error) {
+            console.error(
+                "Error:",
+                error.response?.data?.message || error.message
+            );
+            setLoading(false);
+            notifyError(error.response?.data?.message || "An error occurred");
         }
     };
 
-    const handleResend = () => {
-        console.log("ok");
-    };
+    if (!isLoaded) return <div>Loading...</div>;
 
     return (
         <main className="h-screen bg-background font-inter text-white">
@@ -133,28 +146,14 @@ const VerifiedOtp = () => {
                                 ))}
                             </div>
 
-                            {/* <p className="mt-4 text-center text-sm text-gray-400">
-                                Didn’t get any code?{" "}
-                                <span className="text-blue-400">
-                                    {resendTimer > 0 ? (
-                                        <>
-                                            00:
-                                            {resendTimer < 10
-                                                ? `0${resendTimer}`
-                                                : resendTimer}
-                                        </>
-                                    ) : (
-                                        <span
-                                            className="cursor-pointer text-blue-500 underline"
-                                            onClick={handleResend}
-                                        >
-                                            Resend
-                                        </span>
-                                    )}
-                                </span>
-                            </p> */}
-
-                            <Button title={"Send"} className="mt-5" />
+                            {loading ? (
+                                <Button
+                                    title={<LoadingIcon />}
+                                    className="mt-5 !p-1 flex justify-center"
+                                />
+                            ) : (
+                                <Button title={"Send"} className="mt-5" />
+                            )}
                         </form>
                     </div>
                 </div>
