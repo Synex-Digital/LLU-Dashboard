@@ -65,50 +65,6 @@ const SignUp = () => {
                 console.log(error);
                 notifyError("failed");
             }
-
-            // try {
-            //     let response = await axios.post(
-            //         `${baseUrl}/auth/register`,
-            //         data,
-            //         {
-            //             headers: {
-            //                 "Content-Type": "application/json",
-            //             },
-            //         }
-            //     );
-
-            //     await axios.post(
-            //         `${baseUrl}/auth/register_special_user/${response.data.user_id}?type=facilitator`,
-            //         {
-            //             no_of_professionals: response.data.user_id,
-            //         }
-            //     );
-            //     console.log(response);
-
-            //     notify("Registration successful");
-            //     if (response) {
-            //         let data = {
-            //             email: email,
-            //         };
-            //         let resotp = await axios.post(
-            //             `${baseUrl}/auth/request_otp`,
-            //             data,
-            //             {
-            //                 headers: {
-            //                     "Content-Type": "application/json",
-            //                 },
-            //             }
-            //         );
-            //         console.log(resotp);
-
-            //         notify("OTP sent to your email");
-            //         navigate(routes.verifiedOtp.path);
-            //     }
-            // } catch (error) {
-            //     console.log(error.response.data.message);
-
-            //     notifyError(error.response.data.message);
-            // }
         }
         setLoading(false);
     };
