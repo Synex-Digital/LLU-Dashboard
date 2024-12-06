@@ -112,19 +112,23 @@ const UserProfile = () => {
           </div>
         </div>
       </div>
-      <div className="mt-5 grid grid-cols-2 gap-x-7 sm:w-1/2 mx-auto">
+      <div
+        className={`mt-5 grid ${userData.followed ? "grid-cols-1" : " grid-cols-1"} gap-x-7 sm:w-1/2 mx-auto`}
+      >
         <button
           onClick={handleMag}
           className="flex items-center justify-center gap-2 rounded-lg bg-darkSlate px-6 py-2 text-white"
         >
           Message
         </button>
-        <button
-          onClick={handleFollow}
-          className="flex items-center justify-center gap-2 rounded-lg bg-Primary px-6 py-2 text-white"
-        >
-          {userData.followed ? "Following" : "Follow"}
-        </button>
+        {userData.followed ? null : (
+          <button
+            onClick={handleFollow}
+            className="flex items-center justify-center gap-2 rounded-lg bg-Primary px-6 py-2 text-white"
+          >
+            Follow
+          </button>
+        )}
       </div>
       <div className="border-t-4 mt-8 border-t-darkSlate ">
         <SubPageTitle className={"!mt-5"} title={"Activity"} />

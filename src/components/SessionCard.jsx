@@ -2,8 +2,6 @@ import React from "react";
 import Button from "./common/Button";
 import { MdLocationPin } from "react-icons/md";
 import { FaRegCalendarAlt } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { routes } from "../routes/Routers";
 
 const SessionCard = ({
     title,
@@ -17,7 +15,6 @@ const SessionCard = ({
     key,
     onclick,
 }) => {
-    const navigate = useNavigate();
     return (
         <div key={key} className="rounded-lg bg-darkSlate p-3">
             <h2 className="font-medium">{title}</h2>

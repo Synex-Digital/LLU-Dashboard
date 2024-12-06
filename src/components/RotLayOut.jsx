@@ -32,7 +32,6 @@ const RotLayOut = () => {
 
     const refreshToken = async () => {
         if (!refToken) {
-            console.error("No refresh token available.");
             return;
         }
         try {
@@ -55,7 +54,6 @@ const RotLayOut = () => {
                 expires: fifteenMinutesFromNow,
             });
         } catch (error) {
-            console.error("Error refreshing token", error);
 
             if (error.response?.status === 401) {
                 Cookies.remove("llu-token");
@@ -72,7 +70,6 @@ const RotLayOut = () => {
 
         const interval = setInterval(
             () => {
-                console.log("Calling refreshToken every 14 minutes...");
                 refreshToken();
             },
             14 * 60 * 1000

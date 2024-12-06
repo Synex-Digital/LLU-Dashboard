@@ -44,7 +44,6 @@ const Community = () => {
                 }
             );
             setLoading(false);
-            console.log(response.data.data);
 
             setPosts(response.data.data);
             setHasMorePosts(response.data.data.length === 10);

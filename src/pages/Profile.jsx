@@ -41,7 +41,6 @@ const Profile = () => {
                     },
                 }
             );
-            console.log(response.data);
 
             setBasicInfo(response.data.data.basicInfo.user);
             setDetails(response.data.data.basicInfo.details);
