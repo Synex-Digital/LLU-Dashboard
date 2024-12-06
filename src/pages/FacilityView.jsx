@@ -211,7 +211,7 @@ const FacilityView = () => {
                             onClick={() => handleDelete(item)}
                             className="absolute right-1 top-1 text-background text-xl cursor-pointer shadow-xl"
                         >
-                            <MdDelete />
+                            <MdDelete className="text-white shadow-lg"/>
                         </span>
                         <Image className={"w-full rounded-lg"} src={item.img} />
                     </div>
