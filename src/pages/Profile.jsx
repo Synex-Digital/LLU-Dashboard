@@ -167,7 +167,10 @@ const Profile = () => {
                         key={index}
                         className="flex w-fit max-sm:w-full gap-x-3 rounded-lg bg-darkSlate p-3"
                     >
-                        <Image className={"w-36 rounded-lg"} src={profile} />
+                        <Image
+                            className={"w-36 rounded-lg"}
+                            src={item.image ? item.image : profile}
+                        />
                         <div>
                             <div className="flex items-center gap-x-2 rounded-full bg-background px-3 py-1 text-darkText">
                                 <MdVerified className="text-lg text-Primary" />
