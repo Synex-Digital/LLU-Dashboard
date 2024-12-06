@@ -29,21 +29,49 @@ const FacilityView = () => {
     const facilityData = locations.state?.facility;
     const [facilityView, setFacilityView] = useState("");
     const [realTime, setRealTime] = useState(false);
-
-    const [location, setLocation] = useState({ lat: null, lng: null });
     const { isLoaded, loadError } = useLoadScript({
         googleMapsApiKey: `${import.meta.env.VITE_GOOGLE_MAP_KEY}&loading=async`,
         libraries,
     });
     const mapRef = useRef(null);
-    const markerRef = useRef(null);
     const token = Cookies.get("llu-token");
     const baseUrl = import.meta.env.VITE_BASE_URL;
+    const [center, setCenter] = useState({
+        lat: 0,
+        lng: 0,
+    });
+    const [locationName, setLocationName] = useState("Fetching location...");
 
-    const center = {
-        lat: facilityData.facilityInfo.latitude,
-        lng: facilityData.facilityInfo.longitude,
+    const reverseGeocode = async () => {
+        if (!center) return;
+
+        const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${center.lat},${center.lng}&key=${import.meta.env.VITE_GOOGLE_MAP_KEY}`;
+
+        try {
+            const response = await axios.get(geocodingUrl);
+
+            if (response.data.status === "OK") {
+                const fullAddress = response.data.results[0]?.formatted_address;
+                setLocationName(fullAddress);
+            } else {
+                console.error("Geocoding error:", response.data.status);
+                setLocationName("Location not found");
+            }
+        } catch (error) {
+            console.error("Error with reverse geocoding:", error);
+            setLocationName("Error fetching location");
+        }
     };
+
+    useEffect(() => {
+        if (facilityData && facilityData.facilityInfo) {
+            const newCenter = {
+                lat: facilityData.facilityInfo.latitude,
+                lng: facilityData.facilityInfo.longitude,
+            };
+            setCenter(newCenter);
+        }
+    }, [facilityData]);
 
     useEffect(() => {
         async function apiCall() {
@@ -67,53 +95,8 @@ const FacilityView = () => {
     }, [realTime]);
 
     useEffect(() => {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                setLocation({
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                });
-            },
-            (error) => console.error("Error getting location: ", error),
-            { enableHighAccuracy: true }
-        );
-    }, []);
-
-    useEffect(() => {
-        if (mapRef.current && location.lat && location.lng) {
-            const loadMarker = async () => {
-                try {
-                    const { AdvancedMarkerElement } =
-                        await google.maps.importLibrary("marker");
-
-                    if (markerRef.current) {
-                        markerRef.current.position = new google.maps.LatLng(
-                            location.lat,
-                            location.lng
-                        );
-                    } else {
-                        markerRef.current = new AdvancedMarkerElement({
-                            map: mapRef.current,
-                            position: new google.maps.LatLng(
-                                location.lat,
-                                location.lng
-                            ),
-                        });
-                    }
-                } catch (error) {
-                    console.error("Error loading marker: ", error);
-                }
-            };
-
-            loadMarker();
-        }
-    }, [location, isLoaded]);
-
-    const handleMapClick = (event) => {
-        const lat = event.latLng.lat();
-        const lng = event.latLng.lng();
-        setLocation({ lat, lng });
-    };
+        reverseGeocode();
+    }, [center]);
 
     const onLoad = (map) => {
         mapRef.current = map;
@@ -210,16 +193,13 @@ const FacilityView = () => {
 
                     <GoogleMap
                         mapContainerStyle={mapContainerStyle}
-                        zoom={12}
-                        center={location.lat ? location : center}
-                        onClick={handleMapClick}
+                        zoom={13}
+                        center={center}
                         onLoad={onLoad}
-                    >
-                        {/* {location.lat && <Marker position={location} />} */}
-                    </GoogleMap>
+                    ></GoogleMap>
                     <p className="mt-2 text-sm text-gray-400">
                         <MdLocationPin className="inline-block text-xl text-Primary" />
-                        Green Valley, Hill road, NY
+                        {locationName}
                     </p>
                 </div>
             </div>

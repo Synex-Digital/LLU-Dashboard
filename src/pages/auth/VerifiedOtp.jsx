@@ -7,17 +7,12 @@ import { routes } from "../../routes/Routers";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { LoadingIcon } from "../../assets/icon";
-import {
-    GoogleMap,
-    Marker,
-    InfoWindow,
-    useLoadScript,
-} from "@react-google-maps/api";
+import { useLoadScript } from "@react-google-maps/api";
 
 const VerifiedOtp = () => {
     const [otp, setOtp] = useState(["", "", "", ""]);
-    const [resendTimer, setResendTimer] = useState(59);
     const [loading, setLoading] = useState(false);
+    const [mapLocation, setMapLocation] = useState(null);
     const inputRefs = useRef([]);
     const location = useLocation();
     const UserData = location?.state;
@@ -26,19 +21,31 @@ const VerifiedOtp = () => {
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: `${import.meta.env.VITE_GOOGLE_MAP_KEY}&loading=async`,
     });
+    console.log(mapLocation);
 
     const notify = (message) => toast.success(message);
     const notifyError = (message) => toast.error(message);
 
-    useEffect(() => {
-        const timer = setInterval(() => {
-            if (resendTimer > 0) {
-                setResendTimer((prev) => prev - 1);
-            }
-        }, 1000);
+    const getUserLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setMapLocation({ lat: latitude, lng: longitude });
+                },
+                (error) => {
+                    console.error("Error getting location", error);
+                    setMapLocation({ lat: 23.7918436, lng: 90.3666064 });
+                }
+            );
+        } else {
+            console.error("Geolocation is not supported by this browser.");
+        }
+    };
 
-        return () => clearInterval(timer);
-    }, [resendTimer]);
+    useEffect(() => {
+        getUserLocation();
+    }, []);
 
     const handleOtpChange = (value, index) => {
         const newOtp = [...otp];
@@ -54,8 +61,16 @@ const VerifiedOtp = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+
+        if (!mapLocation) {
+            notifyError("Unable to get your location. Please try again.");
+            setLoading(false);
+            return;
+        }
+
         let user_OTP = Number(otp.join(""));
         try {
+            // Step 1: Verify OTP
             let resOtp = await axios.post(
                 `${baseUrl}/auth/verify_OTP`,
                 { email: UserData.email, user_otp: user_OTP },
@@ -67,6 +82,7 @@ const VerifiedOtp = () => {
             );
             console.log(resOtp);
 
+            // Step 2: Register User
             let data = {
                 full_name: UserData.full_name,
                 email: UserData.email,
@@ -80,12 +96,14 @@ const VerifiedOtp = () => {
             });
 
             console.log(response);
+
+            // Step 3: Register VIP User with Real-Time Location
             let vip_user = await axios.post(
                 `${baseUrl}/auth/register_special_user/${response.data.user_id}?type=facilitator`,
                 {
                     no_of_professionals: response.data.user_id,
-                    latitude: 40.712776,
-                    longitude: -74.005974,
+                    latitude: mapLocation.lat,
+                    longitude: mapLocation.lng,
                 }
             );
             console.log(vip_user);

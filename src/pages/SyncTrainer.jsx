@@ -21,16 +21,37 @@ const SyncTrainer = () => {
     const baseUrl = import.meta.env.VITE_BASE_URL;
     const [trainers, setTrainers] = useState([]);
     const [selectedTrainer, setSelectedTrainer] = useState(null);
+    const [userLocation, setUserLocation] = useState(null);
 
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: `${import.meta.env.VITE_GOOGLE_MAP_KEY}&loading=async`,
     });
 
+    const getUserLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setUserLocation({ latitude, longitude });
+                },
+                (error) => {
+                    console.error("Error getting location", error);
+                }
+            );
+        } else {
+            console.error("Geolocation is not supported by this browser.");
+        }
+    };
+
     async function apiCall() {
+        if (!userLocation) {
+            return;
+        }
+
         try {
             const data = {
-                latitude: 23.7918436,
-                longitude: 90.3666064,
+                latitude: userLocation.latitude,
+                longitude: userLocation.longitude,
             };
 
             let response = await axios.post(
@@ -52,16 +73,20 @@ const SyncTrainer = () => {
     }
 
     useEffect(() => {
-        apiCall();
+        getUserLocation();
     }, []);
+
+    useEffect(() => {
+        if (userLocation) {
+            apiCall();
+        }
+    }, [userLocation]);
     if (!isLoaded) return <div>Loading...</div>;
 
     let handleEmployee = async (item) => {
         const localValue = localStorage.getItem("user");
         const loginUser = localValue ? JSON.parse(localValue) : null;
-        console.log(
-            `${baseUrl}/api/facilitator/${loginUser.specializedUserId}/add_employee/${item.trainer_id}`
-        );
+
         let data = {};
         try {
             let response = await axios.post(

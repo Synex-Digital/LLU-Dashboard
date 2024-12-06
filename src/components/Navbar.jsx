@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "./common/Image";
 
 import notification from "../assets/icon/notification.svg";
@@ -9,15 +9,84 @@ import { FaAnglesRight, FaUsers } from "react-icons/fa6";
 import navBarStore from "../features/navSlice";
 import { HiHome } from "react-icons/hi";
 import { SiSession } from "react-icons/si";
-import { RiQuestionnaireFill } from "react-icons/ri";
 import clsx from "clsx";
 import { PiMessengerLogoBold } from "react-icons/pi";
+import axios from "axios";
 
 const Navbar = () => {
     const { toggleBears } = navBarStore();
     const navigate = useNavigate();
+    const [location, setLocation] = useState(null);
+    const [locationName, setLocationName] = useState("Fetching location...");
 
     let pathName = window.location.pathname;
+
+    const getUserLocation = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setLocation({ lat: latitude, lng: longitude });
+                },
+                (error) => {
+                    console.error("Geolocation error:", error);
+                    setLocationName(`Error: ${error.message}`);
+                }
+            );
+        } else {
+            console.error("Geolocation is not supported by this browser.");
+            setLocationName("Geolocation not supported");
+        }
+    };
+
+    const reverseGeocode = async () => {
+        if (!location) return;
+
+        const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.lat},${location.lng}&key=${import.meta.env.VITE_GOOGLE_MAP_KEY}`;
+        try {
+            const response = await axios.get(geocodingUrl);
+            console.log("API response:", response.data);
+
+            if (response.data.status === "OK") {
+                const addressComponents =
+                    response.data.results[0]?.address_components;
+
+                let city = "";
+                let country = "";
+
+                addressComponents.forEach((component) => {
+                    if (component.types.includes("locality")) {
+                        city = component.long_name;
+                    }
+                    if (component.types.includes("country")) {
+                        country = component.long_name;
+                    }
+                });
+
+                if (city && country) {
+                    setLocationName(`${city}, ${country}`);
+                } else {
+                    setLocationName("Location not found");
+                }
+            } else {
+                console.error("Geocoding error:", response.data.status);
+                setLocationName("Location not found");
+            }
+        } catch (error) {
+            console.error("Error with reverse geocoding:", error);
+            setLocationName("Error fetching location");
+        }
+    };
+
+    useEffect(() => {
+        getUserLocation();
+    }, []);
+
+    useEffect(() => {
+        if (location) {
+            reverseGeocode();
+        }
+    }, [location]);
 
     return (
         <>
@@ -30,7 +99,7 @@ const Navbar = () => {
                     <div className="flex items-center gap-x-3">
                         <div className="flex items-center gap-x-1 rounded bg-darkSlate px-2 py-1">
                             <MdLocationPin className="text-xl" />
-                            <p className="text-xs">New York, USA</p>
+                            <p className="text-xs">{locationName}</p>
                         </div>
                         <div className="relative">
                             <PiMessengerLogoBold
@@ -78,7 +147,7 @@ const Navbar = () => {
                     </Link>
                     <div className="flex items-center gap-x-1 rounded bg-darkSlate px-2 py-1">
                         <MdLocationPin className="text-xl" />
-                        <p className="text-xs">New York, USA</p>
+                        <p className="text-xs">{locationName}</p>
                     </div>
                     <div className="relative">
                         <PiMessengerLogoBold
