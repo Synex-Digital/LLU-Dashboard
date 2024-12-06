@@ -16,10 +16,6 @@ const mapContainerStyle = {
     width: "100%",
     height: "450px",
 };
-const center = {
-    lat: 23.8103,
-    lng: 90.4125,
-};
 
 const AddFacility = () => {
     const token = Cookies.get("llu-token");
@@ -65,11 +61,12 @@ const AddFacility = () => {
         libraries,
     });
 
-    useEffect(() => {
-        if (location.lat && location.lng) {
-            reverseGeocode();
-        }
-    }, [location]);
+    // useEffect(() => {
+    //     if (location.lat && location.lng) {
+    //         reverseGeocode();
+    //     }
+    // }, [location]);
+
     useEffect(() => {
         async function apiCall() {
             try {
@@ -90,25 +87,25 @@ const AddFacility = () => {
         }
         apiCall();
     }, []);
-    const reverseGeocode = async () => {
-        const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.lat},${location.lng}&key=${import.meta.env.VITE_GOOGLE_MAP_KEY}`;
 
-        try {
-            const response = await axios.get(geocodingUrl);
-            console.log(response);
+    // const reverseGeocode = async () => {
+    //     const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location.lat},${location.lng}&key=${import.meta.env.VITE_GOOGLE_MAP_KEY}`;
 
-            if (response.data.status === "OK") {
-                const address =
-                    response.data.results[0]?.formatted_address ||
-                    "Unknown location";
-                setLocationName(address);
-            } else {
-                console.error("Geocoding error:", response.data.status);
-            }
-        } catch (error) {
-            console.error("Error with reverse geocoding:", error);
-        }
-    };
+    //     try {
+    //         const response = await axios.get(geocodingUrl);
+
+    //         if (response.data.status === "OK") {
+    //             const address =
+    //                 response.data.results[0]?.formatted_address ||
+    //                 "Unknown location";
+    //             setLocationName(address);
+    //         } else {
+    //             console.error("Geocoding error:", response.data.status);
+    //         }
+    //     } catch (error) {
+    //         console.error("Error with reverse geocoding:", error);
+    //     }
+    // };
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
@@ -248,8 +245,8 @@ const AddFacility = () => {
         const data = {
             name: fullName,
             hourly_rate: +hourlyRate,
-            latitude: location.lat || center.lat,
-            longitude: location.lng || center.lng,
+            latitude: location.lat,
+            longitude: location.lng,
             capacity: +capacity,
             established_in: +establishedIn,
             available_hours: transformedData,
@@ -277,18 +274,18 @@ const AddFacility = () => {
                 );
                 console.log(response.data);
 
-                // let imageResponse = await axios.post(
-                //     `${baseUrl}/api/facilitator/${storedUser.specializedUserId}/add_img`,
-                //     formData,
-                //     {
-                //         headers: {
-                //             Authorization: `Bearer ${token}`,
-                //             Accept: "application/json",
-                //             "Content-Type": "multipart/form-data",
-                //         },
-                //     }
-                // );
-                // console.log("Images uploaded:", imageResponse.data);
+                let imageResponse = await axios.post(
+                    `${baseUrl}/api/facilitator/${response.data.facility_id}/add_img`,
+                    formData,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            Accept: "application/json",
+                            "Content-Type": "multipart/form-data",
+                        },
+                    }
+                );
+                console.log("Images uploaded:", imageResponse.data);
 
                 alert("Facility Add successfully!");
                 navigate(routes.profile.path);
@@ -473,7 +470,7 @@ const AddFacility = () => {
                 </div>
             ))}
 
-            {/* <SubPageTitle title={"Gallery"} />
+            <SubPageTitle title={"Gallery"} />
             <div>
                 <label className="flex cursor-pointer items-center gap-x-3">
                     <BsPlusSquareDotted className="text-4xl text-Primary" />
@@ -493,7 +490,7 @@ const AddFacility = () => {
                         alt={`Preview ${index}`}
                     />
                 ))}
-            </div> */}
+            </div>
 
             <div className="mt-10 flex justify-between">
                 <h2 className="text-xl font-medium">Address</h2>
@@ -506,7 +503,7 @@ const AddFacility = () => {
             <GoogleMap
                 mapContainerStyle={mapContainerStyle}
                 zoom={12}
-                center={location.lat ? location : center}
+                center={location}
                 onClick={handleMapClick}
                 onLoad={onLoad}
             >

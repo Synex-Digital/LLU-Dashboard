@@ -45,7 +45,7 @@ const Community = () => {
             );
             setLoading(false);
             console.log(response.data.data);
-            
+
             setPosts(response.data.data);
             setHasMorePosts(response.data.data.length === 10);
         } catch (error) {
@@ -510,14 +510,14 @@ const Community = () => {
                                 title={<LoadingIcon />}
                                 className=" flex justify-center !px-12 !py-0 rounded-md"
                             />
-                        ) : (
+                        ) : posts.length >= 10 ? (
                             <Button
                                 title="Next"
                                 onClick={handleNextPage}
                                 disabled={!hasMorePosts}
                                 className="px-12 py-2 rounded-md"
                             />
-                        )}
+                        ) : null}
                     </div>
                 </section>
             ) : (

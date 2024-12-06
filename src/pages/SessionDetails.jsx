@@ -12,7 +12,6 @@ import { routes } from "../routes/Routers";
 const SessionDetails = () => {
     const location = useLocation();
     const sessionData = location.state?.data.sessionDetails;
-    console.log(sessionData);
 
     const navigate = useNavigate();
     return (
