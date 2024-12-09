@@ -50,11 +50,13 @@ const Login = () => {
                         secure: true,
                         sameSite: "Strict",
                         expires: 1 / 96,
+                        path: "/",
                     });
                     Cookies.set("ref-token", response.data.refreshToken, {
                         secure: true,
                         sameSite: "Strict",
                         expires: 7,
+                        path: "/",
                     });
 
                     if (response.data.loginStatus) {
