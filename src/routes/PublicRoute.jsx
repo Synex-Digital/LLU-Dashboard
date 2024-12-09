@@ -10,10 +10,18 @@ const PublicRoute = ({ children }) => {
     useEffect(() => {
         const token = Cookies.get("llu-token");
         if (token) {
-            setIsAuthenticated(true);
+            validateToken(token).then((isValid) => {
+                setIsAuthenticated(isValid);
+                setLoading(false);
+            }).catch(() => {
+                setIsAuthenticated(false);
+                setLoading(false);
+            });
+        } else {
+            setLoading(false);
         }
-        setLoading(false);
     }, []);
+    
 
     if (loading) {
         return <div>Loading...</div>;
