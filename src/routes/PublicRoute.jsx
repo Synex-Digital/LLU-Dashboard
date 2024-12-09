@@ -4,30 +4,22 @@ import Cookies from "js-cookie";
 import { routes } from "./Routers";
 
 const PublicRoute = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const token = Cookies.get("llu-token");
-        if (token) {
-            validateToken(token).then((isValid) => {
-                setIsAuthenticated(isValid);
-                setLoading(false);
-            }).catch(() => {
-                setIsAuthenticated(false);
-                setLoading(false);
-            });
-        } else {
-            setLoading(false);
-        }
-    }, []);
-    
-
-    if (loading) {
-        return <div>Loading...</div>;
+  useEffect(() => {
+    const token = Cookies.get("llu-token");
+    if (token) {
+      setIsAuthenticated(true);
     }
+    setLoading(false);
+  }, []);
 
-    return isAuthenticated ? <Navigate to={routes.dashboard.path} /> : children;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return isAuthenticated ? <Navigate to={routes.dashboard.path} /> : children;
 };
 
 export default PublicRoute;
