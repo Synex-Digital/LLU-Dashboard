@@ -155,8 +155,8 @@ const Community = () => {
             setShowComment(true);
         }
         try {
-            let response = await axios.get(
-                `${baseUrl}/api/user/posts/${item.post_id}?page=1&limit=10`,
+            let response = await axios.post(
+                `${baseUrl}/api/user/individual_post?page=1&limit=10`, {post_id: item.post_id},
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -399,8 +399,8 @@ const Community = () => {
                                         }`}
                                     >
                                         <div className="space-y-3 mt-3">
-                                            {getComments?.map((gitem) => (
-                                                <div className=" p-4 rounded-lg">
+                                            {getComments?.map((gitem,index) => (
+                                                <div key={index} className=" p-4 rounded-lg">
                                                     <div className="flex gap-x-3">
                                                         <Image
                                                             src={profile}
