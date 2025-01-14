@@ -99,8 +99,10 @@ const VerifiedOtp = () => {
 
             // Step 3: Register VIP User with Real-Time Location
             let vip_user = await axios.post(
-                `${baseUrl}/auth/register_special_user/${response.data.user_id}?type=facilitator`,
+                `${baseUrl}/auth/register_special_user`,
                 {
+                    user_id: response.data.user_id,
+                    type: "facilitator",
                     no_of_professionals: response.data.user_id,
                     latitude: mapLocation.lat,
                     longitude: mapLocation.lng,
