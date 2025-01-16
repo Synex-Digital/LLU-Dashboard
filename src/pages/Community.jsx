@@ -124,12 +124,13 @@ const Community = () => {
 
         let data = {
             content: values,
+            post_id: item.post_id,
             time: getCurrentTime(),
         };
 
         try {
             let response = await axios.post(
-                `${baseUrl}/api/user/comment/${item.post_id}`,
+                `${baseUrl}/api/user/comment`,
                 data,
                 {
                     headers: {
@@ -138,7 +139,6 @@ const Community = () => {
                     },
                 }
             );
-            console.log(response.data);
             setPostId(item.post_id);
             setValues("");
         } catch (error) {
@@ -176,7 +176,7 @@ const Community = () => {
                 const isLiked = item.isLiked;
 
                 if (!isLiked) {
-                    axios.get(`${baseUrl}/api/user/like/${post.post_id}`, {
+                    axios.post(`${baseUrl}/api/user/like`,{post_id : post.post_id}, {
                         headers: {
                             Authorization: `Bearer ${token}`,
                             Accept: "application/json",
@@ -188,8 +188,8 @@ const Community = () => {
                         no_of_likes: item.no_of_likes + 1,
                     };
                 } else {
-                    axios.get(
-                        `${baseUrl}/api/user/remove_like/${post.post_id}`,
+                    axios.post(
+                        `${baseUrl}/api/user/remove_like`,{post_id : post.post_id},
                         {
                             headers: {
                                 Authorization: `Bearer ${token}`,

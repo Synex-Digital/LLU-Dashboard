@@ -19,25 +19,29 @@ const UserProfile = () => {
   let [userData, setUserData] = useState("");
   let [realTime, setRealTime] = useState(true);
 
-  async function apiCall() {
-    try {
-      let response = await axios.get(`${baseUrl}/api/user/profile/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-        },
-      });
-      console.log(response);
-
-      setUserData(response.data.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   useEffect(() => {
+    const apiCall = async () => {
+      try {
+        let response = await axios.post(
+          `${baseUrl}/api/user/profile?page=1&limit=5`,
+          { user_id: userId },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          }
+        );
+        setUserData(response.data.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
     apiCall();
   }, [realTime]);
+  console.log(userData);
+  
 
   if (!userData) {
     return;
@@ -45,15 +49,12 @@ const UserProfile = () => {
 
   const handleMag = async () => {
     try {
-      let response = await axios.get(
-        `${baseUrl}/api/user/create_chat/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-        }
-      );
+      await axios.get(`${baseUrl}/api/user/create_chat/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      });
 
       navigate(routes.messages.path);
     } catch (error) {
@@ -64,17 +65,19 @@ const UserProfile = () => {
 
   const handleFollow = async () => {
     try {
-      let response = await axios.get(`${baseUrl}/api/user/follow/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-        },
-      });
-      console.log(response.data);
+      await axios.post(
+        `${baseUrl}/api/user/follow`,
+        { user_id: userId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      );
       setRealTime(false);
     } catch (error) {
       console.log(error);
-      alert(error.response.data.message);
     }
   };
 
@@ -113,7 +116,7 @@ const UserProfile = () => {
         </div>
       </div>
       <div
-        className={`mt-5 grid ${userData.followed ? "grid-cols-1" : " grid-cols-1"} gap-x-7 sm:w-1/2 mx-auto`}
+        className={`mt-5 grid ${userData.followed ? "grid-cols-1" : " grid-cols-2"} gap-x-7 sm:w-1/2 mx-auto`}
       >
         <button
           onClick={handleMag}
@@ -166,7 +169,6 @@ const UserProfile = () => {
                           src={item}
                           alt={`Image ${index}`}
                           className="w-full h-auto object-cover rounded-lg cursor-pointer col-span-2 row-span-2"
-                          onClick={() => openModal(item)}
                         />
                       );
                     } else if (index === 1 || index === 2) {
@@ -176,7 +178,6 @@ const UserProfile = () => {
                           src={item}
                           alt={`Image ${index}`}
                           className="w-full h-auto object-cover rounded-lg cursor-pointer"
-                          onClick={() => openModal(item)}
                         />
                       );
                     } else {
