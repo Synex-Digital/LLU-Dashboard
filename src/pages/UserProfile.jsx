@@ -37,11 +37,10 @@ const UserProfile = () => {
         console.log(error);
       }
     };
-  
+
     apiCall();
   }, [realTime]);
   console.log(userData);
-  
 
   if (!userData) {
     return;
@@ -85,7 +84,10 @@ const UserProfile = () => {
     <section>
       <div className="sm:flex xl:gap-x-16 gap-x-10">
         <div className="mt-5 items-center text-center w-full justify-center gap-6">
-          <Image className={"w-24 rounded-full mx-auto"} src={profile} />
+          <Image
+            className={"w-24 rounded-full mx-auto"}
+            src={userData.user.img ? userData.user.img : profile}
+          />
           <div>
             <p className="mt-2.5 text-lg font-medium capitalize">
               {userData?.user.first_name} {userData?.user.last_name}

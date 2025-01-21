@@ -3,7 +3,6 @@ import PageHeading from "../components/common/PageHeading";
 
 import profile from "../assets/image/pp.png";
 import Image from "../components/common/Image";
-import ProfileCard from "../components/ProfileCard";
 import SubPageTitle from "../components/common/SubPageTitle";
 import { CiCirclePlus, CiEdit, CiShare2 } from "react-icons/ci";
 import { FaAngleRight } from "react-icons/fa6";
@@ -168,7 +167,7 @@ const Profile = () => {
                     >
                         <Image
                             className={"w-36 rounded-lg"}
-                            src={item.image ? item.image : profile}
+                            src={item.img ? item.img : profile}
                         />
                         <div>
                             <div className="flex items-center gap-x-2 rounded-full bg-background px-3 py-1 text-darkText">

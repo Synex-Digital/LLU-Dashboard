@@ -31,7 +31,6 @@ const AddFacility = () => {
     const [hourlyRate, setHourlyRate] = useState("");
     const [establishedIn, setEstablishedIn] = useState("");
     const [capacity, setCapacity] = useState("");
-    const [locationName, setLocationName] = useState("");
     const [selectedTrainers, setSelectedTrainers] = useState([]);
     const [days, setDays] = useState({
         mon: true,
@@ -242,6 +241,51 @@ const AddFacility = () => {
             {}
         );
 
+        const transformSchedule = (schedule) => {
+            const daysMapping = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+            const result = [];
+        
+            const parseTime = (timeStr) => {
+                const [time, period] = timeStr.split(" ");
+                let [hour, minute] = time.split(":").map(Number);
+        
+                if (period === "PM" && hour !== 12) hour += 12;
+                if (period === "AM" && hour === 12) hour = 0;
+        
+                return { hour, minute };
+            };
+        
+            for (const day of daysMapping) {
+                const scheduleInfo = schedule[day] || "Not available";
+        
+                if (scheduleInfo === "Not available") {
+                    result.push({
+                        week_day: day,
+                        start_time: null,
+                        end_time: null,
+                        available: 0,
+                    });
+                } else {
+                    const [start, end] = scheduleInfo.split(" - ").map(parseTime);
+                    const startDate = new Date();
+                    const endDate = new Date();
+        
+                    startDate.setHours(start.hour, start.minute, 0);
+                    endDate.setHours(end.hour, end.minute, 0);
+        
+                    result.push({
+                        week_day: day,
+                        start_time: startDate.toISOString(),
+                        end_time: endDate.toISOString(),
+                        available: 1,
+                    });
+                }
+            }
+        
+            return result;
+        };
+        
+
         const data = {
             name: fullName,
             hourly_rate: +hourlyRate,
@@ -249,7 +293,7 @@ const AddFacility = () => {
             longitude: location.lng,
             capacity: +capacity,
             established_in: +establishedIn,
-            available_hours: transformedData,
+            available_hours: transformSchedule(transformedData),
             amenities: facilities,
             employees: selectedTrainers,
         };
