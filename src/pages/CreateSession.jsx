@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import PageHeading from "../components/common/PageHeading";
 import Button from "../components/common/Button";
 import { MdLocationPin } from "react-icons/md";
