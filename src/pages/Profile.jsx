@@ -159,7 +159,7 @@ const Profile = () => {
                     onClick={() => navigate(routes.syncTrainer.path)}
                 />
             </div>
-            <div className="flex gap-x-3">
+            <div className="flex gap-3 flex-wrap">
                 {trainers.map((item, index) => (
                     <div
                         key={index}

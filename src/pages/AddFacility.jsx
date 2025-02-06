@@ -70,7 +70,7 @@ const AddFacility = () => {
         async function apiCall() {
             try {
                 let response = await axios.get(
-                    `${baseUrl}/api/facilitator/${storedUser.specializedUserId}/employees`,
+                    `${baseUrl}/api/facilitator/employees`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -307,7 +307,7 @@ const AddFacility = () => {
         async function apiPost() {
             try {
                 let response = await axios.post(
-                    `${baseUrl}/api/facilitator/${storedUser.specializedUserId}/add_facility`,
+                    `${baseUrl}/api/facilitator/add_facility`,
                     data,
                     {
                         headers: {
@@ -316,7 +316,6 @@ const AddFacility = () => {
                         },
                     }
                 );
-                console.log(response.data);
 
                 let imageResponse = await axios.post(
                     `${baseUrl}/api/facilitator/${response.data.facility_id}/add_img`,
