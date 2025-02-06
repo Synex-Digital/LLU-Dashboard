@@ -33,6 +33,8 @@ const SyncTrainer = () => {
                 (position) => {
                     const { latitude, longitude } = position.coords;
                     setUserLocation({ latitude, longitude });
+                    console.log(latitude, longitude);
+                    
                 },
                 (error) => {
                     console.error("Error getting location", error);
@@ -53,6 +55,7 @@ const SyncTrainer = () => {
                 latitude: userLocation.latitude,
                 longitude: userLocation.longitude,
             };
+console.log(data);
 
             let response = await axios.post(
                 `${baseUrl}/api/facilitator/nearby_trainers`,
