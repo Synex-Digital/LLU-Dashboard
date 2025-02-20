@@ -316,9 +316,9 @@ const AddFacility = () => {
                         },
                     }
                 );
-
+                formData.append("facility_id", response.data.facility_id);
                 let imageResponse = await axios.post(
-                    `${baseUrl}/api/facilitator/${response.data.facility_id}/add_img`,
+                    `${baseUrl}/api/facilitator/add_img`,
                     formData,
                     {
                         headers: {

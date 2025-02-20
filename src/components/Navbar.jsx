@@ -30,6 +30,19 @@ const Navbar = () => {
         },
         (error) => {
           setLocationName(`Error: ${error.message}`);
+          if (error.code === error.PERMISSION_DENIED) {
+            alert(
+              "❌ Location access is denied!\n\nPlease enable location access in your browser settings."
+            );
+          } else if (error.code === error.POSITION_UNAVAILABLE) {
+            alert("⚠️ Location information is unavailable. Try again later.");
+          } else if (error.code === error.TIMEOUT) {
+            alert(
+              "⏳ Location request timed out. Please check your internet connection."
+            );
+          } else {
+            alert("Unknown error occurred. Please try again.");
+          }
         }
       );
     } else {

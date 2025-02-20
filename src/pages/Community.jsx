@@ -61,7 +61,8 @@ const Community = () => {
     async function apiCall() {
       try {
         let response = await axios.get(
-          `${baseUrl}/api/user/posts/${postId}?page=1&limit=10`,
+          `${baseUrl}/api/user/posts?page=1&limit=10`,
+
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -218,12 +219,16 @@ const Community = () => {
         const isLiked = item.isLiked;
 
         if (!isLiked) {
-          axios.get(`${baseUrl}/api/user/like_comment/${post.comment_id}`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              Accept: "application/json",
-            },
-          });
+          axios.post(
+            `${baseUrl}/api/user/like_comment`,
+            { comment_id: post.comment_id },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+              },
+            }
+          );
           return {
             ...item,
             isLiked: true,
