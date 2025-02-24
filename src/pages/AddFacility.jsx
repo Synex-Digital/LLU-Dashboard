@@ -202,10 +202,11 @@ const AddFacility = () => {
 
   const handleClick = () => {
     const convertTime = (time) => {
-      const [hour, minute] = time.split(":");
+      let [hour, minute] = time.split(":").map(Number);
       const ampm = hour >= 12 ? "PM" : "AM";
-      const adjustedHour = hour % 12 || 12;
-      return `${adjustedHour}:${minute} ${ampm}`;
+      if (hour > 12) hour -= 12;
+      if (hour === 0) hour = 12;
+      return `${hour}:${minute.toString().padStart(2, "0")} ${ampm}`;
     };
 
     const dayMapping = {
@@ -270,13 +271,13 @@ const AddFacility = () => {
           const startDate = new Date();
           const endDate = new Date();
 
-          startDate.setHours(start.hour, start.minute, 0);
-          endDate.setHours(end.hour, end.minute, 0);
+          startDate.setHours(start.hour, start.minute, 49);
+          endDate.setHours(end.hour, end.minute, 49);
 
           result.push({
             week_day: day,
-            start_time: startDate.toISOString(),
-            end_time: endDate.toISOString(),
+            start_time: startDate.toISOString().split("T")[1].split(".")[0], // Format to HH:mm:ss
+          end_time: endDate.toISOString().split("T")[1].split(".")[0],
             available: 1,
           });
         }

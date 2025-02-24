@@ -214,7 +214,7 @@ const MessagePage = () => {
 
       try {
         let response = await axios.get(
-          `${baseUrl}/api/user/chats/${item.room_id}?start_time=${startDate}&end_time=${endDate}`,
+          `${baseUrl}/api/user/chats?start_time=${startDate}&end_time=${endDate}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -222,10 +222,10 @@ const MessagePage = () => {
             },
           }
         );
-        console.log(response.data);
+        console.log("mge", response);
 
         const newMessages = response.data.data;
-        const formattedMessages = newMessages.map((msg) => ({
+        const formattedMessages = newMessages?.map((msg) => ({
           time: new Date(msg.time).toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
