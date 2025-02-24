@@ -48,12 +48,16 @@ const UserProfile = () => {
 
   const handleMag = async () => {
     try {
-      await axios.get(`${baseUrl}/api/user/create_chat/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-        },
-      });
+      await axios.post(
+        `${baseUrl}/api/user/create_chat`,
+        { user_id: userId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      );
 
       navigate(routes.messages.path);
     } catch (error) {
