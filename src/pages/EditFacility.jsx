@@ -53,8 +53,9 @@ const EditFacility = () => {
     useEffect(() => {
         async function apiCall() {
             try {
-                let response = await axios.get(
-                    `${baseUrl}/api/facilitator/facility/${facility_id}?page=1&limit=5`,
+                let response = await axios.post(
+                    `${baseUrl}/api/facilitator/facility?page=1&limit=5`,
+                    {facility_id},
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -62,7 +63,7 @@ const EditFacility = () => {
                         },
                     }
                 );
-                console.log(response.data.data.availableHours);
+                console.log(response.data.data);
                 setFacilityData(response.data.data);
 
                 if (response.data.data.availableHours) {
@@ -228,6 +229,7 @@ const EditFacility = () => {
         };
 
         let data = {
+            facility_id:facility_id,
             description: "It's a good Stadium",
             capacity: +facilityData.facilityInfo.capacity,
             latitude: 40.7128,
@@ -246,7 +248,7 @@ const EditFacility = () => {
 
         try {
             await axios.patch(
-                `${baseUrl}/api/facilitator/facility/${facility_id}`,
+                `${baseUrl}/api/facilitator/facility`,
                 data,
                 {
                     headers: {
